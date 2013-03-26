@@ -126,5 +126,7 @@ while (1) {
             push(@words, $word);
         });
     @words = sort @words;
+    my $last = '';
+    @words = grep {my $result = $_ ne $last; $last = $_; $result; } @words;
     print $words "$_\n" foreach @words;
 }

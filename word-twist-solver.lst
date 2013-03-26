@@ -240,7 +240,6 @@ acing
 acini
 acinic
 acinus
-acis
 ackee
 ackers
 aclu
@@ -657,7 +656,6 @@ ahchoo
 ahead
 aheap
 ahed
-ahem
 ahems
 ahern
 ahh
@@ -710,13 +708,14 @@ aileen
 ailey
 ailing
 ails*
-aim
+aim*
 aimed
 aimee
 aimer
 aimers
 aimful
 aiming
+aims
 aina
 ainas
 aintab
@@ -1193,7 +1192,7 @@ ameban
 amebic
 ameer
 amelia
-amen
+amen*
 amend
 amende
 amends
@@ -1208,7 +1207,6 @@ amerce
 amery
 amex
 amhara
-ami
 amia
 amias
 amice
@@ -1235,7 +1233,6 @@ aminic
 amino
 amir
 amiret
-amis
 amish
 amiss
 amite
@@ -1256,7 +1253,6 @@ amnic
 amnio
 amnion
 amnios
-amo
 amoco
 amoeba
 amok
@@ -1296,10 +1292,8 @@ amt
 amtman
 amtrac
 amtrak
-amu
 amuck
 amulet
-amun
 amur
 amus
 amuse
@@ -1532,7 +1526,6 @@ antsy
 antu
 antung
 antwan
-anu
 anubis
 anura
 anural
@@ -1997,10 +1990,8 @@ ascend
 ascent
 asch
 ascham
-asci
 ascian
 ascii
-asco
 ascoma
 ascot
 ascus
@@ -2299,13 +2290,11 @@ aulic
 auloi
 aulos
 ault
-aum
 aumail
 aumbry
 aumil
 aumils
 aums
-aune
 aunes
 aunt
 auntie
@@ -5476,7 +5465,6 @@ cahone
 cahoot
 cahow
 cahows
-cai
 caid
 caids
 caille
@@ -5576,7 +5564,7 @@ calvin
 calx
 calxes
 calyx
-cam
+cam*
 camail
 camak
 caman
@@ -5594,18 +5582,14 @@ camel
 cameo
 camera
 camese
-cami
 camion
-camis
 camisa
 camize
 camlet
 cammal
 cammed
 cammie
-camo
 camoes
-camos
 camote
 camp
 camped
@@ -5618,6 +5602,7 @@ campti
 campus
 campy
 camry
+cams
 camus
 camuy
 can
@@ -5897,7 +5882,6 @@ cashoo
 casing
 casini
 casino
-casio
 casita
 cask
 casked
@@ -6598,9 +6582,8 @@ chyle
 chyme
 chymic
 chypre
-cia
 ciales
-ciao
+ciao*
 cibber
 cibol
 cibolo
@@ -6625,7 +6608,6 @@ cilice
 cilium
 cill
 cills
-cima
 cimar
 cimars
 cimbri
@@ -6660,7 +6642,6 @@ cirls
 cirque
 cirri
 cirrus
-cis
 cisc
 cisco
 ciskei
@@ -7175,8 +7156,7 @@ colusa
 colver
 coly
 colza
-com
-coma
+coma*
 comade
 comae
 comake
@@ -7184,6 +7164,7 @@ comal
 comals
 comarb
 comart
+comas
 comate
 comb
 combat
@@ -7242,7 +7223,6 @@ compot
 compt
 compts
 comr
-coms
 comsat
 comte
 comtes
@@ -10465,7 +10445,6 @@ eakins
 eakly
 eale
 ealing
-eam
 ear
 earbob
 earcap
@@ -10514,7 +10493,6 @@ eathly
 eating
 eaton
 eats
-eau
 eaus
 eaux
 eave
@@ -11031,7 +11009,7 @@ empusa
 empuse
 ems*
 emt
-emu
+emu*
 emule
 emunge
 emure
@@ -15310,10 +15288,7 @@ hadji
 hadlee
 hadron
 hadst
-hae
 haeing
-haem
-haen
 haeres
 haes
 haff
@@ -15449,7 +15424,7 @@ halve
 halved
 halver
 halves
-ham
+ham*
 hama
 hamada
 hamah
@@ -15461,7 +15436,6 @@ hamaul
 hamba
 hamble
 hamden
-hame
 hamel
 hamer
 hametz
@@ -15485,7 +15459,6 @@ hamuli
 hamza
 hamzah
 hamzas
-han
 hana
 hanap
 hanaps
@@ -15896,9 +15869,8 @@ helped
 helper
 helve
 helved
-hem
+hem*
 hemal
-heman
 heme
 hemen
 hemet
@@ -15913,7 +15885,7 @@ hemp
 hempen
 hempie
 hempy
-hen
+hen*
 henbit
 hence
 hences
@@ -16663,7 +16635,7 @@ huddle
 huddup
 huddy
 hudson
-hue
+hue*
 hued
 huelva
 huemul
@@ -16714,18 +16686,15 @@ hulloa
 hulloo
 hully
 hulme
-hum
-huma
-human
-humane
+hum*
+human*
+humane*
 humas
 humate
 humber
 humble
 humbly
 humbug
-hume
-humean
 humect
 humeri
 humf
@@ -16759,7 +16728,6 @@ humpy
 humus
 humusy
 humvee
-hun
 hunan
 hunch
 hung
@@ -16952,7 +16920,6 @@ ibo
 ibos
 ibsen
 icahn
-icao
 icard
 icaria
 icarus
@@ -17133,7 +17100,6 @@ imbrue
 imbue
 imbued
 imbues
-imco
 imelda
 imho
 imid
@@ -21584,7 +21550,7 @@ mabie
 mable
 mabton
 mabuse
-mac
+mac*
 macaco
 macao
 macau
@@ -21617,7 +21583,7 @@ macoun
 macoya
 macro
 macron
-macs
+macs*
 macula
 macule
 macy
@@ -21646,7 +21612,6 @@ madrid
 madtom
 madura
 maduro
-mae
 maed
 maelid
 maenad
@@ -21701,7 +21666,6 @@ mahwa
 mahwah
 mahwas
 mahzor
-mai
 maia
 maid
 maida
@@ -21843,7 +21807,7 @@ mammy
 mamore
 mamou
 mamzer
-man
+man*
 mana
 manado
 manage
@@ -21864,9 +21828,8 @@ mande
 mandir
 mandom
 mandy
-mane
+mane*
 maned
-maneh
 manehs
 manent
 manes
@@ -21937,7 +21900,6 @@ manus
 manvel
 manx
 many
-mao
 maoism
 maoist
 maori
@@ -22074,7 +22036,6 @@ masai
 masala
 masan
 masas
-masc
 mascle
 mascon
 mascot
@@ -22179,7 +22140,6 @@ mauler
 maulvi
 maumee
 maumet
-maun
 maund
 maundy
 maungy
@@ -22293,7 +22253,6 @@ mcfall
 mcgee
 mcgirk
 mcgrew
-mci
 mcjob
 mcjobs
 mckay
@@ -22323,7 +22282,7 @@ mealer
 mealie
 meally
 mealy
-mean
+mean*
 meane
 meaned
 meaner
@@ -22473,7 +22432,6 @@ memo
 memoir
 memory
 men*
-mena
 menace
 menad
 menado
@@ -22526,7 +22484,7 @@ menton
 mentor
 mentos
 mentum
-menu
+menu*
 menyie
 meos
 meou
@@ -22665,7 +22623,6 @@ metter
 mettle
 metump
 metz
-meu
 meus
 meuse
 meused
@@ -22704,11 +22661,8 @@ mho
 mhorr
 mhorrs
 mhz
-mia
 miami
 miamia
-miao
-miaos
 miaou
 miaow
 miasm
@@ -22718,8 +22672,8 @@ miaul
 miauls
 mib
 mibs
-mic
-mica
+mic*
+mica*
 micah
 micate
 mice
@@ -22737,8 +22691,6 @@ mickie
 mickle
 micky
 micmac
-mico
-micos
 micra
 micro
 micron
@@ -22980,7 +22932,6 @@ misact
 misadd
 misaim
 misate
-misc
 miscue
 miscut
 misdid
@@ -23068,13 +23019,11 @@ mkt
 mlle
 mme
 mmes
-mna
 mnas
 mneme
 mnemes
 mnemic
 mnemon
-moa
 moab
 moan
 moaned
@@ -23095,8 +23044,6 @@ moble
 mobled
 mobs
 mobutu
-moc
-moca
 mocha
 moche
 moches
@@ -23105,7 +23052,6 @@ mocked
 mocker
 mockup
 mocock
-mocs
 mocuck
 mod
 modal
@@ -23413,9 +23359,9 @@ morule
 morus
 morven
 morvin
-mosaic
+mosaic*
+mosaics
 mosby
-mosca
 moscow
 mose
 mosed
@@ -23979,12 +23925,10 @@ nagoya
 nagpur
 nagual
 nagy
-nah
 nahal
 nahals
 nahant
 nahma
-nahum
 naia
 naiad
 naiads
@@ -24023,11 +23967,10 @@ nalla
 nallah
 nallas
 nallen
-nam
 nama
 namas
 namath
-name
+name*
 named
 namely
 namer
@@ -24275,7 +24218,6 @@ neglig
 negro
 negs
 negus
-neh
 nehru
 neif
 neifs
@@ -24301,7 +24243,6 @@ nelly
 nelse
 nelsen
 nelson
-nema
 nemaha
 neman
 nemas
@@ -24396,7 +24337,6 @@ nettly
 netty
 neuk
 neuks
-neum
 neume
 neumes
 neumic
@@ -24682,7 +24622,6 @@ noel
 noelle
 noemi
 noes*
-noes
 noeses
 noesis
 noetic
@@ -24963,7 +24902,6 @@ nullah
 nullas
 nulled
 nulls
-numa
 numb
 numbat
 numbed
@@ -25065,7 +25003,6 @@ oared
 oaring
 oark
 oary
-oas
 oases
 oasis
 oast
@@ -25150,9 +25087,7 @@ obtest
 obtund
 obtuse
 obvert
-oca
 ocala
-ocam
 ocate
 occam
 occamy
@@ -25816,7 +25751,6 @@ osiris
 oslo
 osman
 osmate
-osmic
 osmics
 osmium
 osmol
@@ -31102,7 +31036,6 @@ sachs
 sack
 sacked
 sacker
-saco
 sacque
 sacra
 sacral
@@ -31160,7 +31093,6 @@ sahara
 sahel
 sahib
 sahiba
-saic
 saice
 saices
 saick
@@ -31177,7 +31109,6 @@ sailed
 sailer
 sailor
 saily
-saim
 saimin
 saims
 sained
@@ -31295,7 +31226,6 @@ salvo
 salvor
 salyer
 salyut
-sam
 sama
 samaan
 saman
@@ -31320,7 +31250,6 @@ samey
 samfoo
 samfu
 samfus
-sami
 samian
 samiel
 samit
@@ -31621,7 +31550,7 @@ scall
 scalls
 scalp
 scaly
-scam
+scam*
 scamel
 scamp
 scampi
@@ -31713,11 +31642,9 @@ schurz
 schuss
 schuyt
 schwa
-sci
 scient
 scilla
 scilly
-scio
 scion
 sciota
 scipio
@@ -32701,14 +32628,13 @@ sialic
 sialid
 sialon
 sials
-siam
 sias
 sib
 sibb
 sibbs
 sibyl
 sibyls
-sic
+sic*
 siccan
 siccar
 sicced
@@ -32835,7 +32761,6 @@ silver
 silvex
 silvia
 silvis
-sima
 simar
 simars
 simas
@@ -33617,7 +33542,6 @@ sober
 sobers
 sobful
 sobole
-soca
 socage
 socas
 soccer
@@ -33734,7 +33658,6 @@ solved
 solver
 solves
 solway
-soma
 somali
 soman
 somata
@@ -37726,7 +37649,6 @@ tzetze
 tzupo
 tzuris
 uakari
-uam
 uar
 uaw
 ubangi
@@ -37863,7 +37785,6 @@ umpire
 umpqua
 umpty
 ums
-una
 unable
 unaged
 unai
