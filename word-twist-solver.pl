@@ -15,6 +15,10 @@ sub insert {
         my $next = $current->{$letter} //= {};
         return insert_rec($next, @_);
     }
+    if ($word =~ /\*$/) {
+        $word = substr($word, 0, -1);
+        $seen{$word} = 1;
+    }
     my $end = insert_rec($root, sort split //, $word);
     push(@{$end->{words}}, $word);
 }
@@ -115,5 +119,12 @@ while (1) {
 
 {
     open(my $words, '>', $ARGV[0]);
-    all($trie, sub { print $words "$_[0]\n" });
+    my @words;
+    all($trie, sub {
+            my $word = shift;
+            $word .= '*' if $seen{$word};
+            push(@words, $word);
+        });
+    @words = sort @words;
+    print $words "$_\n" foreach @words;
 }
