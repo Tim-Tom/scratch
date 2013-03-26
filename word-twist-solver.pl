@@ -113,6 +113,7 @@ while (1) {
         chomp(my $resp = <STDIN> // '');
         last unless $resp;
         insert($trie, $resp);
+        $seen{$resp} = 1;
         $modified = 1;
     }
 }
