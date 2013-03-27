@@ -2,11 +2,20 @@ use v6;
 
 my KeySet $seen .= new;
 
-class Trie is Hash {
+class Trie does Associative {
+    has %!elems;
 
-     method new() {
-         self.bless(*, Hash.new);
-    }
+    method keys { %!elems.keys }
+    method values { %!elems.values }
+    method elems returns Int { %!elems.elems }
+    method exists($a) returns Bool { %!elems.exists($a) }
+    method Bool { %!elems.Bool }
+    method Numeric { %!elems.Numeric }
+    method Real { %!elems.Numeric.Real }
+    method hash { %!elems.hash }
+    method at_key($k) { %!elems{$k} }
+    method exists_key($k) { self.exists($k) }
+    method delete_key($k) { %!elems.delete($k) }
 
     method Insert(Str $word) {
         my $w = $word;
@@ -15,12 +24,11 @@ class Trie is Hash {
             $seen{$w} = True;
         }
         my $end = self.Create($w.comb.sort);
-        $end<words> //= [];
-        $end<words>.push($w) unless $w ~~ $end<words>;
+        $end.Add-Word($w);
     }
 
     method Create(@ [$letter, *@rest]) {
-        self{$letter} //= Trie.new();
+        %!elems{$letter} //= Trie.new();
         return self{$letter}.Create(@rest) if @rest;
         return self{$letter};
     }
@@ -46,29 +54,35 @@ class Trie is Hash {
     }
 
     multi method Matches(@ [$letter, *@rest]) {
-        say "Matching [$letter, @rest[]]";
         self{$letter}.?Matches(@rest);
         say @(self{$letter}<words>) if self{$letter}.?exists('words');
         self.Matches(@rest.grep: { $_ ne $letter });
         1;
     }
+
+    method Add-Word(Str $word) {
+        %!elems<words> //= [];
+        %!elems<words>.push($word) unless $word ~~ %!elems<words>
+    }
 }
 
-sub TimeFormat(DateTime $dt) {
-    sprintf '%02d:%02d:%02d', $dt.hour, $dt.minute, $dt.whole-second;
-}
+# sub TimeFormat(DateTime $dt) {
+#     sprintf '%02d:%02d:%02d', $dt.hour, $dt.minute, $dt.whole-second;
+# }
 
 sub MAIN(Str $filename) {
     my $trie = Trie.new;
 
-    my $start = TimeFormat(DateTime.now);
-    say "Creating Trie: $start";
+    print qx/date/;
+    # my $start = TimeFormat(DateTime.new(Instant.now));
+    say "Creating Trie.";
     {
         my $fh = open($filename);
         $trie.Insert($_) while ($_ = $fh.get);
     }
-    my $end = TimeFormat(DateTime.now);
-    say "Done creating Trie: $end";
+    print qx/date/;
+    # my $end = TimeFormat(DateTime.new(Instant.now));
+    say "Done creating Trie.";
 
     # my Bool $modified;
 
