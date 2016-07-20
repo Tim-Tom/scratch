@@ -3,6 +3,8 @@ use warnings;
 
 use v5.22;
 
+# Hacky solver specifically for finding the solution to blog.plover.com/math/17-puzzle.com
+
 my @nums = (6, 6, 5, 2);
 
 my $target = 17;
