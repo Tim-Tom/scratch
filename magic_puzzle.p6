@@ -1,99 +1,86 @@
 use v6;
 
-my @choices = 3 ... 11;
-my @valid_sizes = (1 ... 10).map: * ** 2;
-die "Size ({+@choices}) must be one of @valid_sizes[]" unless +@choices (elem) @valid_sizes;
 my $sum = 21;
-my @a[9];
+my @choices = 3 ... 11;
+my %valid_sizes = (1 ... 10).map: { $_ ** 2 => $_ };
+my $width = %valid_sizes{+@choices};
+my $wm = $width - 1;
+my $wp = $width + 1;
+die "Size ({+@choices}) must be one of {sort keys %valid_sizes}" unless $width;
+my @a[+@choices];
 my %picked = @choices.map: * => False;
 
-sub pick0() {
-    for @choices -> $n {
-        @a[0] = $n;
-        %picked{$n} = True;
-        pick1();
-        %picked{$n} = False;
-    }
+my %additionalConstraints = (
+  (+@choices - $width - 2) => sub {
+    my $calc = [+] @a[$wm, * + $wm ... 6];
+    # say "$sum == $calc (@a[$wm, * + $wm ... 6])?";
+    return $sum != $calc;
+   }
+  (+@choices - 1) => sub {
+    my $i = +@choices - 1;
+    my $c1 = [+] @a[($i - $i % $width) .. $i];
+    my $c2 = [+] @a[0, * + $wp ... $i];
+    # say "$sum == $c1 (@a[($i - $i % $width) .. $i]) == $c2 (@a[0, * + $wp ... $i])?";
+    return $sum != $c1
+        || $sum != $c2;
+   }
+ );
+
+my $right = $width - 1;
+my $secondToLastRow = $width * ($width - 2);
+my $lastRow = $width * ($width - 1);
+sub pickNext($i) {
+  my $next;
+  # say ('.' x $i) ~ "a[$i] = @a[$i]";
+  if ($i == +@choices - 1) {
+    return solution()
+  } elsif ($i >= $lastRow) {
+    $next = $i - $width + 1;
+  } elsif ($i >= $secondToLastRow) {
+    $next = $i + $width;
+    return pickBottom($next);
+  } else {
+    $next = $i + 1;
+  }
+  return pickRight($next) if $next % $width == $right;
+  return pickInternal($next);
 }
 
-sub pick1() {
-    for @choices -> $n {
-        next if %picked{$n} // True;
-        @a[1] = $n;
-        %picked{$n} = True;
-        pick2();
-        %picked{$n} = False;
-    }
-}
-
-sub pick2() {
-    my $n = $sum - @a[1] - @a[0];
-    return if %picked{$n} // True;
-    @a[2] = $n;
+sub pickInternal($i) {
+  for @choices -> $n {
+    next if %picked{$n} // True;
+    @a[$i] = $n;
+    next if %additionalConstraints{$i}:exists && %additionalConstraints{$i}();
     %picked{$n} = True;
-    pick3();
+    pickNext($i);
     %picked{$n} = False;
+  }
 }
 
-sub pick3() {
-    for @choices -> $n {
-        next if %picked{$n} // True;
-        @a[3] = $n;
-        %picked{$n} = True;
-        pick6();
-        %picked{$n} = False;
-    }
+sub pickRight($i) {
+  my $n = $sum - [+] @a[($i - $i % $width) ..^ $i];
+  return if %picked{$n} // True;
+  @a[$i] = $n;
+  return if %additionalConstraints{$i}:exists && %additionalConstraints{$i}();
+  %picked{$n} = True;
+  pickNext($i);
+  %picked{$n} = False;
 }
 
-sub pick6() {
-    my $n = $sum - @a[3] - @a[0];
-    return if %picked{$n} // True;
-    @a[6] = $n;
-    %picked{$n} = True;
-    pick4();
-    %picked{$n} = False;
+sub pickBottom($i) {
+  my $n = $sum - [+] @a[$i % $width, * + $width ...^ $i];
+  return if %picked{$n} // True;
+  @a[$i] = $n;
+  return if %additionalConstraints{$i}:exists && %additionalConstraints{$i}();
+  %picked{$n} = True;
+  pickNext($i);
+  %picked{$n} = False;
 }
 
-sub pick4() {
-    for @choices -> $n {
-        next if %picked{$n} // True;
-        next if $sum != $n + @a[6] + @a[2];
-        @a[4] = $n;
-        %picked{$n} = True;
-        pick5();
-        %picked{$n} = False;
-    }
+sub solution() {
+  state $count = 0;
+  say "--- Solution {++$count} ---";
+  say @a[$_ .. $_ + $wm] for (0, * + $width ...^ +@choices);
 }
 
-sub pick5() {
-    my $n = $sum - @a[4] - @a[3];
-    return if %picked{$n} // True;
-    @a[5] = $n;
-    %picked{$n} = True;
-    pick7();
-    %picked{$n} = False;
-}
-
-sub pick7() {
-    my $n = $sum - @a[4] - @a[1];
-    return if %picked{$n} // True;
-    @a[7] = $n;
-    %picked{$n} = True;
-    pick8();
-    %picked{$n} = False;
-}
-
-my $solution_count = 0;
-sub pick8() {
-    my $n = $sum - @a[7] - @a[6];
-    return if %picked{$n} // True;
-    return if $sum != $n + @a[4] + @a[0];
-    return if $sum != $n + @a[5] + @a[2];
-    @a[8] = $n;
-    say "--- Solution {++$solution_count} ---";
-    say @a[0 .. 2];
-    say @a[3 .. 5];
-    say @a[6 .. 8];
-}
-
-pick0();
+pickInternal(0);
