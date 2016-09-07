@@ -4,9 +4,9 @@ my $goal = 21;
 my @choices = 3 ... 11;
 my %valid_sizes = (1 ... 10).map: { $_ ** 2 => $_ };
 my $width = %valid_sizes{+@choices};
+die "Size ({+@choices}) must be one of {sort keys %valid_sizes}" unless $width;
 my $wm = $width - 1;
 my $wp = $width + 1;
-die "Size ({+@choices}) must be one of {sort keys %valid_sizes}" unless $width;
 
 my @a[+@choices];
 my %picked = @choices.map: * => False;
