@@ -1,14 +1,5 @@
 use_module(library(clpfd)).
 
-flatten([], [], 0, _) :- !.
-flatten([X|T], Flat, H, W) :-
-    length(X, W),
-    append(X, Rest, Flat),
-    flatten(T, Rest, H0, W),
-    H is H0 + 1.
-
-flatten(X, Y) :- flatten(X, Y, _, _).
-
 diag([], [], _).
 diag([Row|Rows], [V|T], D) :-
     D1 is D + 1,
