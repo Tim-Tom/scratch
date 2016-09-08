@@ -13,8 +13,8 @@ my %picked = @choices.map: * => False;
 
 my %additionalConstraints = (
   # One square diagonal from bottom left (due to bottom snaking pattern)
-  (+@choices - $width - 2) => sub {
-    my $calc = [+] @a[$wm, * + $wm ... 6];
+  (+@choices - 2*$width + 1) => sub {
+    my $calc = [+] @a[$wm, * + $wm ... $width*$wm];
     # say "$goal == $calc (@a[$wm, * + $wm ... 6])?";
     return $goal != $calc;
   },
@@ -29,6 +29,7 @@ my %additionalConstraints = (
   }
 );
 
+my @next;
 my $right = $width - 1;
 my $secondToLastRow = $width * ($width - 2);
 my $lastRow = $width * ($width - 1);
@@ -36,21 +37,33 @@ my $lastRow = $width * ($width - 1);
 # the bottom before progressing right since it doesn't require any choices to fill out
 # that box. An optimization would be to run this once and cache the selections for $next
 # and which pick function to use.
-sub pickNext($i) {
-  my $next;
-  # say ('.' x $i) ~ "a[$i] = @a[$i]";
+for 0 ..^ @choices -> $i {
+  my ($next, $func);
   if ($i == +@choices - 1) {
-    return solution()
+    $next = 0;
+    $func = &solution;
   } elsif ($i >= $lastRow) {
     $next = $i - $wm;
   } elsif ($i >= $secondToLastRow) {
     $next = $i + $width;
-    return pickBottom($next);
+    $func = &pickBottom;
   } else {
     $next = $i + 1;
   }
-  return pickRight($next) if $next % $width == $right;
-  return pickInternal($next);
+  if (!defined $func) {
+    if ($next % $width == $right) {
+      $func = &pickRight;
+    } else {
+      $func = &pickInternal;
+    }
+  }
+  @next[$i] = $func => $next;
+};
+
+sub pickNext($i) {
+  my $x = @next[$i];
+  # say "{$x.key.name} ($x.value)";
+  $x.key.($x.value);
 }
 
 # Square that's not along the bottom or right edges, so we have to pick from the remaining
@@ -91,7 +104,7 @@ sub pickBottom($i) {
 }
 
 # Valid selections for all the squares, output choice.
-sub solution() {
+sub solution($) {
   state $count = 0;
   say "--- Solution {++$count} ---";
   say @a[$_ .. $_ + $wm] for (0, * + $width ...^ +@choices);
