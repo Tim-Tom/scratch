@@ -9,9 +9,10 @@
 #define WP (WIDTH+1)
 #define SIZE (WIDTH*WIDTH)
 
-// typedef bool (*()) predicate;
 typedef int bool;
 typedef bool (*predicate)();
+
+static void pickNext(int);
 
 const static int choices[SIZE] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 static bool picked[SIZE];
@@ -19,6 +20,7 @@ static int a[SIZE];
 
 static predicate additionalConstraints[SIZE];
 
+// Find thge index of the item in our choice list. Returns -1 on failure.
 static int choiceSearch(int c) {
   // Since our list is expected to be so small, we actually just do a linear search.
   for(int i = 0; i < SIZE; ++i) {
@@ -27,6 +29,7 @@ static int choiceSearch(int c) {
   return -1;
 }
 
+// Returns whether the cross from the top right to the bottom left is invalid.
 static bool reverseCrossInvalid() {
   int i, sum;
   for(i = WM, sum = 0; i <= WIDTH*WM; i += WM) {
@@ -35,6 +38,8 @@ static bool reverseCrossInvalid() {
   return sum != GOAL;
 }
 
+// Returns whether the bottom row is invalid and the cros sfro mthe top left to the bottom
+// right is invalid.
 static bool bottomRightInvalid() {
   int i, sum;
   // Check bottom horizontal
@@ -51,8 +56,8 @@ static bool bottomRightInvalid() {
   return sum != GOAL;
 }
 
-static void pickNext(int);
-
+// Square that's not along the bottom or right edges, so we have to pick from the
+// remaining choices.
 static void pickInternal(int i) {
   int c;
   predicate ac = additionalConstraints[i];
@@ -67,6 +72,8 @@ static void pickInternal(int i) {
   }
 }
 
+// Square on the right edge, sum the elements horizontally, subtract from the goal, and
+// check if it's a valid selection.
 static void pickRight(int i) {
   int n, c;
   for (c = i - i%WIDTH, n = 0; c < i; ++c) {
@@ -83,6 +90,8 @@ static void pickRight(int i) {
   picked[c] = FALSE;
 }
 
+// Square on the bottom edge, sum the elements vertically, subtract from the goal, and
+// check if it's a valid selection.
 static void pickBottom(int i) {
   int n, c;
   for (c = i % WIDTH, n = 0; c < i; c += WIDTH) {
@@ -99,6 +108,7 @@ static void pickBottom(int i) {
   picked[c] = FALSE;
 }
 
+// Prints out a solution
 static void solution() {
   static int count = 0;
   int i, c;
@@ -115,6 +125,9 @@ static void solution() {
   }
 }
 
+// We go top to bottom, left to right except that on the second to last row we finish off
+// the bottom before progressing right since it doesn't require any choices to fill out
+// that box.
 static void pickNext(int i) {
   int next;
   if (i == SIZE - 1) {
@@ -133,7 +146,6 @@ static void pickNext(int i) {
     pickInternal(next);
   }
 }
-
 
 int main(int argc, const char* argv[]) {
   additionalConstraints[SIZE - 2*WIDTH + 1] = reverseCrossInvalid;
