@@ -9,8 +9,9 @@ create choices  3 ,  4 ,  5 ,
                 9 , 10 , 11 ,
 
 variable picked size allot
+variable additional-constraints size allot
 
-: clearPicked
+: clear-picked
     size
     begin
         1- dup 0>= while
@@ -18,9 +19,15 @@ variable picked size allot
     repeat
     drop ;
 
+: print-picked
+    9 0 do
+        i picked + C@ .
+    loop ;
+
+
 variable a size cells allot
 
-: choiceSearch
+: choice-search
     0
     begin
         dup size < while
@@ -32,114 +39,179 @@ variable a size cells allot
     repeat
     2drop 0 ;
 
-: reverseCrossInvalid
+: reverse-cross-valid
     0
     wm wp * wm do
         a i cells + @ +
     wm +loop
     goal = ;
 
-: crossInvalid
+: cross-valid
     0
     size 0 do
         a i cells + @ +
     wp +loop
     goal = ;
         
-: bottomRowInvalid
+: bottom-row-valid
     0
     size size width - do
         a i cells + @ +
     loop
     goal = ;
 
-: bottomRightInvalid
-    bottomRowInvalid if
+: bottom-right-valid
+    bottom-row-valid if
         -1
     else
-        crossInvalid
+        cross-valid
     endif ;
 
-0 VALUE pickNextRef
+0 VALUE pick-next-ref
 
-: pickInternal
+: execute-predicate?
+    dup 0<> if
+        execute
+    else
+        drop -1
+    endif ;
+
+: pick-internal
     size 0 do
         dup cells a + choices i cells + @ swap !
         i picked + C@ 0= if
-            1 i picked + C!
-            dup pickNextRef execute
-            0 i picked + C!
+            dup cells additional-constraints + @ execute-predicate? if
+                1 i picked + C!
+                dup pick-next-ref execute
+                0 i picked + C!
+            endif
         endif
     loop
     drop ;
 
-: pickRight
+: pick-right
     0 over dup dup width mod - do
         a i cells + @ +
     loop
     goal swap - 
     over over swap cells a + !
-    choiceSearch if
+    choice-search if
         dup picked + C@ 0= if
+            over cells additional-constraints + @ execute-predicate? if
+                1 over picked + C!
+                over pick-next-ref execute
+                0 swap picked + C!
+            else
+                drop
+            endif
             1 over picked + C!
-            over pickNextRef execute
+            over pick-next-ref execute
             0 swap picked + C!
+        else
+            drop
         endif
     endif
     drop ;
 
-: pickBottom
+: pick-bottom
     0 over dup width mod do
         a i cells + @ +
     width +loop
     goal swap -
     over over swap cells a + !
-    choiceSearch if
+    choice-search if
         dup picked + C@ 0= if
-            1 over picked + C!
-            over pickNextRef execute
-            0 swap picked + C!
+            over cells additional-constraints + @ execute-predicate? if
+                1 over picked + C!
+                over pick-next-ref execute
+                0 swap picked + C!
+            else
+                drop
+            endif
+        else
+            drop
         endif
     endif
     drop ;
 
-create solution_count 0 ,
+create solution-count 0 ,
 
 : solution
-    solution_count @ 1+ dup solution_count !
+    solution-count @ 1+ dup solution-count !
     ." --- Solution " . ." ---" CR
     size 0 do
         a i cells + @ .
         i 3 mod 2 = if CR endif
     loop ;
 
-: pickNext
-    dup ." pickNext " .
-    dup size 1- = if
-        drop ." -> solution" CR solution exit
-    endif
-    dup width wm * >= if
-        wm -
-    else
-        dup width dup 2 - * >= if
-            width + ." -> pickBottom " dup . CR pickBottom exit
-        else
-            1+
-        endif
-    endif
+: print-right-internal
     dup width mod wm = if
-        ." -> pickRight " dup . CR pickRight
+        ." pick-right " .
     else
-        ." -> pickInternal " dup . CR pickInternal
+        ." pick-internal " .
     endif ;
 
-' pickNext TO pickNextRef
+: print-next
+    dup . ." -> "
+    dup size 1- = if
+        drop ." solution"
+    else
+        dup width wm * >= if
+            wm -
+            print-right-internal
+        else
+            dup width dup 2 - * >= if
+                width +
+                ." pick-bottom " .
+            else
+                1+
+                print-right-internal
+            endif
+        endif
+    endif ;
 
-: initBoard
-    9 0 do
+: pick-right-internal
+    dup width mod wm = if
+        pick-right
+    else
+        pick-internal
+    endif ;
+
+: pick-next
+    dup size 1- = if
+        drop solution
+    else
+        dup width wm * >= if
+            wm -
+            pick-right-internal
+        else
+            dup width dup 2 - * >= if
+                width +
+                pick-bottom
+            else
+                1+
+                pick-right-internal
+            endif
+        endif
+    endif ;
+
+' pick-next TO pick-next-ref
+
+: init-board
+    size 0 do
         i 1+ a i cells + !
     loop ;
 
+: clear-constraints
+    size 0 do
+        0 additional-constraints i cells + !
+    loop ;
+
+
+clear-constraints
+' reverse-cross-valid additional-constraints size width - width - 1+ cells + !
+' bottom-right-valid additional-constraints size 1- cells + !
+
 : solve-puzzle
-    clearPicked initBoard 0 solution_count !
-    0 pickInternal ;
+    clear-picked init-board 0 solution-count !
+    0 pick-internal ;
