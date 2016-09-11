@@ -9,7 +9,7 @@ create choices  3 ,  4 ,  5 ,
                 9 , 10 , 11 ,
 
 variable picked size allot
-variable additional-constraints size allot
+variable additional-constraints size cells allot
 
 : clear-picked
     size
@@ -62,9 +62,9 @@ variable a size cells allot
 
 : bottom-right-valid
     bottom-row-valid if
-        -1
-    else
         cross-valid
+    else
+        0
     endif ;
 
 0 VALUE pick-next-ref
@@ -104,9 +104,6 @@ variable a size cells allot
             else
                 drop
             endif
-            1 over picked + C!
-            over pick-next-ref execute
-            0 swap picked + C!
         else
             drop
         endif
