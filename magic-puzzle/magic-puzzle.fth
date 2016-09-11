@@ -4,26 +4,29 @@ width 1- constant wm
 width 1+ constant wp
 width width * constant size
 
+(
 create choices  3 ,  4 ,  5 ,
                 6 ,  7 ,  8 ,
                 9 , 10 , 11 ,
+)
+
+create choices   1 ,  2 ,  3 ,  4 ,
+                 5 ,  6 ,  7 ,  8 ,
+                 9 , 10 , 11 , 12 ,
+                13 , 14 , 15 , 16 ,
 
 variable picked size allot
 variable additional-constraints size cells allot
 
 : clear-picked
-    size
-    begin
-        1- dup 0>= while
-            dup picked + 0 swap C!
-    repeat
-    drop ;
-
-: print-picked
-    9 0 do
-        i picked + C@ .
+    size 0 do
+        0 i picked + C!
     loop ;
 
+: print-picked
+    size 0 do
+        i picked + C@ .
+    loop ;
 
 variable a size cells allot
 
@@ -138,7 +141,7 @@ create solution-count 0 ,
     ." --- Solution " . ." ---" CR
     size 0 do
         a i cells + @ .
-        i 3 mod 2 = if CR endif
+        i width mod wm = if CR endif
     loop ;
 
 : print-right-internal
