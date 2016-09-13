@@ -10,15 +10,12 @@
 #define SIZE (WIDTH*WIDTH)
 
 typedef int bool;
-typedef bool (*predicate)();
 
 static void pickNext(int);
 
 const static int choices[SIZE] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 static bool picked[SIZE];
 static int a[SIZE];
-
-static predicate additionalConstraints[SIZE];
 
 // Find thge index of the item in our choice list. Returns -1 on failure.
 static int choiceSearch(int c) {
@@ -29,16 +26,7 @@ static int choiceSearch(int c) {
   return -1;
 }
 
-// Returns whether the cross from the top right to the bottom left is invalid.
-static bool reverseCrossInvalid() {
-  int i, sum;
-  for(i = WM, sum = 0; i <= WIDTH*WM; i += WM) {
-    sum += a[i];
-  }
-  return sum != GOAL;
-}
-
-// Returns whether the bottom row is invalid and the cros sfro mthe top left to the bottom
+// Returns whether the bottom row is invalid and the cross from the top left to the bottom
 // right is invalid.
 static bool bottomRightInvalid() {
   int i, sum;
@@ -60,12 +48,11 @@ static bool bottomRightInvalid() {
 // remaining choices.
 static void pickInternal(int i) {
   int c;
-  predicate ac = additionalConstraints[i];
   for(c = 0; c < SIZE; ++c) {
-    a[i] = choices[c];
-    if (picked[c] || (ac && ac())) {
+    if (picked[c]) {
       continue;
     }
+    a[i] = choices[c];
     picked[c] = TRUE;
     pickNext(i);
     picked[c] = FALSE;
@@ -81,10 +68,10 @@ static void pickRight(int i) {
   }
   n = GOAL - n;
   c = choiceSearch(n);
-  a[i] = n;
-  if (c == -1 || picked[c] || (additionalConstraints[i] && additionalConstraints[i]())) {
+  if (c == -1 || picked[c]) {
     return;
   }
+  a[i] = n;
   picked[c] = TRUE;
   pickNext(i);
   picked[c] = FALSE;
@@ -99,10 +86,30 @@ static void pickBottom(int i) {
   }
   n = GOAL - n;
   c = choiceSearch(n);
-  a[i] = n;
-  if (c == -1 || picked[c] || (additionalConstraints[i] && additionalConstraints[i]())) {
+  if (c == -1 || picked[c]) {
     return;
   }
+  a[i] = n;
+  if (i == SIZE - 1 && bottomRightInvalid()) {
+    return;
+  }
+  picked[c] = TRUE;
+  pickNext(i);
+  picked[c] = FALSE;
+}
+
+// Only used for the square one diagonal from the bottom left corner.
+static void pickReverseCross(int i) {
+  int n, c;
+  for(c = WM, n = 0; c < i; c += WM) {
+    n += a[c];
+  }
+  n = GOAL - a[i + WM] - n;
+  c = choiceSearch(n);
+  if (c == -1 || picked[c]) {
+    return;
+  }
+  a[i] = n;
   picked[c] = TRUE;
   pickNext(i);
   picked[c] = FALSE;
@@ -133,7 +140,10 @@ static void pickNext(int i) {
   if (i == SIZE - 1) {
     return solution();
   }
-  if (i >= WIDTH * WM) {
+  if (i == SIZE - WIDTH) {
+    return pickReverseCross(i - WM);
+  }
+  else if (i >= WIDTH * WM) {
     next = i - WM;
   } else if (i >= WIDTH * (WIDTH - 2)) {
     return pickBottom(i + WIDTH);
@@ -148,7 +158,5 @@ static void pickNext(int i) {
 }
 
 int main(int argc, const char* argv[]) {
-  additionalConstraints[SIZE - 2*WIDTH + 1] = reverseCrossInvalid;
-  additionalConstraints[SIZE - 1] = bottomRightInvalid;
   pickInternal(0);
 }
