@@ -17,15 +17,20 @@ for my $n (1 .. 14) {
 
 sub calculate_sizes {
   my $total = $fact[14];
-  my ($one, $two, $onetwo) = ($total, $total, $total);
+  my ($one, $oneHack, $two, $onetwo) = ($total, $total, $total, $total);
   for my $si (1 .. 4) {
     my $s = $schools[$si];
     $one /= $fact[$si] ** $s;
+    if ($si == 1) {
+      $oneHack /= $fact[$s];
+    } else {
+      $oneHack /= $fact[$si] ** $s;
+    }
     $two /= $fact[$s];
     $onetwo /= $fact[$s] * $fact[$si] ** $s;
   }
   local $" = " ";
-  printf "| (%8s) | %11d | %11d | %13d |\n", "@schools[1..4]", $one, $two, $onetwo;
+  printf "| (%8s) |    %11d   |         %11d   |    %11d   |            %11d   |\n", "@schools[1..4]", $one, $oneHack, $two, $onetwo;
 }
 
 sub pick($size, $remain) {
@@ -38,5 +43,5 @@ sub pick($size, $remain) {
     pick($size - 1, $remain - $count * $size);
   }
 }
-printf "| %8s | %11s | %11s | %13s |\n", "( 1 2 3 4)", "Teams", "Schools", "Teams+Schools";
+printf "| %10s | %16s | %21s | %16s | %24s |\n", "Team Sizes", " Distinct Teams ", "Distinct Teams (hack)", "Distinct Schools", "Distinct Teams & Schools";
 pick(4, 14);
