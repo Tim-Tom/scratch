@@ -5,11 +5,12 @@ procedure TableSorting is
    package IO renames Ada.Text_IO;
    package I_IO renames Ada.Integer_Text_IO;
    
-   Num_Elements : constant := 5;
-   type Index is new Integer range 1 .. Num_Elements;
+   Num_Elements : constant := 14;
+   type Extended_Index is new Integer range 1 .. Num_Elements + 1;
+   subtype Index is Extended_Index range 1 .. Num_Elements;
 
    a : Array(Index'Range) of Integer;
-   output_width : constant := 1;
+   output_width : constant := 3;
    -- standard next Lexicographic order permutation function from knuth modified slightly
    -- to ensure all indexes stay in bounds since I'm in Ada and it checks those things.
    function Next_Permutation return Boolean is
@@ -58,12 +59,48 @@ procedure TableSorting is
          end if;
       end loop;
    end Print_Array;
-begin
-   for i in Index'Range loop
-      a(i) := Integer(i);
-   end loop;
-   loop
-      Print_Array;
-      exit when not Next_Permutation;
-   end loop;
+   procedure Initialize(start : Extended_Index; size : Index) is
+      next : Extended_Index := start;
+      count : Natural := 0;
+   begin
+      if size = 1 then
+         for i in start .. Index'Last loop
+            a(i) := 100 + Integer(start);
+         end loop;
+         loop
+            count := count + 1;
+            -- Print_Array;
+            exit when not Next_Permutation;
+         end loop;
+         for i in Index'First .. Index'Last / 2 loop
+            declare
+               j : constant Index := Index'Last - i + 1;
+               temp : constant Integer := a(i);
+            begin
+               a(i) := a(j);
+               a(j) := temp;
+            end;
+         end loop;
+         IO.Put(Natural'Image(count) & " iterations to solve: ");
+         Print_Array;
+      else
+         Initialize(next, size - 1);
+         while next + size <= Extended_Index'Last loop
+            for i in 0 .. size - 1 loop
+               a(next + i) := Integer(next);
+            end loop;
+            next := next + size;
+            Initialize(next, size - 1);
+         end loop;
+      end if;
+   end Initialize;
+   begin
+   Initialize(Index'First, 4);
+   --  for i in Index'Range loop
+   --     a(i) := Integer(i);
+   --  end loop;
+   --  loop
+   --     Print_Array;
+   --     exit when not Next_Permutation;
+   --  end loop;
 end TableSorting;
