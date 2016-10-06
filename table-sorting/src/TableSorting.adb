@@ -4,30 +4,40 @@ with Ada.Integer_Text_IO;
 procedure TableSorting is
    package IO renames Ada.Text_IO;
    package I_IO renames Ada.Integer_Text_IO;
+   
+   Num_Elements : constant := 5;
+   type Index is new Integer range 1 .. Num_Elements;
 
-   c : Array(1 .. 5) of Character;
-   a : Array(1 .. 5) of Integer;
+   a : Array(Index'Range) of Integer;
    output_width : constant := 1;
+   -- standard next Lexicographic order permutation function from knuth modified slightly
+   -- to ensure all indexes stay in bounds since I'm in Ada and it checks those things.
    function Next_Permutation return Boolean is
-      i : Integer := a'Last;
-      j : Integer := a'Last;
+      i : Index := Index'Last;
+      j : Index := Index'Last;
       temp : Integer;
    begin
-      while i > a'First and then a(i - 1) >= a(i) loop
+      -- Find left pivot (first item that is less than a successor)
+      while i > Index'First and then a(i - 1) >= a(i) loop
          i := i - 1;
       end loop;
-      if i = a'First then
+      -- Dropped off the left side, no more pivots.
+      if i = Index'First then
          return False;
       end if;
-      c(i - 1) := 'v';
-      while a(j) <= a(i-1) loop
+      -- Previously i was the head of the ascending suffix, change it to be the pivot.
+      i := i - 1;
+      -- Find the rightmost element that exceeds our pivot
+      while a(j) <= a(i) loop
          j := j - 1;
       end loop;
-      c(j) := 'v';
-      temp := a(i - 1);
-      a(i - 1) := a(j);
+      -- Swap the pivot and that element
+      temp := a(i);
+      a(i) := a(j);
       a(j) := temp;
-      j := a'Last;
+      -- Reverse the suffix
+      i := i + 1;
+      j := Index'Last;
       while i < j loop
          temp := a(i);
          a(i) := a(j);
@@ -39,18 +49,9 @@ procedure TableSorting is
    end Next_Permutation;
    procedure Print_Array is
    begin
-      for i in c'Range loop
-         IO.Put(c(i));
-         if i = c'Last then
-            IO.New_Line;
-         else
-            IO.Put(' ');
-         end if;
-         c(i) := ' ';
-      end loop;
-      for i in a'Range loop
+      for i in Index'Range loop
          I_IO.put(a(i), Width => output_width);
-         if i = a'Last then
+         if i = Index'Last then
             IO.New_Line;
          else
             IO.Put(' ');
@@ -58,9 +59,8 @@ procedure TableSorting is
       end loop;
    end Print_Array;
 begin
-   for i in a'Range loop
-      a(i) := i;
-      c(i) := ' ';
+   for i in Index'Range loop
+      a(i) := Integer(i);
    end loop;
    loop
       Print_Array;
