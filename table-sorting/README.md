@@ -118,11 +118,16 @@ Given that I have infinite time to do this task, I will do both of the viable op
 Teams within a school being indistinct and both schools and teams being indistinct.
 
 The first one I can do far easier, just a standard permutation algorithm that takes care
-of duplicate elements will suffice.
+of duplicate elements will suffice. After analysis into the permutation algorithms out
+there, it turns out that the only algorithms that check for duplicates are algorithms that
+output elements in Lexicographic order. This makes some form of sense because methods that
+don't do this will have no idea if such an ordering has been generated in the base. For
+simplicity I have taken Algorithm L from The Art of Computer Programming, which is also
+the standard algorithm you will see expressed on the internet.
 
 The second will be a series of permutation algorithms. The first will be applied to the
 total workstation space and will iterate through the school size partitionings. The second
 will be applied within those partitions to order the schools appropriately.
 
 Finally I shall do the second algorithm using one permutation loop by trimming off bad
-states as appropriate.  Knuth says this is possible in TAOCP 4/2 so it should be possible.
+states as appropriate.  Knuth says this is possible in TAoCP 4,2 so it should be possible.
