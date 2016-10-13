@@ -17,7 +17,16 @@ const static int choices[SIZE] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
 static bool picked[SIZE];
 static int a[SIZE];
 
-// Find thge index of the item in our choice list. Returns -1 on failure.
+typedef void (*perform)(int);
+
+typedef struct Action {
+  int pos;
+  perform action;
+  int indexes[WIDTH];
+} Action;
+
+Action actions[SIZE + 3];
+
 static int choiceSearch(int c) {
   // Since our list is expected to be so small, we actually just do a linear search.
   for(int i = 0; i < SIZE; ++i) {
@@ -26,97 +35,48 @@ static int choiceSearch(int c) {
   return -1;
 }
 
-// Returns whether the bottom row is invalid and the cross from the top left to the bottom
-// right is invalid.
-static bool bottomRightInvalid() {
-  int i, sum;
-  // Check bottom horizontal
-  for(i = SIZE-WIDTH, sum = 0; i < SIZE; ++i) {
-    sum += a[i];
-  }
-  if (sum != GOAL) {
-    return TRUE;
-  }
-  // Check forward cross
-  for(i = 0, sum = 0; i < SIZE; i += WP) {
-    sum += a[i];
-  }
-  return sum != GOAL;
-}
-
-// Square that's not along the bottom or right edges, so we have to pick from the
-// remaining choices.
-static void pickInternal(int i) {
-  int c;
-  for(c = 0; c < SIZE; ++c) {
-    if (picked[c]) {
-      continue;
+static void choose(int ai) {
+  int i;
+  const Action* ap = &actions[ai];
+  for (i = 0; i < SIZE; ++i) {
+    if (!picked[i]) {
+      a[ap->pos] = choices[i];
+      picked[i] = TRUE;
+      actions[ai + 1].action(ai + 1);
+      picked[i] = FALSE;
     }
-    a[i] = choices[c];
-    picked[c] = TRUE;
-    pickNext(i);
-    picked[c] = FALSE;
   }
 }
 
-// Square on the right edge, sum the elements horizontally, subtract from the goal, and
-// check if it's a valid selection.
-static void pickRight(int i) {
-  int n, c;
-  for (c = i - i%WIDTH, n = 0; c < i; ++c) {
-    n = n + a[c];
+static void decide(int ai) {
+  int i, n;
+  const Action* ap = &actions[ai];
+  for(i = 0, n = GOAL; i < WIDTH - 1; ++i) {
+    n -= a[ap->indexes[i]];
   }
-  n = GOAL - n;
-  c = choiceSearch(n);
-  if (c == -1 || picked[c]) {
+  i = choiceSearch(n);
+  if (i == -1 || picked[i]) {
     return;
   }
-  a[i] = n;
-  picked[c] = TRUE;
-  pickNext(i);
-  picked[c] = FALSE;
+  a[ap->pos] = n;
+  picked[i] = TRUE;
+  actions[ai + 1].action(ai + 1);
+  picked[i] = FALSE;
 }
 
-// Square on the bottom edge, sum the elements vertically, subtract from the goal, and
-// check if it's a valid selection.
-static void pickBottom(int i) {
-  int n, c;
-  for (c = i % WIDTH, n = 0; c < i; c += WIDTH) {
-    n = n + a[c];
+static void validate(int ai) {
+  int i, n;
+  const Action* ap = &actions[ai];
+  for(i = 0, n = GOAL; i < WIDTH; ++i) {
+    n -= a[ap->indexes[i]];
   }
-  n = GOAL - n;
-  c = choiceSearch(n);
-  if (c == -1 || picked[c]) {
-    return;
+  if (n == 0) {
+    actions[ai + 1].action(ai + 1);
   }
-  a[i] = n;
-  if (i == SIZE - 1 && bottomRightInvalid()) {
-    return;
-  }
-  picked[c] = TRUE;
-  pickNext(i);
-  picked[c] = FALSE;
-}
-
-// Only used for the square one diagonal from the bottom left corner.
-static void pickReverseCross(int i) {
-  int n, c;
-  for(c = WM, n = 0; c < i; c += WM) {
-    n += a[c];
-  }
-  n = GOAL - a[i + WM] - n;
-  c = choiceSearch(n);
-  if (c == -1 || picked[c]) {
-    return;
-  }
-  a[i] = n;
-  picked[c] = TRUE;
-  pickNext(i);
-  picked[c] = FALSE;
 }
 
 // Prints out a solution
-static void solution() {
+static void solution(int ai) {
   static int count = 0;
   int i, c;
   char sep;
@@ -132,31 +92,31 @@ static void solution() {
   }
 }
 
-// We go top to bottom, left to right except that on the second to last row we finish off
-// the bottom before progressing right since it doesn't require any choices to fill out
-// that box.
-static void pickNext(int i) {
-  int next;
-  if (i == SIZE - 1) {
-    return solution();
-  }
-  if (i == SIZE - WIDTH) {
-    return pickReverseCross(i - WM);
-  }
-  else if (i >= WIDTH * WM) {
-    next = i - WM;
-  } else if (i >= WIDTH * (WIDTH - 2)) {
-    return pickBottom(i + WIDTH);
-  } else {
-    next = i + 1;
-  }
-  if (next % WIDTH == WM) {
-    pickRight(next);
-  } else {
-    pickInternal(next);
-  }
-}
-
 int main(int argc, const char* argv[]) {
-  pickInternal(0);
+  int i = 0;
+#if WIDTH == 3
+  return 0;
+#elif WIDTH == 4
+  actions[i].pos =  0; actions[i++].action = &choose;
+  actions[i].pos =  1; actions[i++].action = &choose;
+  actions[i].pos =  2; actions[i++].action = &choose;
+  actions[i].pos =  3; actions[i  ].action = &decide; actions[i].indexes[0] =  0; actions[i].indexes[1] =  1; actions[i++].indexes[2] =  2;
+  actions[i].pos =  5; actions[i++].action = &choose;
+  actions[i].pos =  9; actions[i++].action = &choose;
+  actions[i].pos = 13; actions[i  ].action = &decide; actions[i].indexes[0] =  1; actions[i].indexes[1] =  5; actions[i++].indexes[2] =  9;
+  actions[i].pos = 10; actions[i++].action = &choose;
+  actions[i].pos = 15; actions[i  ].action = &decide; actions[i].indexes[0] =  0; actions[i].indexes[1] =  5; actions[i++].indexes[2] = 10;
+  actions[i].pos =  6; actions[i++].action = &choose;
+  actions[i].pos = 14; actions[i  ].action = &decide; actions[i].indexes[0] =  2; actions[i].indexes[1] =  6; actions[i++].indexes[2] = 10;
+  actions[i].pos = 12; actions[i  ].action = &decide; actions[i].indexes[0] = 13; actions[i].indexes[1] = 14; actions[i++].indexes[2] = 15;
+  actions[i].pos =  4; actions[i++].action = &choose;
+  actions[i].pos =  7; actions[i  ].action = &decide; actions[i].indexes[0] =  4; actions[i].indexes[1] =  5; actions[i++].indexes[2] =  6;
+  actions[i].pos =  8; actions[i  ].action = &decide; actions[i].indexes[0] =  0; actions[i].indexes[1] =  4; actions[i++].indexes[2] = 12;
+  actions[i].pos = 11; actions[i  ].action = &decide; actions[i].indexes[0] =  8; actions[i].indexes[1] =  9; actions[i++].indexes[2] = 10;
+  actions[i].pos =  0; actions[i  ].action = &validate; actions[i].indexes[0] =  3; actions[i].indexes[1] =  7; actions[i].indexes[2] = 11; actions[i++].indexes[3] = 15;
+  actions[i].pos =  0; actions[i  ].action = &validate; actions[i].indexes[0] =  3; actions[i].indexes[1] =  6; actions[i].indexes[2] =  9; actions[i++].indexes[3] = 12;
+  actions[i].pos =  0; actions[i++].action = &solution;
+  actions[0].action(0);
+  return 0;
+#endif
 }
