@@ -7,7 +7,7 @@
 #include <vector>
 #include <queue>
 
-#define WIDTH 5
+#define WIDTH 6
 #define SIZE (WIDTH*WIDTH)
 
 #define WP (WIDTH + 1)
@@ -35,7 +35,17 @@ Validation validations[SIZE][SIZE];
 class Board_Cost {
 public:
   bool operator()(const Board* a, const Board* b) const {
-    return a->estimate < b->estimate;
+    int i;
+    bool result = a->estimate < b->estimate;
+    if (result == false) {
+      for(i = 0; i < SIZE; ++i) {
+        if (a->remaining[i] != b->remaining[i]) {
+          result = a->remaining[i];
+          break;
+        }
+      }
+    }
+    return result;
   }
 };
 
@@ -218,9 +228,17 @@ int main(const int argc, const char * const argv[]) {
     }
   }
   root.cost = 0;
-  root.step = 0;
   root.remaining_count = SIZE;
-  root.estimate = SIZE;
+  root.step = 0;
+  for (i = 0; i < WIDTH - 1; ++i) {
+    ++root.step;
+    pick(&root, i, root.step);
+  }
+  for (i = 1; i < WIDTH - 1; ++i) {
+    ++root.step;
+    pick(&root, 1 + WIDTH*i, root.step);
+  }
+  root.estimate = root.remaining_count * (root.step + 1) * (root.step + 1);
   board_list.push(&root);
   solve();
   printf("%d\n", (int)memory.size());
