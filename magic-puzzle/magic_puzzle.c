@@ -93,30 +93,41 @@ static void solution(int ai) {
 }
 
 int main(int argc, const char* argv[]) {
-  int i = 0;
+  int i = -1;
 #if WIDTH == 3
-  return 0;
+  actions[++i].pos = 0; actions[i].action = &choose;
+  actions[++i].pos = 1; actions[i].action = &choose;
+  actions[++i].pos = 2; actions[i].action = &decide; actions[i].indexes[0] = 0; actions[i].indexes[1] = 1;
+  actions[++i].pos = 4; actions[i].action = &choose;
+  actions[++i].pos = 8; actions[i].action = &decide; actions[i].indexes[0] = 0; actions[i].indexes[1] = 4;
+  actions[++i].pos = 5; actions[i].action = &decide; actions[i].indexes[0] = 2; actions[i].indexes[1] = 8;
+  actions[++i].pos = 3; actions[i].action = &decide; actions[i].indexes[0] = 4; actions[i].indexes[1] = 5;
+  actions[++i].pos = 6; actions[i].action = &decide; actions[i].indexes[0] = 0; actions[i].indexes[1] = 3;
+  actions[++i].pos = 7; actions[i].action = &decide; actions[i].indexes[0] = 6; actions[i].indexes[1] = 8;
+  actions[++i].pos = 0; actions[i].action = &validate; actions[i].indexes[0] = 1; actions[i].indexes[1] = 4; actions[i].indexes[2] = 7;
+  actions[++i].pos = 0; actions[i].action = &validate; actions[i].indexes[0] = 2; actions[i].indexes[1] = 4; actions[i].indexes[2] = 6;
+  actions[++i].pos = 0; actions[i].action = &solution;
 #elif WIDTH == 4
-  actions[i].pos =  0; actions[i++].action = &choose;
-  actions[i].pos =  1; actions[i++].action = &choose;
-  actions[i].pos =  2; actions[i++].action = &choose;
-  actions[i].pos =  3; actions[i  ].action = &decide; actions[i].indexes[0] =  0; actions[i].indexes[1] =  1; actions[i++].indexes[2] =  2;
-  actions[i].pos =  5; actions[i++].action = &choose;
-  actions[i].pos =  9; actions[i++].action = &choose;
-  actions[i].pos = 13; actions[i  ].action = &decide; actions[i].indexes[0] =  1; actions[i].indexes[1] =  5; actions[i++].indexes[2] =  9;
-  actions[i].pos = 10; actions[i++].action = &choose;
-  actions[i].pos = 15; actions[i  ].action = &decide; actions[i].indexes[0] =  0; actions[i].indexes[1] =  5; actions[i++].indexes[2] = 10;
-  actions[i].pos =  6; actions[i++].action = &choose;
-  actions[i].pos = 14; actions[i  ].action = &decide; actions[i].indexes[0] =  2; actions[i].indexes[1] =  6; actions[i++].indexes[2] = 10;
-  actions[i].pos = 12; actions[i  ].action = &decide; actions[i].indexes[0] = 13; actions[i].indexes[1] = 14; actions[i++].indexes[2] = 15;
-  actions[i].pos =  4; actions[i++].action = &choose;
-  actions[i].pos =  7; actions[i  ].action = &decide; actions[i].indexes[0] =  4; actions[i].indexes[1] =  5; actions[i++].indexes[2] =  6;
-  actions[i].pos =  8; actions[i  ].action = &decide; actions[i].indexes[0] =  0; actions[i].indexes[1] =  4; actions[i++].indexes[2] = 12;
-  actions[i].pos = 11; actions[i  ].action = &decide; actions[i].indexes[0] =  8; actions[i].indexes[1] =  9; actions[i++].indexes[2] = 10;
-  actions[i].pos =  0; actions[i  ].action = &validate; actions[i].indexes[0] =  3; actions[i].indexes[1] =  7; actions[i].indexes[2] = 11; actions[i++].indexes[3] = 15;
-  actions[i].pos =  0; actions[i  ].action = &validate; actions[i].indexes[0] =  3; actions[i].indexes[1] =  6; actions[i].indexes[2] =  9; actions[i++].indexes[3] = 12;
-  actions[i].pos =  0; actions[i++].action = &solution;
+  actions[++i].pos =  0; actions[i].action = &choose;
+  actions[++i].pos =  1; actions[i].action = &choose;
+  actions[++i].pos =  2; actions[i].action = &choose;
+  actions[++i].pos =  3; actions[i].action = &decide; actions[i].indexes[0] =  0; actions[i].indexes[1] =  1; actions[i].indexes[2] =  2;
+  actions[++i].pos =  5; actions[i].action = &choose;
+  actions[++i].pos =  9; actions[i].action = &choose;
+  actions[++i].pos = 13; actions[i].action = &decide; actions[i].indexes[0] =  1; actions[i].indexes[1] =  5; actions[i].indexes[2] =  9;
+  actions[++i].pos = 10; actions[i].action = &choose;
+  actions[++i].pos = 15; actions[i].action = &decide; actions[i].indexes[0] =  0; actions[i].indexes[1] =  5; actions[i].indexes[2] = 10;
+  actions[++i].pos =  6; actions[i].action = &choose;
+  actions[++i].pos = 14; actions[i].action = &decide; actions[i].indexes[0] =  2; actions[i].indexes[1] =  6; actions[i].indexes[2] = 10;
+  actions[++i].pos = 12; actions[i].action = &decide; actions[i].indexes[0] = 13; actions[i].indexes[1] = 14; actions[i].indexes[2] = 15;
+  actions[++i].pos =  4; actions[i].action = &choose;
+  actions[++i].pos =  7; actions[i].action = &decide; actions[i].indexes[0] =  4; actions[i].indexes[1] =  5; actions[i].indexes[2] =  6;
+  actions[++i].pos =  8; actions[i].action = &decide; actions[i].indexes[0] =  0; actions[i].indexes[1] =  4; actions[i].indexes[2] = 12;
+  actions[++i].pos = 11; actions[i].action = &decide; actions[i].indexes[0] =  8; actions[i].indexes[1] =  9; actions[i].indexes[2] = 10;
+  actions[++i].pos =  0; actions[i].action = &validate; actions[i].indexes[0] =  3; actions[i].indexes[1] =  7; actions[i].indexes[2] = 11; actions[i].indexes[3] = 15;
+  actions[++i].pos =  0; actions[i].action = &validate; actions[i].indexes[0] =  3; actions[i].indexes[1] =  6; actions[i].indexes[2] =  9; actions[i].indexes[3] = 12;
+  actions[++i].pos =  0; actions[i].action = &solution;
+#endif
   actions[0].action(0);
   return 0;
-#endif
 }
