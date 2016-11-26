@@ -26,10 +26,8 @@ class Trie-Node {
         if ($.final) {
             say $.final;
         }
-        # my @a = @partials.kv;
         for @partials.kv -> $i, $word {
-            # self.find-partial($word).?find-words(@partials[(0 ..^@partials).grep: * != $i]);
-            self.find-partial($word).?find-words(@partials[0 ..^ $i, $i ^..^ +@partials].flat());
+            self.find-partial($word).?find-words(@partials[grep * != $i, 0 .. *]);
         }
     }
 }
