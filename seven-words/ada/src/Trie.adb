@@ -5,8 +5,8 @@ package body Trie is
    procedure Add_Word(node : in out Trie_Node; word, partial : String; node_count : in out Natural) is
       first : Character;
    begin
-   if partial'Length = 0 then
-   node.is_terminal := true;
+      if partial'Length = 0 then
+         node.is_terminal := true;
          node.word := BoundedString.To_Bounded_String(word);
       else
          first := partial(partial'First);
