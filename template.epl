@@ -1,0 +1,7 @@
+<% $count ||= 10; %>
+This is some text
+
+Here is a list
+<%` for my $i (1 .. $count) { %>
+<%- $i %>. <%- $values[$i - 1] || '?' %>
+<%` } %>
