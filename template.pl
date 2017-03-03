@@ -51,8 +51,7 @@ if (exists $config{variables}) {
 
 sub insert_text {
   return unless $buffer;
-  $buffer =~ s/\\/\\/g;
-  $buffer =~ s/([#$@%])/\$1/g;
+  $buffer =~ s/([#\$\@\%\\])/\\$1/g;
   $line_no += $buffer =~ s/\n/\\n/g;
   $sub_text .= '$OUT .= qq#' . $buffer . "#;\n";
   $buffer = '';
