@@ -4,7 +4,7 @@ use v6;
 my $max = 120;
 my $count = 500;
 
-# Start with $count numbers.
+# Start with $count experiments
 my $co-prime = (^$count)
 # Pick out pairs of numbers from our range.
   .map( { |(1 .. $max).roll(2) })
