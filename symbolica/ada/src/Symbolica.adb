@@ -91,19 +91,69 @@ procedure Symbolica is
       IO.Put_Line("Read in original Board");
       PrintBoard(b);
    end ReadBoard;
+   
+   
+   procedure Validate_Counts is
+      counts : Array(Color_T, Symbol_T) of Integer := (others => (others => 0));
+      count_incorrect : exception;
+   begin
+      for row in Row_T'range loop
+         for col in Column_T'range loop
+            declare
+               o : Tile_T renames original_board(row, col);
+               b : Tile_T renames board(row, col);
+            begin
+               counts(o.Color, o.Symbol) := counts(o.Color, o.Symbol) + 1;
+               counts(b.Color, b.Symbol) := counts(b.Color, b.Symbol) - 1;
+            end;
+         end loop;
+      end loop;
+      for c in Color_T'range loop
+         for s in Symbol_T'range loop
+            if counts(c, s) /= 0 then
+               raise count_incorrect;
+            end if;
+         end loop;
+      end loop;
+   end Validate_Counts;
+   
+   procedure Validate_Integrity is
+      board_integrity : exception;
+      function Pair_Is_Valid(a, b : Tile_T) return Boolean is
+      begin
+         return (a.Color = b.Color and then a.Symbol /= b.Symbol) or else (a.Color /= b.Color and then a.Symbol = b.Symbol);
+      end Pair_Is_Valid;
+   begin
+      for row in Row_T'range loop
+         for col in Column_T'range loop
+            declare
+               b : Tile_T renames board(row, col);
+            begin
+               if (row > Row_T'First    and then not Pair_Is_Valid(b, board(row-1, col))) or else
+                  (row < Row_T'Last     and then not Pair_Is_Valid(b, board(row+1, col))) or else
+                  (col > Column_T'First and then not Pair_Is_Valid(b, board(row, col-1))) or else
+                  (col < Column_T'Last  and then not Pair_Is_Valid(b, board(row, col+1))) then
+                  raise board_integrity;
+               end if;
+            end;
+         end loop;
+      end loop;
+   end Validate_Integrity;
 
    procedure CompareBoards is
       distance : Natural := 0;
-      chain : Natural := 0;
-      waiting : Array(Color_T, Symbol_T, Color_T, Symbol_T) of Natural := (others => (others => (others => (others => 0))));
+      chain    : Natural := 0;
+      waiting  : Array(Color_T, Symbol_T, Color_T, Symbol_T) of Natural := (others => (others => (others => (others => 0))));
    begin
+      Validate_Counts;
+      Validate_Integrity;
       total_solutions := total_solutions + 1;
       for row in Row_T'Range loop
          for col in Column_T'Range loop
             declare
-               o : Tile_T renames original_board(row, col);
-               b : Tile_T renames board(row, col);
-               w : natural renames waiting(o.Color, o.Symbol, b.Color, b.Symbol);
+               o  : Tile_T renames original_board(row, col);
+               b  : Tile_T renames board(row, col);
+               w  : natural renames waiting(o.Color, o.Symbol, b.Color, b.Symbol);
                ow : natural renames waiting(b.Color, b.Symbol, o.Color, o.Symbol);
             begin
                if o.Color /= b.Color or else o.Symbol /= b.Symbol then
