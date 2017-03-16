@@ -91,8 +91,7 @@ procedure Symbolica is
       IO.Put_Line("Read in original Board");
       PrintBoard(b);
    end ReadBoard;
-   
-   
+
    procedure Validate_Counts is
       counts : Array(Color_T, Symbol_T) of Integer := (others => (others => 0));
       count_incorrect : exception;
@@ -111,12 +110,14 @@ procedure Symbolica is
       for c in Color_T'range loop
          for s in Symbol_T'range loop
             if counts(c, s) /= 0 then
+               IO.Put_Line("New Board has incorrect count of " & (colors(c), symbols(s)) & ": " & Integer'Image(counts(c, s)));
+               PrintBoard(board);
                raise count_incorrect;
             end if;
          end loop;
       end loop;
    end Validate_Counts;
-   
+
    procedure Validate_Integrity is
       board_integrity : exception;
       function Pair_Is_Valid(a, b : Tile_T) return Boolean is
@@ -133,20 +134,25 @@ procedure Symbolica is
                   (row < Row_T'Last     and then not Pair_Is_Valid(b, board(row+1, col))) or else
                   (col > Column_T'First and then not Pair_Is_Valid(b, board(row, col-1))) or else
                   (col < Column_T'Last  and then not Pair_Is_Valid(b, board(row, col+1))) then
+                  IO.Put_Line("New Board has incorrect incorrectly placed " & TileImage(b) & " at " & Row_T'Image(row) & "," & Column_T'Image(col));
+                  PrintBoard(board);
                   raise board_integrity;
                end if;
             end;
          end loop;
       end loop;
    end Validate_Integrity;
-
+   
+   Perform_Additional_Validation : constant Boolean := False;
    procedure CompareBoards is
       distance : Natural := 0;
       chain    : Natural := 0;
       waiting  : Array(Color_T, Symbol_T, Color_T, Symbol_T) of Natural := (others => (others => (others => (others => 0))));
    begin
-      Validate_Counts;
-      Validate_Integrity;
+      if Perform_Additional_Validation then
+         Validate_Counts;
+         Validate_Integrity;
+      end if;
       total_solutions := total_solutions + 1;
       for row in Row_T'Range loop
          for col in Column_T'Range loop
@@ -178,31 +184,31 @@ procedure Symbolica is
       end if;
    end CompareBoards;
 
-   procedure Solve(row : Row_T; col : Column_T) is
-
-      procedure NextSolve(c : Color_T; s : Symbol_T) is
-         tc : Natural renames tile_count(c, s);
-      begin
-         if tc = 0 then
-            return;
-         end if;
-         board(row, col) := (c, s);
-         if col = Column_T'Last then
-            if row = Row_T'Last then
-               CompareBoards;
-            else
-               tc := tc - 1;
-               Solve(row + 1, 1);
-               tc := tc + 1;
-            end if;
+   procedure Solve(row : Row_T; col : Column_T);
+   procedure Pick(row : Row_T; col : Column_T; c : Color_T; s : Symbol_T) is
+     tc : Natural renames tile_count(c, s);
+   begin
+      if tc = 0 then
+         return;
+      end if;
+      board(row, col) := (c, s);
+      if col = Column_T'Last then
+         if row = Row_T'Last then
+            CompareBoards;
          else
             tc := tc - 1;
-            Solve(row, col + 1);
+            Solve(row + 1, 1);
             tc := tc + 1;
          end if;
-      end NextSolve;
-      pragma inline(NextSolve);
+      else
+         tc := tc - 1;
+         Solve(row, col + 1);
+         tc := tc + 1;
+      end if;
+   end Pick;
+   pragma inline(Pick);
 
+   procedure Solve(row : Row_T; col : Column_T) is
    begin
       iterations := iterations + 1;
       if row = 1 then
@@ -211,12 +217,12 @@ procedure Symbolica is
          begin
             for color in Color_T'Range loop
                if color /= left.Color then
-                  NextSolve(color, left.Symbol);
+                  Pick(row, col, color, left.Symbol);
                end if;
             end loop;
             for symbol in Symbol_T'Range loop
                if symbol /= left.Symbol then
-                  NextSolve(left.Color, symbol);
+                  Pick(row, col, left.Color, symbol);
                end if;
             end loop;
          end;
@@ -226,12 +232,12 @@ procedure Symbolica is
          begin
             for color in Color_T'Range loop
                if color /= above.Color then
-                  NextSolve(color, above.Symbol);
+                  Pick(row, col, color, above.Symbol);
                end if;
             end loop;
             for symbol in Symbol_T'Range loop
                if symbol /= above.Symbol then
-                  NextSolve(above.Color, symbol);
+                  Pick(row, col, above.Color, symbol);
                end if;
             end loop;
          end;
@@ -243,18 +249,18 @@ procedure Symbolica is
             if left.Color = above.Color then
                for symbol in Symbol_T'Range loop
                   if symbol /= left.Symbol and then symbol /= above.Symbol then
-                     NextSolve(left.Color, symbol);
+                     Pick(row, col, left.Color, symbol);
                   end if;
                end loop;
             elsif left.Symbol = above.Symbol then
                for color in Color_T'Range loop
                   if color /= left.Color and then color /= above.Color then
-                     NextSolve(color, left.Symbol);
+                     Pick(row, col, color, left.Symbol);
                   end if;
                end loop;
             else
-               NextSolve(left.Color, above.Symbol);
-               NextSolve(above.Color, left.Symbol);
+               Pick(row, col, left.Color, above.Symbol);
+               Pick(row, col, above.Color, left.Symbol);
             end if;
          end;
       end if;
@@ -273,8 +279,7 @@ begin
    end loop;
    for color in Color_T'Range loop
       for symbol in Symbol_T'Range loop
-         board(1, 1) := (color, symbol);
-         Solve(1, 2);
+         Pick(1, 1, color, symbol);
       end loop;
    end loop;
    IO.Put_Line("Total Iterations" & Natural'Image(iterations));
