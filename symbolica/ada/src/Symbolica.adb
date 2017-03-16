@@ -16,14 +16,14 @@ procedure Symbolica is
    type Row_T    is new Natural range 1 .. Width;
 
    type Tile_T is record
-      Color : Color_T;
+      Color  : Color_T;
       Symbol : Symbol_T;
    end record;
 
-   type Board_T is Array(Row_T, Column_T) of Tile_T;
+   type Board_T is Array(Row_T, Column_T)   of Tile_T;
    type Count_T is Array(Color_T, Symbol_T) of Natural;
 
-   colors  : constant Array(Color_T) of Character := ('R', 'B', 'G', 'Y');
+   colors  : constant Array(Color_T)  of Character := ('R', 'B', 'G', 'Y');
    symbols : constant Array(Symbol_T) of Character := ('a', 'g', 'c');
 
    original_board, best_board, board : Board_T;
@@ -32,28 +32,6 @@ procedure Symbolica is
    total_solutions : Natural := 0;
    iterations      : Natural := 0;
    tile_count      : Count_T := (others => (others => 0));
-
-   Not_In : exception;
-
-   function GetColor(c: Character) return Color_T is
-   begin
-      for color in Color_T'Range loop
-         if colors(color) = c then
-            return color;
-         end if;
-      end loop;
-      raise Not_In;
-   end GetColor;
-
-   function GetSymbol(s: Character) return Symbol_T is
-   begin
-      for symbol in Symbol_T'Range loop
-         if symbols(symbol) = s then
-            return symbol;
-         end if;
-      end loop;
-      raise Not_In;
-   end GetSymbol;
 
    function TileImage(tile : Tile_T) return String is
    begin
@@ -70,7 +48,30 @@ procedure Symbolica is
    end PrintBoard;
 
    procedure ReadBoard(filename: in String; b : out Board_T) is
-      f : IO.File_Type;
+
+      Not_In : exception;
+
+      function GetColor(c: Character) return Color_T is
+      begin
+         for color in Color_T'Range loop
+            if colors(color) = c then
+               return color;
+            end if;
+         end loop;
+         raise Not_In;
+      end GetColor;
+
+      function GetSymbol(s: Character) return Symbol_T is
+      begin
+         for symbol in Symbol_T'Range loop
+            if symbols(symbol) = s then
+               return symbol;
+            end if;
+         end loop;
+         raise Not_In;
+      end GetSymbol;
+
+      f   : IO.File_Type;
       c,s : Character;
       eol : Boolean;
    begin
@@ -186,7 +187,7 @@ procedure Symbolica is
          end;
       else
          declare
-            left : Tile_T renames board(row, col -1);
+            left  : Tile_T renames board(row, col -1);
             above : Tile_T renames board(row - 1, col);
          begin
             if left.Color = above.Color then
