@@ -2,35 +2,39 @@ with Ada.Text_IO;
 with Ada.Command_Line;
 
 procedure Symbolica is
-   NumColors : constant := 4;
+
+   NumColors  : constant := 4;
    NumSymbols : constant := 3;
-   Length : constant := 5;
-   Width  : constant := 5;
+   Length     : constant := 5;
+   Width      : constant := 5;
 
    package IO renames Ada.Text_IO;
 
-   type Color_T is new Natural range 0 .. NumColors - 1;
+   type Color_T  is new Natural range 0 .. NumColors - 1;
    type Symbol_T is new Natural range 0 .. NumSymbols - 1;
    type Column_T is new Natural range 1 .. Length;
-   type Row_T is new Natural range 1 .. Width;
+   type Row_T    is new Natural range 1 .. Width;
+
    type Tile_T is record
       Color : Color_T;
       Symbol : Symbol_T;
    end record;
+
    type Board_T is Array(Row_T, Column_T) of Tile_T;
    type Count_T is Array(Color_T, Symbol_T) of Natural;
 
-   -- colors : constant Array(Color_T) of Character := ('R', 'B');
-   -- symbols : constant Array(Symbol_T) of Character := ('n', 'a');
-   colors : constant Array(Color_T) of Character := ('R', 'B', 'G', 'Y');
+   colors  : constant Array(Color_T) of Character := ('R', 'B', 'G', 'Y');
    symbols : constant Array(Symbol_T) of Character := ('a', 'g', 'c');
 
    original_board, best_board, board : Board_T;
-   best_distance : Natural := Length * Width;
+
+   best_distance   : Natural := Length * Width;
    total_solutions : Natural := 0;
-   iterations : Natural := 0;
-   tile_count : Count_T := (others => (others => 0));
+   iterations      : Natural := 0;
+   tile_count      : Count_T := (others => (others => 0));
+
    Not_In : exception;
+
    function GetColor(c: Character) return Color_T is
    begin
       for color in Color_T'Range loop
@@ -40,6 +44,7 @@ procedure Symbolica is
       end loop;
       raise Not_In;
    end GetColor;
+
    function GetSymbol(s: Character) return Symbol_T is
    begin
       for symbol in Symbol_T'Range loop
@@ -49,6 +54,7 @@ procedure Symbolica is
       end loop;
       raise Not_In;
    end GetSymbol;
+
    function TileImage(tile : Tile_T) return String is
    begin
       return (colors(tile.Color), symbols(tile.Symbol));
@@ -62,6 +68,7 @@ procedure Symbolica is
          IO.New_Line;
       end loop;
    end PrintBoard;
+
    procedure ReadBoard(filename: in String; b : out Board_T) is
       f : IO.File_Type;
       c,s : Character;
@@ -83,6 +90,7 @@ procedure Symbolica is
       IO.Put_Line("Read in original Board");
       PrintBoard(b);
    end ReadBoard;
+
    procedure CompareBoards is
       distance : Natural := 0;
       chain : Natural := 0;
@@ -118,7 +126,9 @@ procedure Symbolica is
          best_distance := distance;
       end if;
    end CompareBoards;
+
    procedure Solve(row : Row_T; col : Column_T) is
+
       procedure NextSolve(c : Color_T; s : Symbol_T) is
          tc : Natural renames tile_count(c, s);
       begin
@@ -141,6 +151,7 @@ procedure Symbolica is
          end if;
       end NextSolve;
       pragma inline(NextSolve);
+
    begin
       iterations := iterations + 1;
       if row = 1 then
@@ -197,6 +208,7 @@ procedure Symbolica is
          end;
       end if;
    end Solve;
+
 begin
    ReadBoard(Ada.Command_Line.Argument(1), original_board);
    for row in Row_T'Range loop
