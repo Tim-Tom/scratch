@@ -1,4 +1,5 @@
 with Ada.Text_IO;
+with Ada.Command_Line;
 
 procedure Symbolica is
    NumColors : constant := 4;
@@ -197,7 +198,7 @@ procedure Symbolica is
       end if;
    end Solve;
 begin
-   ReadBoard("default_board.txt", original_board);
+   ReadBoard(Ada.Command_Line.Argument(1), original_board);
    for row in Row_T'Range loop
       for col in Column_T'Range loop
          declare
