@@ -24,7 +24,7 @@ procedure Symbolica is
    type Count_T is Array(Color_T, Symbol_T) of Natural;
 
    colors  : constant Array(Color_T)  of Character := ('R', 'B', 'G', 'Y');
-   symbols : constant Array(Symbol_T) of Character := ('a', 'g', 'c');
+   symbols : constant Array(Symbol_T) of Character := ('a', 'b', 'c');
 
    original_board, best_board, board : Board_T;
 
