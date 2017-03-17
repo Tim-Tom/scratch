@@ -11,8 +11,9 @@ param symbolNames{colors, symbols} symbolic;
 param originalBoard{boardSize, boardSize, types} integer;
 
 # Variables
-var board{boardSize, boardSize, types} integer, >= 0, <= 3;
-var _boardDiff{boardSize, boardSize, types} integer, >= 0, <= 1;
+var board{boardSize, boardSize, types} integer, >= 0;
+var _boardDiff{boardSize, boardSize, types, abs} integer, >= 0;
+var _boardDiffSelector{boardSize, boardSize, types} binary;
 var _boardDiffCap{boardSize, boardSize} binary;
 var _horzAdj{boardSize, boundedBoardSize, types, abs} integer, >= 0;
 var _vertAdj{boundedBoardSize, boardSize, types, abs} integer, >= 0;
@@ -50,11 +51,12 @@ s.t. _vertAdjCap2{r in boundedBoardSize, c in boardSize, t in types}: 6*_vertAdj
 s.t. horizontalAdjacency{r in boardSize, c in boundedBoardSize}: sum{t in types} _horzAdjCap[r,c,t] = 1;
 s.t. verticalAdjacency{r in boundedBoardSize, c in boardSize}: sum{t in types} _vertAdjCap[r,c,t] = 1;
 
-s.t. _boardDiff1{r in boardSize, c in boardSize, t in types}: _boardDiff[r, c, t] >= originalBoard[r, c, t] - board[r, c, t];
-s.t. _boardDiff2{r in boardSize, c in boardSize, t in types}: _boardDiff[r, c, t] >= board[r, c, t] - originalBoard[r, c, t];
+s.t. _boardDiff1{r in boardSize, c in boardSize, t in types}: originalBoard[r, c, t] - board[r, c, t] = _boardDiff[r,c,t,"pos"] - _boardDiff[r,c,t,"neg"];
+s.t. _boardDiff2{r in boardSize, c in boardSize, t in types}: _boardDiff[r, c, t, "pos"] <= 6*_boardDiffSelector[r,c,t];
+s.t. _boardDiff3{r in boardSize, c in boardSize, t in types}: _boardDiff[r, c, t, "neg"] <= 6*(1-_boardDiffSelector[r,c,t]);
 
-s.t. _boardDiffCap1{r in boardSize, c in boardSize}: _boardDiffCap[r,c] <= _boardDiff[r,c,"color"] + _boardDiff[r,c,"symbol"];
-s.t. _boardDiffCap2{r in boardSize, c in boardSize}: 1000*_boardDiffCap[r,c] >= _boardDiff[r,c,"color"] + _boardDiff[r,c,"symbol"];
+s.t. _boardDiffCap1{r in boardSize, c in boardSize}: _boardDiffCap[r,c] <= sum{t in types, s in abs} _boardDiff[r,c,t,s];
+s.t. _boardDiffCap2{r in boardSize, c in boardSize}: 1000*_boardDiffCap[r,c] >= sum{t in types, s in abs} _boardDiff[r,c,t,s];
 
 # This is wrong on pretty much every level, but it somewhat gets close.
 s.t. picked{t in types}: sum{r in boardSize, c in boundedBoardSize} (board[r,c,t] - originalBoard[r,c,t]) = 0;
