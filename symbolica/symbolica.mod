@@ -13,8 +13,10 @@ param originalBoard{boardSize, boardSize, types} integer;
 var board{boardSize, boardSize, types} integer, >= 0, <= 3;
 var _boardDiff{boardSize, boardSize, types} integer, >= 0, <= 1;
 var _boardDiffCap{boardSize, boardSize} binary;
-var _horzAdj{boardSize, boundedBoardSize, types} integer, >= 0;
-var _vertAdj{boundedBoardSize, boardSize, types} integer, >= 0;
+var _horzAdj{boardSize, boundedBoardSize, types, 0 .. 1} integer, >= 0;
+var _vertAdj{boundedBoardSize, boardSize, types, 0 .. 1} integer, >= 0;
+var _horzAdjSelector{boardSize, boundedBoardSize, types} binary;
+var _vertAdjSelector{boundedBoardSize, boardSize, types} binary;
 var _horzAdjCap{boardSize, boundedBoardSize, types} binary;
 var _vertAdjCap{boundedBoardSize, boardSize, types} binary;
 
@@ -28,21 +30,23 @@ var _vertAdjCap{boundedBoardSize, boardSize, types} binary;
 # Set the adjacency to be at least the absolute value of the difference between the the
 # tile and the tile to its right or below it. I'm actually not sure how this works, since
 # it could just always pick 100 for every node and satisfy this constraint.
-s.t. _horzAdj1{r in boardSize, c in boundedBoardSize, t in types}: _horzAdj[r,c,t] >= board[r,c+0,t] - board[r,c+1,t];
-s.t. _horzAdj2{r in boardSize, c in boundedBoardSize, t in types}: _horzAdj[r,c,t] >= board[r,c+1,t] - board[r,c+0,t];
+s.t. _horzAdj1{r in boardSize, c in boundedBoardSize, t in types}: board[r,c+0,t] - board[r,c+1,t] = _horzAdj[r,c,t,0] - _horzAdj[r,c,t,1];
+s.t. _horzAdj2{r in boardSize, c in boundedBoardSize, t in types}: _horzAdj[r,c,t,0] <= 6*_horzAdjSelector[r,c,t];
+s.t. _horzAdj3{r in boardSize, c in boundedBoardSize, t in types}: _horzAdj[r,c,t,1] <= 6*(1-_horzAdjSelector[r,c,t]);
 
-s.t. _vertAdj1{r in boundedBoardSize, c in boardSize, t in types}: _vertAdj[r,c,t] >= board[r+0,c,t] - board[r+1,c,t];
-s.t. _vertAdj2{r in boundedBoardSize, c in boardSize, t in types}: _vertAdj[r,c,t] >= board[r+1,c,t] - board[r+0,c,t];
+s.t. _vertAdj1{r in boundedBoardSize, c in boardSize, t in types}: board[r+0,c,t] - board[r+1,c,t] = _vertAdj[r,c,t,0] - _vertAdj[r,c,t,1];
+s.t. _vertAdj2{r in boundedBoardSize, c in boardSize, t in types}: _vertAdj[r,c,t,0] <= 6*_vertAdjSelector[r,c,t];
+s.t. _vertAdj3{r in boundedBoardSize, c in boardSize, t in types}: _vertAdj[r,c,t,1] <= 6*(1-_vertAdjSelector[r,c,t]);
 
 # This relies on the variable being binary. It says it has to be less than or equal to the
 # difference, which means it can't be 1 if the difference is zero, and 1000 times it has
 # to be greater than it, so it can't be 0 when the difference is positive. Meaning it will
 # be zero if the difference is zero and one if the difference is non-zero.
-s.t. _horzAdjCap1{r in boardSize, c in boundedBoardSize, t in types}: _horzAdjCap[r,c,t] <= _horzAdj[r,c,t];
-s.t. _horzAdjCap2{r in boardSize, c in boundedBoardSize, t in types}: 1000*_horzAdjCap[r,c,t] >= _horzAdj[r,c,t];
+s.t. _horzAdjCap1{r in boardSize, c in boundedBoardSize, t in types}: _horzAdjCap[r,c,t] <= sum{s in 0 ..1} _horzAdj[r,c,t,s];
+s.t. _horzAdjCap2{r in boardSize, c in boundedBoardSize, t in types}: 1000*_horzAdjCap[r,c,t] >= sum{s in 0 ..1} _horzAdj[r,c,t,s];
 
-s.t. _vertAdjCap1{r in boundedBoardSize, c in boardSize, t in types}: _vertAdjCap[r,c,t] <= _vertAdj[r,c,t];
-s.t. _vertAdjCap2{r in boundedBoardSize, c in boardSize, t in types}: 1000*_vertAdjCap[r,c,t] >= _vertAdj[r,c,t];
+s.t. _vertAdjCap1{r in boundedBoardSize, c in boardSize, t in types}: _vertAdjCap[r,c,t] <= sum{s in 0 .. 1} _vertAdj[r,c,t,s];
+s.t. _vertAdjCap2{r in boundedBoardSize, c in boardSize, t in types}: 1000*_vertAdjCap[r,c,t] >= sum{s in 0 .. 1} _vertAdj[r,c,t,s];
 
 # Now that we've ensured the adjacency values are exactly 0 or 1, we can ensure that the
 # sum for each square in each direction is 1 and not 0 or 2.
