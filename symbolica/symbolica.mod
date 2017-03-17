@@ -1,6 +1,6 @@
 # Sets
-set boardSize := 0 .. 4;
-set boundedBoardSize := 0 .. 3;
+set boardSize := 0 .. 2;
+set boundedBoardSize := 0 .. 1;
 set types  := 0 .. 1;
 set colors  := 0 .. 3;
 set symbols := 0 .. 2;
@@ -95,19 +95,33 @@ param symbolNames :=
 # Ba Ra Rb Bb Bc
 # Rb Ya Yb Ra Ba
 
+# param originalBoard :=
+# # Color
+# [*,*,0] : 0 1 2 3 4 :=
+#         0 0 1 1 1 1
+#         1 2 1 3 1 2
+#         2 3 3 1 1 3
+#         3 1 0 0 1 1
+#         4 0 3 3 0 1
+# # Symbol
+# [*,*,1] : 0 1 2 3 4 :=
+#         0 0 1 0 1 1
+#         1 0 0 2 0 1
+#         2 1 1 1 2 0
+#         3 0 0 1 1 2
+#         4 1 0 1 0 0
+#         ;
+
 param originalBoard :=
 # Color
-[*,*,0] : 0 1 2 3 4 :=
-        0 0 1 1 1 1
-        1 2 1 3 1 2
-        2 3 3 1 1 3
-        3 1 0 0 1 1
-        4 0 3 3 0 1
+[*,*,0] : 0 1 2 :=
+        0 0 0 0
+        1 0 0 0
+        2 0 0 0
+
 # Symbol
-[*,*,1] : 0 1 2 3 4 :=
-        0 0 1 0 1 1
-        1 0 0 2 0 1
-        2 1 1 1 2 0
-        3 0 0 1 1 2
-        4 1 0 1 0 0
+[*,*,1] : 0 1 2 :=
+        0 0 1 0
+        1 1 1 0
+        2 0 1 0
         ;

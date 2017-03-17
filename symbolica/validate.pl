@@ -65,7 +65,8 @@ for my $ri (0 .. $#solution) {
 
 exit $bad;
 
-__DATA__
+=pod
+
 Ra Bb Ba Bb Bb
 Ga Ba Yc Ba Gb
 Yb Yb Bb Bc Ya
@@ -77,3 +78,14 @@ Ga Gb Gc Gb Gb
 Ga Ga Gb Rb Gb
 Ba Ra Rb Bb Bb
 Ra Ya Yb Bb Ba
+
+=cut
+
+__DATA__
+Ra Rb Ra
+Rb Ra Rb
+Ra Rb Ra
+
+Ra Rc Ra
+Rb Ra Ba
+Ra Rb Ra
