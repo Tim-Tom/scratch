@@ -4,7 +4,7 @@ project RandomArt is
    for Source_Dirs use ("inc", "src");
    type Build_Type is
       ("Release", "Debug");
-   Build : Build_Type := external ("Release", "Debug");
+   Build : Build_Type := external ("Build", "Release");
 
    package Naming is
       for Casing use "MixedCase";
