@@ -111,15 +111,15 @@ fn build_expression(depth: i32, rng: &mut rand::ThreadRng) -> Box<Expression> {
     }
 }
 
-fn eval_expression(expression: &Box<Expression>, x: f32, y: f32) -> f32 {
-    return match **expression {
+fn eval_expression(expression: &Expression, x: f32, y: f32) -> f32 {
+    return match *expression {
         Expression::Terminal { expr }  => expr(x,y),
-        Expression::Single {expr, ref e} => expr(eval_expression(e, x, y)),
-        Expression::Double {expr, ref e1, ref e2} => expr(eval_expression(e1, x, y), eval_expression(e2, x, y))
+        Expression::Single {expr, ref e} => expr(eval_expression((*e).as_ref(), x, y)),
+        Expression::Double {expr, ref e1, ref e2} => expr(eval_expression((*e1).as_ref(), x, y), eval_expression((*e2).as_ref(), x, y))
     }
 }
 
-fn emit_greyscale(scale: i32, expr: Box<Expression>) {
+fn emit_greyscale(scale: i32, expr: &Expression) {
     let size: usize = 2*(scale as usize) + 1;
     let mut output = BufWriter::new(File::create("test.pgm").unwrap());
     // So apparently the size of arrays in rust have to be a compile time
@@ -139,5 +139,5 @@ fn emit_greyscale(scale: i32, expr: Box<Expression>) {
 fn main() {
     let mut rng : rand::ThreadRng = rand::thread_rng();
     let expr = build_expression(15, &mut rng);
-    emit_greyscale(150, expr);
+    emit_greyscale(150, expr.as_ref());
 }
