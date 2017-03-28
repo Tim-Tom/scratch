@@ -1,7 +1,10 @@
+extern crate rand;
+
 use std::io::prelude::*;
 use std::fs::File;
 use std::io::BufWriter;
 use std::f32;
+use rand::Rng;
 
 // Terminals
 #[allow(unused_variables)]
@@ -35,6 +38,8 @@ fn expr_sqrt(e: f32) -> f32 {
         return f32::sqrt(e);
     }
 }
+
+// Double
 
 fn expr_arith_mean(e1: f32, e2: f32) -> f32 {
     return (e1 + e2) / 2.0;
@@ -83,17 +88,38 @@ enum Expression {
     }
 }
 
-fn build_expression(depth: i32) -> Box<Expression> {
+fn build_expression(depth: i32, rng: &mut rand::ThreadRng) -> Box<Expression> {
+    let terminals: [ExprTerminal; 2] = [expr_x, expr_y];
+    let singles: [ExprSingle; 4] = [expr_sin, expr_cos, expr_negate, expr_sqrt];
+    let doubles: [ExprDouble; 5] = [expr_arith_mean, expr_geo_mean, expr_mult, expr_min, expr_max];
     if depth == 1 {
-        let e = Box::new(Expression::Terminal { expr: expr_x });
+        let f = terminals[rng.gen_range(0, 2)];
+        let e = Box::new(Expression::Terminal { expr: f });
         return e;
     } else {
-        let e = Box::new(Expression::Terminal { expr: expr_x });
-        return e;
+        let i = rng.gen_range(0, 4 + 5);
+        if i < 4 {
+            let e1 = build_expression(depth - 1, rng);
+            let e = Box::new(Expression::Single { expr: singles[i], e: e1 });
+            return e;
+        } else {
+            let e1 = build_expression(depth - 1, rng);
+            let e2 = build_expression(depth - 1, rng);
+            let e = Box::new(Expression::Double { expr: doubles[i - 4], e1: e1, e2: e2 });
+            return e;
+        }
     }
 }
 
-fn emit_greyscale(scale: i32) {
+fn eval_expression(expression: &Box<Expression>, x: f32, y: f32) -> f32 {
+    return match **expression {
+        Expression::Terminal { expr }  => expr(x,y),
+        Expression::Single {expr, ref e} => expr(eval_expression(e, x, y)),
+        Expression::Double {expr, ref e1, ref e2} => expr(eval_expression(e1, x, y), eval_expression(e2, x, y))
+    }
+}
+
+fn emit_greyscale(scale: i32, expr: Box<Expression>) {
     let size: usize = 2*(scale as usize) + 1;
     let mut output = BufWriter::new(File::create("test.pgm").unwrap());
     // So apparently the size of arrays in rust have to be a compile time
@@ -103,7 +129,7 @@ fn emit_greyscale(scale: i32) {
         for yi in -scale .. (scale + 1) {
             let x = xi as f32 / scale as f32;
             let y = yi as f32 / scale as f32;
-            let intensity = (127.5 + 127.5*(x + y)/2.0) as u8;
+            let intensity = (127.5 + 127.5*eval_expression(&expr, x, y)/2.0) as u8;
             let buf: [u8; 1] = [intensity];
             output.write(&buf).unwrap();
         }
@@ -111,5 +137,7 @@ fn emit_greyscale(scale: i32) {
 }
 
 fn main() {
-    emit_greyscale(150);
+    let mut rng : rand::ThreadRng = rand::thread_rng();
+    let expr = build_expression(10, &mut rng);
+    emit_greyscale(150, expr);
 }

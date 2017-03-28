@@ -1,6 +1,6 @@
 [package]
 
-name = "Random_Art"
+name = "random_art"
 version = "0.0.1"
 authors = [ "Tim Bollman <tim.bollman@gmail.com>" ]
 
