@@ -138,6 +138,6 @@ fn emit_greyscale(scale: i32, expr: Box<Expression>) {
 
 fn main() {
     let mut rng : rand::ThreadRng = rand::thread_rng();
-    let expr = build_expression(10, &mut rng);
+    let expr = build_expression(15, &mut rng);
     emit_greyscale(150, expr);
 }
