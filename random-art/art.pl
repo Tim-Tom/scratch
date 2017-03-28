@@ -203,8 +203,8 @@ sub emitGreyscale($name, $scale, $expr) {
   open(my $pgm, '>:raw', "$name.pgm") or die;
   my $size = 2*$scale + 1;
   printf $pgm 'P5 %d %d 255'."\n", $size, $size;
-  for my $xi (-$scale .. $scale) {
-    for my $yi (-$scale .. $scale) {
+  for my $yi (-$scale .. $scale) {
+    for my $xi (-$scale .. $scale) {
       my ($x, $y) = map { $_ / $scale } ($xi, $yi);
       my $intensity = int(127.5 + 127.5*eval_expr($expr, $x, $y));
       print $pgm (pack 'C', $intensity);

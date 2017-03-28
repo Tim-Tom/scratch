@@ -17,8 +17,8 @@ procedure RandomArt is
          Byte_IO.Write(file, Byte(Character'Pos(header(i))));
       end loop;
       Byte_IO.Write(file, 10); -- newline
-      for xi in -Scale .. Scale loop
-         for yi in -Scale .. Scale loop
+      for yi in -Scale .. Scale loop
+         for xi in -Scale .. Scale loop
             declare
                x : constant Expression_Value := Float(xi) / Float(Scale);
                y : constant Expression_Value := Float(yi) / Float(Scale);

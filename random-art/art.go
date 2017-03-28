@@ -114,11 +114,11 @@ func greyscale(e ExpressionEvaluator, scale int) {
 	}
 	fmt.Fprintf(f, "P5 %d %d 255\n", size, size)
 	buf := make([]byte, size)
-	for xi := -scale; xi <= scale; xi++ {
-		for yi := -scale; yi <= scale; yi++ {
+	for yi := -scale; yi <= scale; yi++ {
+		for xi := -scale; xi <= scale; xi++ {
 			x := float64(xi)/float64(scale)
 			y := float64(yi)/float64(scale)
-			buf[yi + scale] = byte(127.5 + 127.5*e.evaluate(x,y));
+			buf[xi + scale] = byte(127.5 + 127.5*e.evaluate(x,y));
 		}
 		f.Write(buf)
 	}

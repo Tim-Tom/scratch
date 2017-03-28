@@ -125,8 +125,8 @@ fn emit_greyscale(scale: i32, expr: &Expression) {
     // So apparently the size of arrays in rust have to be a compile time
     // constant at the moment. Hardcode the value because whatever.
     write!(output, "P5 {} {} 255\n", size, size).unwrap();
-    for xi in -scale .. (scale + 1) {
-        for yi in -scale .. (scale + 1) {
+    for yi in -scale .. (scale + 1) {
+        for xi in -scale .. (scale + 1) {
             let x = xi as f32 / scale as f32;
             let y = yi as f32 / scale as f32;
             let intensity = (127.5 + 127.5*eval_expression(&expr, x, y)/2.0) as u8;
