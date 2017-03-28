@@ -1,0 +1,9 @@
+[package]
+
+name = "Random_Art"
+version = "0.0.1"
+authors = [ "Tim Bollman <tim.bollman@gmail.com>" ]
+
+[dependencies]
+
+rand="0.3.0"
