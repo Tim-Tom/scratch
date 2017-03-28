@@ -5,6 +5,8 @@ import (
 	"os"
 	"fmt"
 	"math"
+	"math/rand"
+	"time"
 )
 
 // Terminal
@@ -126,16 +128,27 @@ func greyscale(e ExpressionEvaluator, scale int) {
 }
 
 func build_expression(depth int) ExpressionEvaluator {
+	terminals := []expr_terminal {expr_x, expr_y}
+	singles := []expr_single { expr_sin, expr_cos, expr_negate, expr_sqrt }
+	doubles := []expr_double { expr_arith_mean, expr_geo_mean, expr_mult, expr_min, expr_max }
+
 	if depth == 1 {
-		return TerminalExpression { expr: expr_y }
+		return TerminalExpression { expr: terminals[rand.Intn(2)] }
 	} else {
-		e1 := build_expression(depth - 1)
-		e2 := build_expression(depth - 1)
-		return DoubleExpression { expr: expr_arith_mean, e1: e1, e2: e2 };
+		i := rand.Intn(4 + 5);
+		if i < 4 {
+			e := build_expression(depth - 1)
+			return SingleExpression { expr: singles[i], e: e }
+		} else {
+			e1 := build_expression(depth - 1)
+			e2 := build_expression(depth - 1)
+			return DoubleExpression { expr: doubles[i - 4], e1: e1, e2: e2 };
+		}
 	}
 }
 
 func main() {
-	e := build_expression(2)
+	rand.Seed(time.Now().Unix());
+	e := build_expression(15)
 	greyscale(e, 150)
 }
