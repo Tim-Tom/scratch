@@ -15,17 +15,25 @@ my @queue;
 
 my $max = 255;
 for my $x (1 .. $max) {
-  # Not sure if this one is neccessary
   push(@queue, ["$x-$x-$x", $x, $x, $x]) if $x % 2 == 0;
-  for my $y ($x+1 .. $max) {
+  my $ymax = int($max*3 - ($x*2));
+  for my $y ($x+1 .. $ymax) {
     if ($x % 2 == 0 || $y % 2 == 0) {
       push(@queue, ["$x-$x-$y", $x, $x, $y]);
+    }
+  }
+  $ymax = int(($max*3 - $x) / 2);
+  for my $y ($x+1 .. $ymax) {
+    if ($x % 2 == 0 || $y % 2 == 0) {
       push(@queue, ["$x-$y-$y", $x, $y, $y]);
     }
   }
 }
 
+my $limit = 11;
 my $length = 1;
+
+my @solutions;
 
 sub evaluate_candidate($pred, $p1, $p2, $p3) {
   if ($p1 == $p2 || $p2 == $p3) {
@@ -34,15 +42,7 @@ sub evaluate_candidate($pred, $p1, $p2, $p3) {
   my $key = "$p1-$p2-$p3";
   return if exists $memory{$key};
   $memory{$key} = $pred;
-  if ($length == 11) {
-    return if $p3 > 255;
-    say "$key produces a valid chain of length 11";
-    while($key) {
-      say "$key";
-      $key = $memory{$key};
-    }
-    exit;
-  }
+  push(@solutions, $key) if $length >= $limit && $p3 <= $max;
   push(@queue, [$key, $p1, $p2, $p3]);
 }
 push(@queue, 'delim');
@@ -50,8 +50,9 @@ push(@queue, 'delim');
 while(1) {
   my $pkg = shift (@queue);
   unless (ref $pkg) {
-    say "$length: queue length is " . scalar @queue;
-    last if ++$length == 13;
+    print STDERR "$length: queue length is " . scalar @queue . "\n";
+    ++$length;
+    last if @queue == 0;
     push(@queue, 'delim');
     next;
   }
@@ -78,6 +79,20 @@ while(1) {
       evaluate_candidate($key, $p3_2, $p1, $p2 + $p3_2);
     } elsif ($p3_2 < $p2) {
       evaluate_candidate($key, $p1, $p3_2, $p2 + $p3_2);
+    } else {
+      # Our number is so large, there are no bets it would have won in the previous round
     }
+  }
+}
+
+say "Found " . scalar @solutions . " solutions of length $limit";
+foreach my $solution (sort @solutions) {
+  say "$solution";
+  my $next = $solution;
+  my $i = 1;
+  while($next) {
+    say "\t$i. $next";
+    $next = $memory{$next};
+    ++$i;
   }
 }
