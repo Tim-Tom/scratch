@@ -16,19 +16,21 @@ my @queue;
 my $max = 255;
 for my $x (1 .. $max) {
   push(@queue, ["$x-$x-$x", $x, $x, $x]) if $x % 2 == 0;
-  my $ymax = $max*3; # int($max*3 - ($x*2));
+  my $ymax = int($max*3 - ($x*2));
   for my $y ($x+1 .. $ymax) {
     if ($x % 2 == 0 || $y % 2 == 0) {
       push(@queue, ["$x-$x-$y", $x, $x, $y]);
     }
   }
-  $ymax = $max*3;# int(($max*3 - $x) / 2);
+  $ymax = int(($max*3 - $x) / 2);
   for my $y ($x+1 .. $ymax) {
     if ($x % 2 == 0 || $y % 2 == 0) {
       push(@queue, ["$x-$y-$y", $x, $y, $y]);
     }
   }
 }
+
+# @queue = (['133-232-232', 133, 232, 232], );
 
 my $limit = 11;
 my $length = 1;
@@ -61,8 +63,8 @@ push(@queue, 'delim');
 while(1) {
   my $pkg = shift (@queue);
   unless (ref $pkg) {
-    print STDERR "$length: queue length is " . scalar @queue . "\n";
     ++$length;
+    print STDERR "$length: queue length is " . scalar @queue . "\n";
     last if @queue == 0;
     push(@queue, 'delim');
     next;
@@ -76,34 +78,17 @@ while(1) {
   }
   if ($p2 % 2 == 0) {
     my $p2_2 = $p2 / 2;
-    if ($p2_2 < $p1) {
-      evaluate_candidate($key, $p2_2, sort { $a <=> $b} $p1 + $p2_2, $p3);
-      evaluate_candidate($key, $p2_2, $p1, $p3 + $p2_2);
-    } else {
-      evaluate_candidate($key, $p1, $p2_2, $p3 + $p2_2);
-    }
+    evaluate_candidate($key, sort { $a <=> $b } $p2_2, $p1 + $p2_2, $p3);
+    evaluate_candidate($key, sort { $a <=> $b } $p2_2, $p1, $p3 + $p2_2);
   }
   if ($p3 % 2 == 0) {
     my $p3_2 = $p3 / 2;
-    if ($p3_2 < $p1) {
-      evaluate_candidate($key, $p3_2, sort { $a <=> $b } $p1 + $p3_2, $p2);
-      evaluate_candidate($key, $p3_2, $p1, $p2 + $p3_2);
-    } elsif ($p3_2 < $p2) {
-      evaluate_candidate($key, $p1, $p3_2, $p2 + $p3_2);
-    } else {
-      # Our number is so large, there are no bets it would have won in the previous round
-    }
+    evaluate_candidate($key, sort { $a <=> $b } $p3_2, $p1 + $p3_2, $p2);
+    evaluate_candidate($key, sort { $a <=> $b } $p3_2, $p1, $p2 + $p3_2);
   }
 }
 
-say "Found " . scalar @solutions . " solutions of length $limit";
+say "Found " . scalar @solutions . " solutions of length @{[$limit + 1]}";
 foreach my $solution (sort @solutions) {
   print_solution($solution);
 }
-
-
-say "What happened to his solutions?";
-
-print_solution("175-199-223");
-print_solution("197-205-213");
-print_solution("209-217-225");
