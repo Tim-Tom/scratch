@@ -1,36 +1,36 @@
 # Sets
-set labelFamilies := 0 .. 9;
-set labelFamilyLabels := 0 .. 29;
+set components := 0 .. 9;
+set versions := 0 .. 29;
 
 # Parameters
-param familyName{labelFamilies} symbolic;
-param labelName{labelFamilies, labelFamilyLabels} symbolic;
-param labelValue{labelFamilies, labelFamilyLabels};
-param labelDependencies{f in labelFamilies, l in labelFamilyLabels, df in labelFamilies, dl in labelFamilyLabels: f <> df} binary;
+param componentNames{components} symbolic;
+param versionNames{components, versions} symbolic;
+param desirability{components, versions};
+param dependencies{c in components, v in versions, dc in components, dv in versions: f <> df} binary;
 
 # Variables
-var labelChosen{labelFamilies, labelFamilyLabels} binary;
+var labelChosen{components, versions} binary;
 
 # Constraints
-s.t. onePerFamily{f in labelFamilies}: sum{l in labelFamilyLabels} labelChosen[f, l] = 1;
-s.t. dependencies{f in labelFamilies, l in labelFamilyLabels}:
-    (sum{df in labelFamilies, dl in labelFamilyLabels: f <> df} labelDependencies[f, l, df, dl] * labelChosen[df, dl])
- >= (card(labelFamilies) - 1) * labelChosen[f, l];
+s.t. onePerComponent{c in components}: sum{v in versions} labelChosen[f, l] = 1;
+s.t. dependencies{c in components, v in versions}:
+    (sum{dc in components, dv in versions: f <> df} dependencies[f, l, df, dl] * labelChosen[df, dl])
+ >= (card(components) - 1) * labelChosen[f, l];
 
 # Goal
 maximize buildValue:
-    sum{f in labelFamilies, l in labelFamilyLabels} labelValue[f, l]*labelChosen[f, l];
+    sum{c in components, v in versions} desirability[f, l]*labelChosen[f, l];
 
 solve;
 
 # Result Output
-for {f in labelFamilies, l in labelFamilyLabels: labelChosen[f, l] = 1} {
-    printf "Label Chosen for Family %s: %s (Value %0.5f)\n", familyName[f], labelName[f, l], labelValue[f, l];
+for {c in components, v in versions: labelChosen[f, l] = 1} {
+    printf "Label Chosen for Component %s: %s (Value %0.5f)\n", componentNames[f], versionNames[f, l], desirability[f, l];
 }
 
 data;
 
-param familyName :=
+param componentNames :=
         0           A
         1           B
         2           C
@@ -43,7 +43,7 @@ param familyName :=
         9           J
         ;
 
-param labelName :=
+param versionNames :=
         :       0       1       2       3       4       5       6       7       8       9      10      11      12      13      14      15      16      17      18      19      20      21      22      23      24      25      26      27      28      29 :=
         0      A1      A2      A3      A4      A5      A6      A7      A8      A9     A10     A11     A12     A13     A14     A15     A16     A17     A18     A19     A20     A21     A22     A23     A24     A25     A26     A27     A28     A29     A30
         1      B1      B2      B3      B4      B5      B6      B7      B8      B9     B10     B11     B12     B13     B14     B15     B16     B17     B18     B19     B20     B21     B22     B23     B24     B25     B26     B27     B28     B29     B30
@@ -57,7 +57,7 @@ param labelName :=
         9      J1      J2      J3      J4      J5      J6      J7      J8      J9     J10     J11     J12     J13     J14     J15     J16     J17     J18     J19     J20     J21     J22     J23     J24     J25     J26     J27     J28     J29     J30
         ;
 
-param labelValue :=
+param desirability :=
         :       0       1       2       3       4       5       6       7       8       9      10      11      12      13      14      15      16      17      18      19      20      21      22      23      24      25      26      27      28      29 :=
         0 0.03333 0.06667 0.10000 0.13333 -100000 0.20000 0.23333 -100000 -100000 -100000 0.36667 -100000 0.43333 0.46667 0.50000 0.53333 -100000 -100000 0.63333 0.66667 0.70000 0.73333 0.76667 0.80000 0.83333 -100000 0.90000 0.93333 -100000 1.00000
         1 0.03333 0.06667 -100000 0.13333 -100000 0.20000 0.23333 -100000 0.30000 0.33333 0.36667 -100000 0.43333 -100000 0.50000 0.53333 0.56667 0.60000 0.63333 0.66667 0.70000 -100000 0.76667 -100000 0.83333 0.86667 -100000 -100000 0.96667 1.00000
@@ -71,7 +71,7 @@ param labelValue :=
         9 0.03333 0.06667 -100000 0.13333 -100000 0.20000 0.23333 -100000 0.30000 -100000 0.36667 0.40000 0.43333 -100000 0.50000 0.53333 0.56667 0.60000 -100000 -100000 -100000 -100000 -100000 0.80000 0.83333 -100000 0.90000 0.93333 0.96667 1.00000
         ;
 
-param labelDependencies :=
+param dependencies :=
 [   0,   0,   *,   *]   :       0       1       2       3       4       5       6       7       8       9      10      11      12      13      14      15      16      17      18      19      20      21      22      23      24      25      26      27      28      29 :=
                         1       1       1       1       1       0       1       1       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0
                         2       1       1       1       1       1       1       1       1       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0       0

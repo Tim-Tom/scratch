@@ -52,7 +52,9 @@ And we can use math to validate that there should be 15 solutions.  We have 6! t
 permutations of 6 objects. Divided by 2!^3 for the two teams in each of our
 schools. Divided by 3! for the fact we have 3 schools with 2 teams. = 720/(2*2*2*6) = 15
 
-Given our problem space, here are the sizes for the various versions (worst case in bold):
+Given our problem space, here are the sizes for the various versions (worst case in bold;
+indistinct teams (hack) is special casing that schools with only one team made indistinct,
+this could be done by putting all those teams in one school and ignoring its distances):
 
 | Team Sizes | Indistinct Teams | Indistinct Teams (hack) | Indistinct Schools | Indistinct Teams & Schools |
 |------------|-----------------:|------------------------:|-------------------:|---------------------------:|

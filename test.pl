@@ -1,29 +1,23 @@
 use strict;
-use warnings;
+use experimental 'signatures';
 
-use v5.22;
-
-use feature 'signatures';
-
-sub pow2 ($base, $exp) {
-  my ($prod, $sum) = ($base, 1);
-  while($exp > 0) {
-    say "$prod, $sum, $exp";
-    if ($exp % 2 == 1) {
-      $sum *= $prod;
-    }
-    $prod *= $prod;
-    $exp = int($exp / 2);
-  }
-  return $sum;
+sub make_error($seed) {
+  return sub($incr=1) {
+    $x = $x + $incr;
+    return $x;
+  };
 }
-
-say pow2(2, 10);
-
-#for my $base (1 .. 20) {
-#  for my $exp (1 .. 7) {
-#    if (pow2($base, $exp) != $base ** $exp) {
-#      say "Oops: $base ** $exp";
-#    }
-#  }
-#}
+sub make_not_accumulator($seed) {
+  my $x = $seed;
+  return sub($incr=1) {
+    my $x = $x + $incr;
+    return $x;
+  };
+}
+sub make_accumulator($seed) {
+  my $x = $seed;
+  return sub($incr=1) {
+    $x = $x + $incr;
+    return $x
+  };
+}
