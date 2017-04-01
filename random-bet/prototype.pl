@@ -11,45 +11,73 @@ use Carp qw(confess);
 
 my %memory;
 
-my $best_size = 0;
-my $best_key = '1;1;1';
+my @queue;
 
-my $level = 0;
-sub find_best($p1, $p2, $p3) {
-  # Since we're sorted, we don't have to check p1 == p3
-  say (('-'x$level++) . "Checking $p1 $p2 $p3");
-  if ($p1 == $p2 || $p2 == $p3) {
-    say (('-'x$level--) . "Base Case");
-    return 0;
-  }
-  my $key = join(';', $p1, $p2, $p3);
-  if (exists $memory{$key}) {
-    say (('-'x$level--) . "Remembered $memory{$key}");
-    return $memory{$key};
-  }
-  $memory{$key} = 1e100;
-  my $min = min(
-    find_best(sort { $a <=> $b } $p1+$p1, $p2 - $p1, $p3),
-    find_best(sort { $a <=> $b } $p1+$p1, $p2,       $p3 - $p1),
-    find_best(sort { $a <=> $b } $p1,     $p2+$p2,   $p3 - $p2)
-   ) + 1;
-  if ($min > $best_size) {
-    $best_size = $min;
-    $best_key = $key;
-  }
-  say (('-'x$level--) . "Best of $p1, $p2, $p3 is $min");
-  return $memory{$key} = $min;
-}
-
-my $max = 10;
-for my $p1 (1 .. $max) {
-  for my $p2 ($p1+1 .. $max) {
-    for my $p3 ($p2+1 .. $max) {
-      find_best($p1, $p2, $p3);
+my $max = 255;
+for my $x (1 .. $max) {
+  # Not sure if this one is neccessary
+  push(@queue, ["$x-$x-$x", $x, $x, $x]) if $x % 2 == 0;
+  for my $y ($x+1 .. $max) {
+    if ($x % 2 == 0 || $y % 2 == 0) {
+      push(@queue, ["$x-$x-$y", $x, $x, $y]);
+      push(@queue, ["$x-$y-$y", $x, $y, $y]);
     }
   }
 }
 
-# find_best(3,4,8);
+my $length = 1;
 
-say "Best was $best_key with $best_size turns";
+sub evaluate_candidate($pred, $p1, $p2, $p3) {
+  if ($p1 == $p2 || $p2 == $p3) {
+    return;
+  }
+  my $key = "$p1-$p2-$p3";
+  return if exists $memory{$key};
+  $memory{$key} = $pred;
+  if ($length == 11) {
+    return if $p3 > 255;
+    say "$key produces a valid chain of length 11";
+    while($key) {
+      say "$key";
+      $key = $memory{$key};
+    }
+    exit;
+  }
+  push(@queue, [$key, $p1, $p2, $p3]);
+}
+push(@queue, 'delim');
+
+while(1) {
+  my $pkg = shift (@queue);
+  unless (ref $pkg) {
+    say "$length: queue length is " . scalar @queue;
+    last if ++$length == 13;
+    push(@queue, 'delim');
+    next;
+  }
+  my ($key, $p1, $p2, $p3) = @$pkg;
+  # Only even numbers can be used to get to the next candidate.
+  if ($p1 % 2 == 0) {
+    my $p1_2 = $p1 / 2;
+    evaluate_candidate($key, $p1_2, sort { $a <=> $b } $p2 + $p1_2, $p3);
+    evaluate_candidate($key, $p1_2, $p2, $p3 + $p1_2);
+  }
+  if ($p2 % 2 == 0) {
+    my $p2_2 = $p2 / 2;
+    if ($p2_2 < $p1) {
+      evaluate_candidate($key, $p2_2, sort { $a <=> $b} $p1 + $p2_2, $p3);
+      evaluate_candidate($key, $p2_2, $p1, $p3 + $p2_2);
+    } else {
+      evaluate_candidate($key, $p1, $p2_2, $p3 + $p2_2);
+    }
+  }
+  if ($p3 % 2 == 0) {
+    my $p3_2 = $p3 / 2;
+    if ($p3_2 < $p1) {
+      evaluate_candidate($key, $p3_2, sort { $a <=> $b } $p1 + $p3_2, $p2);
+      evaluate_candidate($key, $p3_2, $p1, $p2 + $p3_2);
+    } elsif ($p3_2 < $p2) {
+      evaluate_candidate($key, $p1, $p3_2, $p2 + $p3_2);
+    }
+  }
+}
