@@ -16,13 +16,13 @@ my @queue;
 my $max = 255;
 for my $x (1 .. $max) {
   push(@queue, ["$x-$x-$x", $x, $x, $x]) if $x % 2 == 0;
-  my $ymax = int($max*3 - ($x*2));
+  my $ymax = $max*3; # int($max*3 - ($x*2));
   for my $y ($x+1 .. $ymax) {
     if ($x % 2 == 0 || $y % 2 == 0) {
       push(@queue, ["$x-$x-$y", $x, $x, $y]);
     }
   }
-  $ymax = int(($max*3 - $x) / 2);
+  $ymax = $max*3;# int(($max*3 - $x) / 2);
   for my $y ($x+1 .. $ymax) {
     if ($x % 2 == 0 || $y % 2 == 0) {
       push(@queue, ["$x-$y-$y", $x, $y, $y]);
@@ -45,8 +45,19 @@ sub evaluate_candidate($pred, $p1, $p2, $p3) {
   push(@solutions, $key) if $length >= $limit && $p3 <= $max;
   push(@queue, [$key, $p1, $p2, $p3]);
 }
-push(@queue, 'delim');
 
+sub print_solution($solution) {
+  say "$solution";
+  my $next = $solution;
+  my $i = 1;
+  while($next) {
+    say "\t$i. $next";
+    $next = $memory{$next};
+    ++$i;
+  }
+}
+
+push(@queue, 'delim');
 while(1) {
   my $pkg = shift (@queue);
   unless (ref $pkg) {
@@ -87,12 +98,12 @@ while(1) {
 
 say "Found " . scalar @solutions . " solutions of length $limit";
 foreach my $solution (sort @solutions) {
-  say "$solution";
-  my $next = $solution;
-  my $i = 1;
-  while($next) {
-    say "\t$i. $next";
-    $next = $memory{$next};
-    ++$i;
-  }
+  print_solution($solution);
 }
+
+
+say "What happened to his solutions?";
+
+print_solution("175-199-223");
+print_solution("197-205-213");
+print_solution("209-217-225");
