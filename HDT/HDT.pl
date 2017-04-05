@@ -15,23 +15,23 @@ my $ignored = do {
   qr/\b(?:$joined)\b/;
 };
 
-my %memory;
+my %keywords;
 my @articles;
 my $sum_log_views;
 # Skip header
 <$input>;
 
-sub update_memory {
+sub update_keywords {
   my ($kw1, $kw2, $type, $pageviews, $log_views, $article_id) = @_;
   my $word = join("\t", $kw1, $kw2, $type);
-  my $memory = ($memory{$word} ||= { count => 0, pageviews => 0, log_pageviews => 0, min_pageviews => $log_views, max_pageviews => $log_views, occurances => [] });
-  $memory->{count}++;
-  $memory->{pageviews} += $pageviews;
-  $memory->{log_pageviews} += $log_views;
-  $memory->{max_pageviews} = $log_views if $log_views > $memory->{max_pageviews};
-  $memory->{min_pageviews} = $log_views if $log_views < $memory->{min_pageviews};
-  push(@{$memory->{occurances}}, $article_id);
-  return $memory;
+  my $keywords = ($keywords{$word} ||= { count => 0, pageviews => 0, log_pageviews => 0, min_pageviews => $log_views, max_pageviews => $log_views, occurances => [] });
+  $keywords->{count}++;
+  $keywords->{pageviews} += $pageviews;
+  $keywords->{log_pageviews} += $log_views;
+  $keywords->{max_pageviews} = $log_views if $log_views > $keywords->{max_pageviews};
+  $keywords->{min_pageviews} = $log_views if $log_views < $keywords->{min_pageviews};
+  push(@{$keywords->{occurances}}, $article_id);
+  return $keywords;
 }
 
 while(<$input>) {
@@ -52,10 +52,10 @@ while(<$input>) {
   my @keywords = split(/ +/, $title);
   for my $kw (@keywords) {
     my $word = "$kw\tN/A\t$type";
-    update_memory($kw, 'N/A', $type, $pageviews, $log_views, $#articles);
+    update_keywords($kw, 'N/A', $type, $pageviews, $log_views, $#articles);
   }
   for my $id (0 .. $#keywords - 1) {
-    update_memory($keywords[$id], $keywords[$id+1], $type, $pageviews, $log_views, $#articles);
+    update_keywords($keywords[$id], $keywords[$id+1], $type, $pageviews, $log_views, $#articles);
   }
   $sum_log_views += $log_views;
 }
@@ -71,7 +71,7 @@ print $output "Word 1\tWord 2\tType\tOccurances\tAverage Pageviews (log)\tMinimu
 print $reasons "Keywords\tPage Views (log)\tWord 1\tWord 2\tType\tOccurances\tAverage Pageviews (log)\tMinimum Pageviews (log)\tMaximum Pageviews (log)\n";
 
 my $good_keywords = 0;
-while (my ($word, $info) = each %memory) {
+while (my ($word, $info) = each %keywords) {
   my ($count, $views, $min, $max, $occurances) = @{$info}{qw(count log_pageviews min_pageviews max_pageviews occurances)};
   my @occurances = @$occurances;
   my $avg = $views / $count;
@@ -113,7 +113,7 @@ for my $article (@articles) {
 $real_bad = @articles - $real_good;
 
 my $num_articles = @articles;
-my $num_keywords = keys %memory;
+my $num_keywords = keys %keywords;
 my $avg_good = $good_views / $good_articles;
 my $avg_bad = $bad_views / $bad_articles;
 my $error_rate = ($false_positive + $false_negative) / $num_articles;
