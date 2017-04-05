@@ -11,7 +11,7 @@ open(my $input, '<:encoding(latin1)', $filename) or die "Cannot open $filename f
 
 my $ignored = do {
   my @ignored = qw(a the for in and or is in are of);
-  my $joined = join('|', @ignored);
+  my $joined = join('|', map { quotemeta } @ignored);
   qr/\b(?:$joined)\b/;
 };
 
