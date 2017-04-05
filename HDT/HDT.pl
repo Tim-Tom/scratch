@@ -57,7 +57,7 @@ while(<$input>) {
   $title =~ s/ $//;
   my $type = ($url =~ /blogs/) ? 'BLOG' : 'OTHER';
   push(@articles, [$., $title, $log_pageviews, "BAD"]);
-  my @keywords = split(/ +/, $title);
+  my @keywords = split(/ /, $title);
   for my $kw (@keywords) {
     my $word = "$kw\tN/A\t$type";
     update_keywords($kw, 'N/A', $type, $pageviews, $log_pageviews, $#articles);
