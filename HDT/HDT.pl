@@ -5,7 +5,8 @@ my $filename = $ARGV[0] || 'HDT-data3.tsv';
 
 # I honestly don't know what the encoding here is, it looks like it's been re-encoded a
 # couple times, because it ends up as ??[symbol], which seems roundtripped through
-# something because there shouldn't be two question marks.
+# something because there shouldn't be two question marks. We strip out any non-ascii
+# alphanum, so it doesn't particularly matter in the grand scheme of things.
 open(my $input, '<:encoding(latin1)', $filename) or die "Cannot open $filename for read: $!";
 
 my $ignored = do {
@@ -20,10 +21,23 @@ my $sum_log_views;
 # Skip header
 <$input>;
 
+sub update_memory {
+  my ($kw1, $kw2, $type, $pageviews, $log_views, $article_id) = @_;
+  my $word = join("\t", $kw1, $kw2, $type);
+  my $memory = ($memory{$word} ||= { count => 0, pageviews => 0, log_pageviews => 0, min_pageviews => $log_views, max_pageviews => $log_views, occurances => [] });
+  $memory->{count}++;
+  $memory->{pageviews} += $pageviews;
+  $memory->{log_pageviews} += $log_views;
+  $memory->{max_pageviews} = $log_views if $log_views > $memory->{max_pageviews};
+  $memory->{min_pageviews} = $log_views if $log_views < $memory->{min_pageviews};
+  push(@{$memory->{occurances}}, $article_id);
+  return $memory;
+}
+
 while(<$input>) {
   chomp;
   my ($title, $url, $date, $pageviews) = split(/\t/, lc);
-  my $log_views  = log(1 + $pageviews);
+  my $log_views = log(1 + $pageviews);
   # Replace any non-alphanumeric characters with a space
   $title =~ s/[^a-z0-9]/ /g;
   # Remove words we ignore
@@ -38,23 +52,10 @@ while(<$input>) {
   my @keywords = split(/ +/, $title);
   for my $kw (@keywords) {
     my $word = "$kw\tN/A\t$type";
-    my $memory = ($memory{$word} ||= { count => 0, pageviews => 0, log_pageviews => 0, min_pageviews => $log_views, max_pageviews => $log_views, occurances => [] });
-    $memory->{count}++;
-    $memory->{pageviews} += $pageviews;
-    $memory->{log_pageviews} += $log_views;
-    $memory->{max_pageviews} = $log_views if $log_views > $memory->{max_pageviews};
-    $memory->{min_pageviews} = $log_views if $log_views < $memory->{min_pageviews};
-    push(@{$memory->{occurances}}, $#articles);
+    update_memory($kw, 'N/A', $type, $pageviews, $log_views, $#articles);
   }
   for my $id (0 .. $#keywords - 1) {
-    my $word = "$keywords[$id]\t$keywords[$id+1]\t$type";
-    my $memory = ($memory{$word} ||= { count => 0, pageviews => 0, log_pageviews => 0, min_pageviews => $log_views, max_pageviews => $log_views, occurances => [] });
-    $memory->{count}++;
-    $memory->{pageviews} += $pageviews;
-    $memory->{log_pageviews} += $log_views;
-    $memory->{max_pageviews} = $log_views if $log_views > $memory->{max_pageviews};
-    $memory->{min_pageviews} = $log_views if $log_views < $memory->{min_pageviews};
-    push(@{$memory->{occurances}}, $#articles);
+    update_memory($keywords[$id], $keywords[$id+1], $type, $pageviews, $log_views, $#articles);
   }
   $sum_log_views += $log_views;
 }
