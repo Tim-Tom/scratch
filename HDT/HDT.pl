@@ -36,8 +36,10 @@ sub update_keywords {
 # I honestly don't know what the encoding here is, it looks like it's been re-encoded a
 # couple times, because it ends up as ??[symbol], which seems roundtripped through
 # something because there shouldn't be two question marks. We strip out any non-ascii
-# alphanum, so it doesn't particularly matter in the grand scheme of things.
-open(my $input, '<:encoding(latin1)', $filename) or die "Cannot open $filename for read: $!";
+# alphanum, so it doesn't particularly matter in the grand scheme of things. I went with
+# CP-1252 because that's the default encoding in windows and this looks to be a windows
+# text file.
+open(my $input, '<:encoding(CP-1252)', $filename) or die "Cannot open $filename for read: $!";
 
 # Skip header
 <$input>;
@@ -74,8 +76,8 @@ close $input;
 # Categorize articles as good or bad based on keyword pageviews.
 ##
 
-open(my $output, '>:encoding(utf-8)', 'hdt-out.txt');
-open(my $reasons, '>:encoding(utf-8)', 'hdt-reasons.txt');
+open(my $output, '>:encoding(ascii)', 'hdt-out.txt');
+open(my $reasons, '>:encoding(ascii)', 'hdt-reasons.txt');
 
 print $output "Word 1\tWord 2\tType\tOccurances\tAverage Pageviews (log)\tMinimum Pageviews (log)\tMaximum Pageviews (log)\tArticles\n";
 print $reasons "Keywords\tPage Views (log)\tWord 1\tWord 2\tType\tOccurances\tAverage Pageviews (log)\tMinimum Pageviews (log)\tMaximum Pageviews (log)\n";
