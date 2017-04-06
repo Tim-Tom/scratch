@@ -76,8 +76,8 @@ close $input;
 # Categorize articles as good or bad based on keyword pageviews.
 ##
 
-open(my $output, '>:encoding(ascii)', 'hdt-out.txt');
-open(my $reasons, '>:encoding(ascii)', 'hdt-reasons.txt');
+open(my $output, '>:encoding(ascii)', 'hdt-out.tsv');
+open(my $reasons, '>:encoding(ascii)', 'hdt-reasons.tsv');
 
 print $output "Word 1\tWord 2\tType\tOccurances\tAverage Pageviews (log)\tMinimum Pageviews (log)\tMaximum Pageviews (log)\tArticles\n";
 print $reasons "Keywords\tPage Views (log)\tWord 1\tWord 2\tType\tOccurances\tAverage Pageviews (log)\tMinimum Pageviews (log)\tMaximum Pageviews (log)\n";
@@ -137,14 +137,16 @@ my $avg_bad = $bad_pageviews / $bad_articles;
 my $error_rate = ($false_positives + $false_negatives) / $num_articles;
 my $aggregation_factor = ($num_keywords / $good_keywords) / ($num_articles / $good_articles);
 
-print "Average pageviews: $avg_pageviews\n";
-print "Number of articles marked as good: $good_articles (real number is $real_good)\n";
-print "Number of articles marked as bad: $bad_articles (real number is $real_bad)\n";
-print "Avg pv: articles marked as good: $avg_good\n";
-print "Avg pv: articles marked as bad: $avg_bad\n";
-print "Number of false positives: $false_positives (bad marked as good)\n";
-print "Number of false negatives: $false_negatives (good marked as bad)\n";
-print "Number of articles: $num_articles\n";
-print "Error Rate: $error_rate\n";
-print "Number of feature values: $num_keywords (marked as good: $good_keywords)\n";
-print "Aggregation factor: $aggregation_factor\n";
+print <<"END_SUMMARY";
+Average pageviews: $avg_pageviews
+Number of articles marked as good: $good_articles (real number is $real_good)
+Number of articles marked as bad: $bad_articles (real number is $real_bad)
+Avg pv: articles marked as good: $avg_good
+Avg pv: articles marked as bad: $avg_bad
+Number of false positives: $false_positives (bad marked as good)
+Number of false negatives: $false_negatives (good marked as bad)
+Number of articles: $num_articles
+Error Rate: $error_rate
+Number of feature values: $num_keywords (marked as good: $good_keywords)
+Aggregation factor: $aggregation_factor
+END_SUMMARY
