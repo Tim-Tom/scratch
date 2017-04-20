@@ -88,7 +88,7 @@ main =
       Decide   (ind 7 [0,3]),    --  7 = 6 -> [0 3];
       Decide   (ind 8 [6,8]),    --  8 = 7 -> [6 8];
       Validate (ind 9 [1,4,7]),  --  9 =   -> [1 4 7];
-      Validate (ind 10 [2,4,6]), -- 10 =   -> [2 4 6];
+      Validate (ind 9 [2,4,6]),  -- 10 =   -> [2 4 6];
       Solution]
     (h:t) = actions
     solutions = perform h t [] []
