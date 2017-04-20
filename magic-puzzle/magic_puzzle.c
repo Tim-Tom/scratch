@@ -3,8 +3,8 @@
 #define TRUE 1
 #define FALSE 0
 
-#define GOAL 34
-#define WIDTH 4
+#define WIDTH 3
+
 #define WM (WIDTH-1)
 #define WP (WIDTH+1)
 #define SIZE (WIDTH*WIDTH)
@@ -13,7 +13,19 @@ typedef int bool;
 
 static void pickNext(int);
 
+
+#if WIDTH == 3
+
+#define GOAL 21
+const static int choices[SIZE] = {3,4,5,6,7,8,9,10,11};
+
+#elif WIDTH == 4
+
+#define GOAL 34
 const static int choices[SIZE] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16};
+
+#endif
+
 static bool picked[SIZE];
 static int a[SIZE];
 
