@@ -13,4 +13,6 @@ my $expected = 'SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
 
 if ($output ne $expected) {
   say "wrong: $output";
+} else {
+  say "correct";
 }
