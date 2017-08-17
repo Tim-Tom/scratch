@@ -15,7 +15,7 @@ sub build_frequency_table($filename) {
   while(read($input, my $buffer, 1024)) {
     $buffer = lc $buffer;
     $buffer =~ s/\s+/ /g;
-    $buffer =~ s/[^\x0a-\x0d\x20-\x7e]//g;
+    $buffer =~ s/[^\x09-\x0d\x20-\x7e]//g;
     my @letters = split(//, $buffer);
     foreach my $letter (@letters) {
       $graphs{$letter}++;
@@ -63,7 +63,7 @@ my @possible;
     foreach my $key (@keys) {
       my $padded = $key x length($input);
       my $decoded = $input ^ $padded;
-      next if $decoded =~ /[^\x0a-\x0d\x20-\x7e]/;
+      next if $decoded =~ /[^\x09-\x0d\x20-\x7e]/;
       push(@possible, [$key, $decoded, get_frequency($decoded)]);
     }
   }
