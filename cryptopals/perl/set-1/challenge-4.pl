@@ -50,7 +50,7 @@ sub get_frequency($str) {
   return 30*$t + 5*$d + $g;
 }
 
-build_frequency_table('../../sherlock.txt');
+build_frequency_table('../../freq/sherlock.txt');
 
 my @keys = ('a' .. 'z', 'A' .. 'Z', '0' .. '9');
 my @possible;
