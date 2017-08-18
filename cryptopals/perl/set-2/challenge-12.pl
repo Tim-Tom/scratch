@@ -27,16 +27,20 @@ sub encrypt_it($text) {
   return join('', map { $cipher->encrypt($_) } unpack('(a16)*', $decoded));
 }
 
+# So we determine block size in the following way: check the length of the encrypted
+# text. When we add a character, check if the length changed. It will only go up in block
+# size increments, thus telling us the real length of the text and the block size.
+my $target_length = length encrypt_it('');
 my $block_size;
 
-candidate_block_size: for my $cbs (1 .. 32) {
-  my $text = 'A' x (4*$cbs);
-  my @blocks = unpack('(a' . $cbs . ')4', encrypt_it($text));
-  for my $i (0 .. 2) {
-    next candidate_block_size if $blocks[$i] ne $blocks[$i + 1];
+for my $increment (1 .. 1e6) {
+  my $candidate = 'A' x $increment;
+  my $new_length = length(encrypt_it($candidate));
+  if ($new_length != $target_length) {
+    $block_size = $new_length - $target_length;
+    $target_length -= $increment - 1;
+    last;
   }
-  $block_size = $cbs;
-  last;
 }
 
 die "Couldn't find block size" unless defined $block_size;
@@ -67,8 +71,6 @@ while (length $known < $block_size) {
   $known .= search($block, $padded . $known);
 }
 
-my $target_length = length encrypt_it('');
-
 # I can get this by looking at the length of the returned result instead of just knowing
 # it. I'd decrypt the padding bytes as well, but that's not really a concern.
 while (length $known < $target_length) {
@@ -77,8 +79,6 @@ while (length $known < $target_length) {
   my $block = unpack(($skip_block x ((length $known) / $block_size)) . $get_block, encrypt_it($padded));
   $known .= search($block, substr($known, 1 - $block_size));
 }
-
-$known =~ s/\x04+$//;
 
 say $known;
 
