@@ -5,7 +5,6 @@ use v5.24;
 
 use experimental 'signatures';
 
-
 use Crypt::Cipher::AES;
 use MIME::Base64;
 use File::Slurp qw(read_file);
