@@ -111,7 +111,11 @@ my @board;
     }
     push(@queue, @{$node->{neighbors}});
   }
+  print join('', "\N{BOX DRAWINGS LIGHT DOWN AND RIGHT}", (map { "\N{BOX DRAWINGS LIGHT DOWN AND HORIZONTAL}" } @{$board[0]}), "\N{BOX DRAWINGS LIGHT DOWN AND LEFT}")."\n";
   for my $row (@board) {
-    print join(' ', map { colored([$colors{$_->{color}}], sprintf('%3d', $_->{real_id})) } @$row)."\n";
+    # my $fmt = '%' . (length scalar @nodes) . 'd';
+    # print join(' ', map { colored([$colors{$_->{color}}], sprintf($fmt, $_->{real_id})) } @$row)."\n";
+    print join('', "\N{BOX DRAWINGS LIGHT VERTICAL AND RIGHT}", (map { colored([$colors{$_->{color}}], "\N{BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL}") } @$row), "\N{BOX DRAWINGS LIGHT VERTICAL AND LEFT}")."\n";
   }
+  print join('', "\N{BOX DRAWINGS LIGHT UP AND RIGHT}", (map { "\N{BOX DRAWINGS LIGHT UP AND HORIZONTAL}" } @{$board[0]}), "\N{BOX DRAWINGS LIGHT UP AND LEFT}")."\n";
 }
