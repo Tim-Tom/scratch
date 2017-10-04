@@ -7,6 +7,10 @@ use experimental 'signatures';
 
 use Term::ANSIColor qw(colored);
 
+use Hash::PriorityQueue;
+
+use Data::Printer;
+
 my @nodes;
 my $root;
 
@@ -147,11 +151,26 @@ sub add_node($state, $node) {
   }
 }
 
-use Data::Printer;
-
-my $max_depth = -1;
+sub distance_to_goal($state) {
+  my @queue = map { @$_ } values %{ $state->{neighbors} };
+  push(@queue, 'level');
+  my $depth = 1;
+  my %seen = %{ $state->{nodes} };
+  while(my $index = shift @queue) {
+    if ($index eq 'level') {
+      ++$depth;
+      if (@queue) {
+        push(@queue, 'level');
+      }
+      next;
+    }
+    push(@queue, grep { !$seen{$_}++ } map { $_->{index} } @{ $nodes[$index]->{neighbors}});
+  }
+  return $depth;
+}
 
 # Breadth first search
+sub breadth
 {
   my @queue;
   my $start_state = {
@@ -160,7 +179,8 @@ my $max_depth = -1;
     neighbors => {
       map { $_ => [] } @colors
      }
-  };
+   };
+  my $max_depth = -1;
   add_node($start_state, $root);
   push(@queue, $start_state);
   while(my $state = shift @queue) {
@@ -191,3 +211,48 @@ my $max_depth = -1;
     }
   }
 }
+
+sub star
+{
+  my $queue = Hash::PriorityQueue->new;
+  my $start_state = {
+    nodes => {},
+    path => [],
+    neighbors => {
+      map { $_ => [] } @colors
+     }
+   };
+  my $max_depth = 0;
+  add_node($start_state, $root);
+  $queue->insert($start_state, 0);
+  while(my $state = $queue->pop) {
+    my $completed = @nodes == keys %{ $state->{nodes} };
+    # say join('', @{$state->{path}});
+    if ($completed) {
+      say join(' -> ', @{ $state->{path} });
+      exit;
+    }
+    if (@{$state->{path}} > $max_depth) {
+      $max_depth = @{$state->{path}};
+      say "Got to depth of $max_depth";
+    }
+    foreach my $color (@colors) {
+      # p($state->{neighbors}{$color});
+      my @neighbors = grep { !$state->{nodes}{$_} } @{ $state->{neighbors}{$color} };
+      if (@neighbors) {
+        my $new_state = clone_state($state);
+        push(@{ $new_state->{path} }, $color);
+        $new_state->{neighbors}{$color} = [];
+        foreach my $neighbor (map { $nodes[$_] } @neighbors) {
+          # warn "Adding node $neighbor->{index}";
+          add_node($new_state, $neighbor);
+        }
+        $queue->insert($new_state, scalar(@{$new_state->{path}}) + distance_to_goal($new_state));
+      }
+    }
+  }
+}
+
+# breadth();
+star();
+
