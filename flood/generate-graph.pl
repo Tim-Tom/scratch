@@ -15,7 +15,11 @@ my %nodes;
 my %colors = (
   'R' => 'red',
   'G' => 'green',
-  'B' => 'cyan'
+  'B' => 'blue',
+  'C' => 'cyan',
+  'M' => 'magenta',
+  'Y' => 'yellow',
+  'O' => 'white'
  );
 
 sub get_node($id) {
@@ -111,11 +115,12 @@ my @board;
     }
     push(@queue, @{$node->{neighbors}});
   }
-  print join('', "\N{BOX DRAWINGS LIGHT DOWN AND RIGHT}", (map { "\N{BOX DRAWINGS LIGHT DOWN AND HORIZONTAL}" } @{$board[0]}), "\N{BOX DRAWINGS LIGHT DOWN AND LEFT}")."\n";
+  # print join('', "\N{BOX DRAWINGS LIGHT DOWN AND RIGHT}", (map { "\N{BOX DRAWINGS LIGHT DOWN AND HORIZONTAL}" } @{$board[0]}), "\N{BOX DRAWINGS LIGHT DOWN AND LEFT}")."\n";
   for my $row (@board) {
-    # my $fmt = '%' . (length scalar @nodes) . 'd';
+    my $fmt = '%' . (length scalar @nodes) . 'd';
     # print join(' ', map { colored([$colors{$_->{color}}], sprintf($fmt, $_->{real_id})) } @$row)."\n";
-    print join('', "\N{BOX DRAWINGS LIGHT VERTICAL AND RIGHT}", (map { colored([$colors{$_->{color}}], "\N{BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL}") } @$row), "\N{BOX DRAWINGS LIGHT VERTICAL AND LEFT}")."\n";
+    print join(' ', map { sprintf($fmt, $_->{real_id}) } @$row)."\n";
+    # print join('', "\N{BOX DRAWINGS LIGHT VERTICAL AND RIGHT}", (map { die $_->{color} unless $colors{$_->{color}}; colored([$colors{$_->{color}}], "\N{BOX DRAWINGS LIGHT VERTICAL AND HORIZONTAL}") } @$row), "\N{BOX DRAWINGS LIGHT VERTICAL AND LEFT}")."\n";
   }
-  print join('', "\N{BOX DRAWINGS LIGHT UP AND RIGHT}", (map { "\N{BOX DRAWINGS LIGHT UP AND HORIZONTAL}" } @{$board[0]}), "\N{BOX DRAWINGS LIGHT UP AND LEFT}")."\n";
+  # print join('', "\N{BOX DRAWINGS LIGHT UP AND RIGHT}", (map { "\N{BOX DRAWINGS LIGHT UP AND HORIZONTAL}" } @{$board[0]}), "\N{BOX DRAWINGS LIGHT UP AND LEFT}")."\n";
 }

@@ -15,7 +15,11 @@ my %nodes;
 my %colors = (
   'R' => 'red',
   'G' => 'green',
-  'B' => 'cyan'
+  'B' => 'blue',
+  'C' => 'cyan',
+  'M' => 'magenta',
+  'Y' => 'yellow',
+  'O' => 'white'
  );
 
 sub get_node($id) {
