@@ -274,6 +274,7 @@ sub star
       say join(' -> ', @{ $state->{path} });
       exit;
     }
+    next if (@{$state->{path}} == $goal);
     if (@{$state->{path}} > $max_depth) {
       $max_depth = @{$state->{path}};
       say "Got to depth of $max_depth";
@@ -289,7 +290,7 @@ sub star
           # warn "Adding node $neighbor->{index}";
           add_node($new_state, $neighbor);
         }
-        my $distance = @{$new_state->{path}} + distance_to_goal($new_state);
+        my $distance = @{$new_state->{path}} + 3*distance_to_goal($new_state);
         # if ($distance <= $goal) {
           $queue->insert($new_state, $distance);
         # }
