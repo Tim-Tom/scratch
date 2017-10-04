@@ -72,11 +72,13 @@ sub neighbor_nodes($n, $m) {
   return ($n, $m);
 }
 
+my ($type, $filename, $goal) = @ARGV;
 {
   my @above;
   my $first = 1;
   my $line = 0;
-  while(<ARGV>) {
+  open(my $input, '<', $filename);
+  while(<$input>) {
     next if (/^#/);
     chomp;
     my $col = 0;
@@ -98,7 +100,6 @@ sub neighbor_nodes($n, $m) {
     @above = @current;
     ++$line;
   }
-  close ARGV;
 }
 
 # foreach my $id (sort { $a <=> $b } keys %nodes) {
@@ -156,17 +157,21 @@ sub distance_to_goal($state) {
   push(@queue, 'level');
   my $depth = 1;
   my %seen = %{ $state->{nodes} };
+#  my %colors;
   while(my $index = shift @queue) {
     if ($index eq 'level') {
       ++$depth;
       if (@queue) {
         push(@queue, 'level');
+#       %colors = ();
       }
       next;
     }
-    push(@queue, grep { !$seen{$_}++ } map { $_->{index} } @{ $nodes[$index]->{neighbors}});
+    my $n = $nodes[$index];
+#   $colors{$n->{color}}++;
+    push(@queue, grep { !$seen{$_}++ } map { $_->{index} } @{ $n->{neighbors}});
   }
-  return $depth;
+  return $depth; # + keys(%colors) - 1;
 }
 
 # Breadth first search
@@ -212,6 +217,43 @@ sub breadth
   }
 }
 
+sub depth
+{
+  my @stack;
+  my $start_state = {
+    nodes => {},
+    path => [],
+    neighbors => {
+      map { $_ => [] } @colors
+     }
+   };
+  my $max_depth = 0;
+  add_node($start_state, $root);
+  push(@stack, $start_state);
+  while(my $state = pop @stack) {
+    my $completed = @nodes == keys %{ $state->{nodes} };
+    if ($completed) {
+      say join(' -> ', @{ $state->{path} });
+      exit;
+    }
+    next if @{ $state->{path} } == $goal;
+    foreach my $color (@colors) {
+      # p($state->{neighbors}{$color});
+      my @neighbors = grep { !$state->{nodes}{$_} } @{ $state->{neighbors}{$color} };
+      if (@neighbors) {
+        my $new_state = clone_state($state);
+        push(@{ $new_state->{path} }, $color);
+        $new_state->{neighbors}{$color} = [];
+        foreach my $neighbor (map { $nodes[$_] } @neighbors) {
+          # warn "Adding node $neighbor->{index}";
+          add_node($new_state, $neighbor);
+        }
+        push(@stack, $new_state);
+      }
+    }
+  }
+}
+
 sub star
 {
   my $queue = Hash::PriorityQueue->new;
@@ -247,12 +289,19 @@ sub star
           # warn "Adding node $neighbor->{index}";
           add_node($new_state, $neighbor);
         }
-        $queue->insert($new_state, scalar(@{$new_state->{path}}) + distance_to_goal($new_state));
+        my $distance = @{$new_state->{path}} + distance_to_goal($new_state);
+        # if ($distance <= $goal) {
+          $queue->insert($new_state, $distance);
+        # }
       }
     }
   }
 }
 
 # breadth();
-star();
-
+# depth();
+# star();
+{
+  no strict 'refs';
+  $type->();
+}
