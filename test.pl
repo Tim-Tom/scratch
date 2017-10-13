@@ -1,4 +1,10 @@
+use v5.24;
+
 use strict;
+use warnings;
+
+=pod
+
 use experimental 'signatures';
 
 sub make_error($seed) {
@@ -21,3 +27,17 @@ sub make_accumulator($seed) {
     return $x
   };
 }
+
+=cut
+
+sub test_ors {
+  local $\ = "\n";
+  print "hello";
+  {
+    local $\ = "$\  ";
+    print "indented";
+  }
+  print "world";
+}
+
+test_ors();
