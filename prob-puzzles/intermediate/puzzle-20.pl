@@ -3,6 +3,8 @@ use v5.24;
 use strict;
 use warnings;
 
+use PDL;
+
 =pod
 
 Imagine that, on a given day, the weather can be either sunny (with probability 0.4),
@@ -30,6 +32,18 @@ chain and see how that plays out.
 =cut
 
 my @types = qw(sunny cloudy rainy);
+
+my @prob = (0.4, 0.4, 0.2);
+my @transient_tuples = (
+  [0.0, 0.4, 0.2, 0.4, 0.0, 0.0],
+  [0.4, 0.0, 0.2, 0.0, 0.4, 0.0],
+  [0.4, 0.4, 0.0, 0.0, 0.0, 0.2]
+);
+my @absorbing_tuples = (
+  [0.4, 0.6],
+  [0.4, 0.6],
+  [0.2, 0.8]
+);
 
 my %prob = (
   sunny => 0.4,
@@ -103,7 +117,85 @@ sub make_dot {
     }
   }
   say "}";
-  
+
 }
 
-make_dot();
+# make_dot();
+
+my $num_days = 10;
+my $n = $num_days - 1;
+my $transient_count = do {
+  # each day has $day block counts in it, each of which has @types states, except for the last
+  # day which is my absorbing state (doesn't count in Q) and one more for the start state.
+  @types * ($n*($n+1)/2) + 1;
+};
+
+my $absorbing_count = $num_days;
+
+say "Transient: $transient_count";
+say "Absorbing: $absorbing_count";
+
+my ($Q, $R, $N, $B);
+$Q = [];
+# Start State
+push(@$Q, [0, @prob, map { 0 } 1 .. ($transient_count - 4)]);
+
+# Normal Days
+{
+  my @prefix = (0, );
+  for my $day (1 .. $n - 1) {
+    my $day_count = $day*@types;
+    for my $count (1 .. $day) {
+      push(@prefix, ((0, ) x @types));
+      for my $tuple (@transient_tuples) {
+        my @row = (@prefix, @{$tuple});
+        push(@$Q, [@row, ((0, ) x ($transient_count - @row))]);
+      }
+    }
+    push(@prefix, ((0, ) x @types));
+  }
+}
+
+# Day before last (transitions to absorbing states)
+for my $count (1 .. $n) {
+  for my $type (@types) {
+    push(@$Q, [(0, ) x $transient_count]);
+  }
+}
+
+=pod
+
+Debug Print $Q
+
+my @labels = (' S ', map { my $day = $_; map { my $count = $_; map { my $type = $_; $day . $count . $type } qw(S C R) } 1 .. $day } 1 .. $n);
+
+say join(' ', '   ', @labels);
+for my $i (0 .. $#$Q) {
+  my $row = $Q->[$i];
+  my $label = $labels[$i];
+  say join(' ', $label, map { sprintf '%0.1f', $_ } @$row);
+}
+
+=cut
+
+$Q = pdl($Q);
+$R = pdl do {
+  my @R = map { [(0, ) x $absorbing_count] } 1 .. ($transient_count - $n*@types);
+  my @prefix;
+  for my $count (1 .. $n) {
+    for my $tuple (@absorbing_tuples) {
+      my @row = (@prefix, @$tuple);
+      push(@R, [ @row, ((0, ) x ($absorbing_count - @row))])
+    }
+    push(@prefix, 0);
+  }
+  @R;
+};
+$N = (identity($transient_count, $transient_count) - $Q)->inv;
+$B = $N x $R;
+
+say $B;
+say $B->slice(':, (0)');
+say $B->slice(':, (0)') * (sequence($absorbing_count) + 1);
+say sumover($B->slice(':, (0)') * (sequence($absorbing_count) + 1));
+
