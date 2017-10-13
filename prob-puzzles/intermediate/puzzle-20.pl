@@ -28,3 +28,50 @@ fraction of the total number of visits, but let's try building another absorbing
 chain and see how that plays out.
 
 =cut
+
+my @types = qw(sunny cloudy rainy);
+
+my %prob = (
+  sunny => 0.4,
+  cloudy => 0.4,
+  rainy => 0.2
+);
+
+sub make_dot {
+
+  say "digraph weather {";
+  for my $day (1 .. 10) {
+    say "  subgraph cluster_day_$day {";
+    say "    label = \"Day $day\";";
+    say "    color = black;";
+    for my $count (1 .. $day) {
+      say "    subgraph cluster_day_${day}_${count} {";
+      say "      label = \"$count blocks\";";
+      say "      color = grey;";
+      for my $type (@types) {
+        my $name = "${type}_${day}_${count}";
+        say "      $name [shape=box, label=\"$type\"];";
+      }
+      say "    }";
+    }
+    say "  }";
+  }
+  for my $day (1 .. 9) {
+    my $next_day = $day + 1;
+    for my $count (1 .. $day) {
+      for my $type (@types) {
+        my $name = "${type}_${day}_${count}";
+        for my $next_type (@types) {
+          my $same = $type eq $next_type;
+          my $next_count = $count + ($same ? 0 : 1);
+          my $next_name = "${next_type}_${next_day}_${next_count}";
+          my $color = $same ? 'grey' : 'black';
+          say "  $name -> $next_name [color=$color];";
+        }
+      }
+    }
+  }
+  say "}";
+
+}
+

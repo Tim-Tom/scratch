@@ -1,0 +1,832 @@
+digraph weather {
+  subgraph cluster_day_1 {
+    label = "Day 1";
+    color = black;
+    subgraph cluster_day_1_1 {
+      label = "1 blocks";
+      color = grey;
+      sunny_1_1 [shape=box, label="sunny"];
+      cloudy_1_1 [shape=box, label="cloudy"];
+      rainy_1_1 [shape=box, label="rainy"];
+    }
+  }
+  subgraph cluster_day_2 {
+    label = "Day 2";
+    color = black;
+    subgraph cluster_day_2_1 {
+      label = "1 blocks";
+      color = grey;
+      sunny_2_1 [shape=box, label="sunny"];
+      cloudy_2_1 [shape=box, label="cloudy"];
+      rainy_2_1 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_2_2 {
+      label = "2 blocks";
+      color = grey;
+      sunny_2_2 [shape=box, label="sunny"];
+      cloudy_2_2 [shape=box, label="cloudy"];
+      rainy_2_2 [shape=box, label="rainy"];
+    }
+  }
+  subgraph cluster_day_3 {
+    label = "Day 3";
+    color = black;
+    subgraph cluster_day_3_1 {
+      label = "1 blocks";
+      color = grey;
+      sunny_3_1 [shape=box, label="sunny"];
+      cloudy_3_1 [shape=box, label="cloudy"];
+      rainy_3_1 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_3_2 {
+      label = "2 blocks";
+      color = grey;
+      sunny_3_2 [shape=box, label="sunny"];
+      cloudy_3_2 [shape=box, label="cloudy"];
+      rainy_3_2 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_3_3 {
+      label = "3 blocks";
+      color = grey;
+      sunny_3_3 [shape=box, label="sunny"];
+      cloudy_3_3 [shape=box, label="cloudy"];
+      rainy_3_3 [shape=box, label="rainy"];
+    }
+  }
+  subgraph cluster_day_4 {
+    label = "Day 4";
+    color = black;
+    subgraph cluster_day_4_1 {
+      label = "1 blocks";
+      color = grey;
+      sunny_4_1 [shape=box, label="sunny"];
+      cloudy_4_1 [shape=box, label="cloudy"];
+      rainy_4_1 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_4_2 {
+      label = "2 blocks";
+      color = grey;
+      sunny_4_2 [shape=box, label="sunny"];
+      cloudy_4_2 [shape=box, label="cloudy"];
+      rainy_4_2 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_4_3 {
+      label = "3 blocks";
+      color = grey;
+      sunny_4_3 [shape=box, label="sunny"];
+      cloudy_4_3 [shape=box, label="cloudy"];
+      rainy_4_3 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_4_4 {
+      label = "4 blocks";
+      color = grey;
+      sunny_4_4 [shape=box, label="sunny"];
+      cloudy_4_4 [shape=box, label="cloudy"];
+      rainy_4_4 [shape=box, label="rainy"];
+    }
+  }
+  subgraph cluster_day_5 {
+    label = "Day 5";
+    color = black;
+    subgraph cluster_day_5_1 {
+      label = "1 blocks";
+      color = grey;
+      sunny_5_1 [shape=box, label="sunny"];
+      cloudy_5_1 [shape=box, label="cloudy"];
+      rainy_5_1 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_5_2 {
+      label = "2 blocks";
+      color = grey;
+      sunny_5_2 [shape=box, label="sunny"];
+      cloudy_5_2 [shape=box, label="cloudy"];
+      rainy_5_2 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_5_3 {
+      label = "3 blocks";
+      color = grey;
+      sunny_5_3 [shape=box, label="sunny"];
+      cloudy_5_3 [shape=box, label="cloudy"];
+      rainy_5_3 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_5_4 {
+      label = "4 blocks";
+      color = grey;
+      sunny_5_4 [shape=box, label="sunny"];
+      cloudy_5_4 [shape=box, label="cloudy"];
+      rainy_5_4 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_5_5 {
+      label = "5 blocks";
+      color = grey;
+      sunny_5_5 [shape=box, label="sunny"];
+      cloudy_5_5 [shape=box, label="cloudy"];
+      rainy_5_5 [shape=box, label="rainy"];
+    }
+  }
+  subgraph cluster_day_6 {
+    label = "Day 6";
+    color = black;
+    subgraph cluster_day_6_1 {
+      label = "1 blocks";
+      color = grey;
+      sunny_6_1 [shape=box, label="sunny"];
+      cloudy_6_1 [shape=box, label="cloudy"];
+      rainy_6_1 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_6_2 {
+      label = "2 blocks";
+      color = grey;
+      sunny_6_2 [shape=box, label="sunny"];
+      cloudy_6_2 [shape=box, label="cloudy"];
+      rainy_6_2 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_6_3 {
+      label = "3 blocks";
+      color = grey;
+      sunny_6_3 [shape=box, label="sunny"];
+      cloudy_6_3 [shape=box, label="cloudy"];
+      rainy_6_3 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_6_4 {
+      label = "4 blocks";
+      color = grey;
+      sunny_6_4 [shape=box, label="sunny"];
+      cloudy_6_4 [shape=box, label="cloudy"];
+      rainy_6_4 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_6_5 {
+      label = "5 blocks";
+      color = grey;
+      sunny_6_5 [shape=box, label="sunny"];
+      cloudy_6_5 [shape=box, label="cloudy"];
+      rainy_6_5 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_6_6 {
+      label = "6 blocks";
+      color = grey;
+      sunny_6_6 [shape=box, label="sunny"];
+      cloudy_6_6 [shape=box, label="cloudy"];
+      rainy_6_6 [shape=box, label="rainy"];
+    }
+  }
+  subgraph cluster_day_7 {
+    label = "Day 7";
+    color = black;
+    subgraph cluster_day_7_1 {
+      label = "1 blocks";
+      color = grey;
+      sunny_7_1 [shape=box, label="sunny"];
+      cloudy_7_1 [shape=box, label="cloudy"];
+      rainy_7_1 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_7_2 {
+      label = "2 blocks";
+      color = grey;
+      sunny_7_2 [shape=box, label="sunny"];
+      cloudy_7_2 [shape=box, label="cloudy"];
+      rainy_7_2 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_7_3 {
+      label = "3 blocks";
+      color = grey;
+      sunny_7_3 [shape=box, label="sunny"];
+      cloudy_7_3 [shape=box, label="cloudy"];
+      rainy_7_3 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_7_4 {
+      label = "4 blocks";
+      color = grey;
+      sunny_7_4 [shape=box, label="sunny"];
+      cloudy_7_4 [shape=box, label="cloudy"];
+      rainy_7_4 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_7_5 {
+      label = "5 blocks";
+      color = grey;
+      sunny_7_5 [shape=box, label="sunny"];
+      cloudy_7_5 [shape=box, label="cloudy"];
+      rainy_7_5 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_7_6 {
+      label = "6 blocks";
+      color = grey;
+      sunny_7_6 [shape=box, label="sunny"];
+      cloudy_7_6 [shape=box, label="cloudy"];
+      rainy_7_6 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_7_7 {
+      label = "7 blocks";
+      color = grey;
+      sunny_7_7 [shape=box, label="sunny"];
+      cloudy_7_7 [shape=box, label="cloudy"];
+      rainy_7_7 [shape=box, label="rainy"];
+    }
+  }
+  subgraph cluster_day_8 {
+    label = "Day 8";
+    color = black;
+    subgraph cluster_day_8_1 {
+      label = "1 blocks";
+      color = grey;
+      sunny_8_1 [shape=box, label="sunny"];
+      cloudy_8_1 [shape=box, label="cloudy"];
+      rainy_8_1 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_8_2 {
+      label = "2 blocks";
+      color = grey;
+      sunny_8_2 [shape=box, label="sunny"];
+      cloudy_8_2 [shape=box, label="cloudy"];
+      rainy_8_2 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_8_3 {
+      label = "3 blocks";
+      color = grey;
+      sunny_8_3 [shape=box, label="sunny"];
+      cloudy_8_3 [shape=box, label="cloudy"];
+      rainy_8_3 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_8_4 {
+      label = "4 blocks";
+      color = grey;
+      sunny_8_4 [shape=box, label="sunny"];
+      cloudy_8_4 [shape=box, label="cloudy"];
+      rainy_8_4 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_8_5 {
+      label = "5 blocks";
+      color = grey;
+      sunny_8_5 [shape=box, label="sunny"];
+      cloudy_8_5 [shape=box, label="cloudy"];
+      rainy_8_5 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_8_6 {
+      label = "6 blocks";
+      color = grey;
+      sunny_8_6 [shape=box, label="sunny"];
+      cloudy_8_6 [shape=box, label="cloudy"];
+      rainy_8_6 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_8_7 {
+      label = "7 blocks";
+      color = grey;
+      sunny_8_7 [shape=box, label="sunny"];
+      cloudy_8_7 [shape=box, label="cloudy"];
+      rainy_8_7 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_8_8 {
+      label = "8 blocks";
+      color = grey;
+      sunny_8_8 [shape=box, label="sunny"];
+      cloudy_8_8 [shape=box, label="cloudy"];
+      rainy_8_8 [shape=box, label="rainy"];
+    }
+  }
+  subgraph cluster_day_9 {
+    label = "Day 9";
+    color = black;
+    subgraph cluster_day_9_1 {
+      label = "1 blocks";
+      color = grey;
+      sunny_9_1 [shape=box, label="sunny"];
+      cloudy_9_1 [shape=box, label="cloudy"];
+      rainy_9_1 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_9_2 {
+      label = "2 blocks";
+      color = grey;
+      sunny_9_2 [shape=box, label="sunny"];
+      cloudy_9_2 [shape=box, label="cloudy"];
+      rainy_9_2 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_9_3 {
+      label = "3 blocks";
+      color = grey;
+      sunny_9_3 [shape=box, label="sunny"];
+      cloudy_9_3 [shape=box, label="cloudy"];
+      rainy_9_3 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_9_4 {
+      label = "4 blocks";
+      color = grey;
+      sunny_9_4 [shape=box, label="sunny"];
+      cloudy_9_4 [shape=box, label="cloudy"];
+      rainy_9_4 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_9_5 {
+      label = "5 blocks";
+      color = grey;
+      sunny_9_5 [shape=box, label="sunny"];
+      cloudy_9_5 [shape=box, label="cloudy"];
+      rainy_9_5 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_9_6 {
+      label = "6 blocks";
+      color = grey;
+      sunny_9_6 [shape=box, label="sunny"];
+      cloudy_9_6 [shape=box, label="cloudy"];
+      rainy_9_6 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_9_7 {
+      label = "7 blocks";
+      color = grey;
+      sunny_9_7 [shape=box, label="sunny"];
+      cloudy_9_7 [shape=box, label="cloudy"];
+      rainy_9_7 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_9_8 {
+      label = "8 blocks";
+      color = grey;
+      sunny_9_8 [shape=box, label="sunny"];
+      cloudy_9_8 [shape=box, label="cloudy"];
+      rainy_9_8 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_9_9 {
+      label = "9 blocks";
+      color = grey;
+      sunny_9_9 [shape=box, label="sunny"];
+      cloudy_9_9 [shape=box, label="cloudy"];
+      rainy_9_9 [shape=box, label="rainy"];
+    }
+  }
+  subgraph cluster_day_10 {
+    label = "Day 10";
+    color = black;
+    subgraph cluster_day_10_1 {
+      label = "1 blocks";
+      color = grey;
+      sunny_10_1 [shape=box, label="sunny"];
+      cloudy_10_1 [shape=box, label="cloudy"];
+      rainy_10_1 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_10_2 {
+      label = "2 blocks";
+      color = grey;
+      sunny_10_2 [shape=box, label="sunny"];
+      cloudy_10_2 [shape=box, label="cloudy"];
+      rainy_10_2 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_10_3 {
+      label = "3 blocks";
+      color = grey;
+      sunny_10_3 [shape=box, label="sunny"];
+      cloudy_10_3 [shape=box, label="cloudy"];
+      rainy_10_3 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_10_4 {
+      label = "4 blocks";
+      color = grey;
+      sunny_10_4 [shape=box, label="sunny"];
+      cloudy_10_4 [shape=box, label="cloudy"];
+      rainy_10_4 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_10_5 {
+      label = "5 blocks";
+      color = grey;
+      sunny_10_5 [shape=box, label="sunny"];
+      cloudy_10_5 [shape=box, label="cloudy"];
+      rainy_10_5 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_10_6 {
+      label = "6 blocks";
+      color = grey;
+      sunny_10_6 [shape=box, label="sunny"];
+      cloudy_10_6 [shape=box, label="cloudy"];
+      rainy_10_6 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_10_7 {
+      label = "7 blocks";
+      color = grey;
+      sunny_10_7 [shape=box, label="sunny"];
+      cloudy_10_7 [shape=box, label="cloudy"];
+      rainy_10_7 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_10_8 {
+      label = "8 blocks";
+      color = grey;
+      sunny_10_8 [shape=box, label="sunny"];
+      cloudy_10_8 [shape=box, label="cloudy"];
+      rainy_10_8 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_10_9 {
+      label = "9 blocks";
+      color = grey;
+      sunny_10_9 [shape=box, label="sunny"];
+      cloudy_10_9 [shape=box, label="cloudy"];
+      rainy_10_9 [shape=box, label="rainy"];
+    }
+    subgraph cluster_day_10_10 {
+      label = "10 blocks";
+      color = grey;
+      sunny_10_10 [shape=box, label="sunny"];
+      cloudy_10_10 [shape=box, label="cloudy"];
+      rainy_10_10 [shape=box, label="rainy"];
+    }
+  }
+  sunny_1_1 -> sunny_2_1 [color=grey];
+  sunny_1_1 -> cloudy_2_2 [color=black];
+  sunny_1_1 -> rainy_2_2 [color=black];
+  cloudy_1_1 -> sunny_2_2 [color=black];
+  cloudy_1_1 -> cloudy_2_1 [color=grey];
+  cloudy_1_1 -> rainy_2_2 [color=black];
+  rainy_1_1 -> sunny_2_2 [color=black];
+  rainy_1_1 -> cloudy_2_2 [color=black];
+  rainy_1_1 -> rainy_2_1 [color=grey];
+  sunny_2_1 -> sunny_3_1 [color=grey];
+  sunny_2_1 -> cloudy_3_2 [color=black];
+  sunny_2_1 -> rainy_3_2 [color=black];
+  cloudy_2_1 -> sunny_3_2 [color=black];
+  cloudy_2_1 -> cloudy_3_1 [color=grey];
+  cloudy_2_1 -> rainy_3_2 [color=black];
+  rainy_2_1 -> sunny_3_2 [color=black];
+  rainy_2_1 -> cloudy_3_2 [color=black];
+  rainy_2_1 -> rainy_3_1 [color=grey];
+  sunny_2_2 -> sunny_3_2 [color=grey];
+  sunny_2_2 -> cloudy_3_3 [color=black];
+  sunny_2_2 -> rainy_3_3 [color=black];
+  cloudy_2_2 -> sunny_3_3 [color=black];
+  cloudy_2_2 -> cloudy_3_2 [color=grey];
+  cloudy_2_2 -> rainy_3_3 [color=black];
+  rainy_2_2 -> sunny_3_3 [color=black];
+  rainy_2_2 -> cloudy_3_3 [color=black];
+  rainy_2_2 -> rainy_3_2 [color=grey];
+  sunny_3_1 -> sunny_4_1 [color=grey];
+  sunny_3_1 -> cloudy_4_2 [color=black];
+  sunny_3_1 -> rainy_4_2 [color=black];
+  cloudy_3_1 -> sunny_4_2 [color=black];
+  cloudy_3_1 -> cloudy_4_1 [color=grey];
+  cloudy_3_1 -> rainy_4_2 [color=black];
+  rainy_3_1 -> sunny_4_2 [color=black];
+  rainy_3_1 -> cloudy_4_2 [color=black];
+  rainy_3_1 -> rainy_4_1 [color=grey];
+  sunny_3_2 -> sunny_4_2 [color=grey];
+  sunny_3_2 -> cloudy_4_3 [color=black];
+  sunny_3_2 -> rainy_4_3 [color=black];
+  cloudy_3_2 -> sunny_4_3 [color=black];
+  cloudy_3_2 -> cloudy_4_2 [color=grey];
+  cloudy_3_2 -> rainy_4_3 [color=black];
+  rainy_3_2 -> sunny_4_3 [color=black];
+  rainy_3_2 -> cloudy_4_3 [color=black];
+  rainy_3_2 -> rainy_4_2 [color=grey];
+  sunny_3_3 -> sunny_4_3 [color=grey];
+  sunny_3_3 -> cloudy_4_4 [color=black];
+  sunny_3_3 -> rainy_4_4 [color=black];
+  cloudy_3_3 -> sunny_4_4 [color=black];
+  cloudy_3_3 -> cloudy_4_3 [color=grey];
+  cloudy_3_3 -> rainy_4_4 [color=black];
+  rainy_3_3 -> sunny_4_4 [color=black];
+  rainy_3_3 -> cloudy_4_4 [color=black];
+  rainy_3_3 -> rainy_4_3 [color=grey];
+  sunny_4_1 -> sunny_5_1 [color=grey];
+  sunny_4_1 -> cloudy_5_2 [color=black];
+  sunny_4_1 -> rainy_5_2 [color=black];
+  cloudy_4_1 -> sunny_5_2 [color=black];
+  cloudy_4_1 -> cloudy_5_1 [color=grey];
+  cloudy_4_1 -> rainy_5_2 [color=black];
+  rainy_4_1 -> sunny_5_2 [color=black];
+  rainy_4_1 -> cloudy_5_2 [color=black];
+  rainy_4_1 -> rainy_5_1 [color=grey];
+  sunny_4_2 -> sunny_5_2 [color=grey];
+  sunny_4_2 -> cloudy_5_3 [color=black];
+  sunny_4_2 -> rainy_5_3 [color=black];
+  cloudy_4_2 -> sunny_5_3 [color=black];
+  cloudy_4_2 -> cloudy_5_2 [color=grey];
+  cloudy_4_2 -> rainy_5_3 [color=black];
+  rainy_4_2 -> sunny_5_3 [color=black];
+  rainy_4_2 -> cloudy_5_3 [color=black];
+  rainy_4_2 -> rainy_5_2 [color=grey];
+  sunny_4_3 -> sunny_5_3 [color=grey];
+  sunny_4_3 -> cloudy_5_4 [color=black];
+  sunny_4_3 -> rainy_5_4 [color=black];
+  cloudy_4_3 -> sunny_5_4 [color=black];
+  cloudy_4_3 -> cloudy_5_3 [color=grey];
+  cloudy_4_3 -> rainy_5_4 [color=black];
+  rainy_4_3 -> sunny_5_4 [color=black];
+  rainy_4_3 -> cloudy_5_4 [color=black];
+  rainy_4_3 -> rainy_5_3 [color=grey];
+  sunny_4_4 -> sunny_5_4 [color=grey];
+  sunny_4_4 -> cloudy_5_5 [color=black];
+  sunny_4_4 -> rainy_5_5 [color=black];
+  cloudy_4_4 -> sunny_5_5 [color=black];
+  cloudy_4_4 -> cloudy_5_4 [color=grey];
+  cloudy_4_4 -> rainy_5_5 [color=black];
+  rainy_4_4 -> sunny_5_5 [color=black];
+  rainy_4_4 -> cloudy_5_5 [color=black];
+  rainy_4_4 -> rainy_5_4 [color=grey];
+  sunny_5_1 -> sunny_6_1 [color=grey];
+  sunny_5_1 -> cloudy_6_2 [color=black];
+  sunny_5_1 -> rainy_6_2 [color=black];
+  cloudy_5_1 -> sunny_6_2 [color=black];
+  cloudy_5_1 -> cloudy_6_1 [color=grey];
+  cloudy_5_1 -> rainy_6_2 [color=black];
+  rainy_5_1 -> sunny_6_2 [color=black];
+  rainy_5_1 -> cloudy_6_2 [color=black];
+  rainy_5_1 -> rainy_6_1 [color=grey];
+  sunny_5_2 -> sunny_6_2 [color=grey];
+  sunny_5_2 -> cloudy_6_3 [color=black];
+  sunny_5_2 -> rainy_6_3 [color=black];
+  cloudy_5_2 -> sunny_6_3 [color=black];
+  cloudy_5_2 -> cloudy_6_2 [color=grey];
+  cloudy_5_2 -> rainy_6_3 [color=black];
+  rainy_5_2 -> sunny_6_3 [color=black];
+  rainy_5_2 -> cloudy_6_3 [color=black];
+  rainy_5_2 -> rainy_6_2 [color=grey];
+  sunny_5_3 -> sunny_6_3 [color=grey];
+  sunny_5_3 -> cloudy_6_4 [color=black];
+  sunny_5_3 -> rainy_6_4 [color=black];
+  cloudy_5_3 -> sunny_6_4 [color=black];
+  cloudy_5_3 -> cloudy_6_3 [color=grey];
+  cloudy_5_3 -> rainy_6_4 [color=black];
+  rainy_5_3 -> sunny_6_4 [color=black];
+  rainy_5_3 -> cloudy_6_4 [color=black];
+  rainy_5_3 -> rainy_6_3 [color=grey];
+  sunny_5_4 -> sunny_6_4 [color=grey];
+  sunny_5_4 -> cloudy_6_5 [color=black];
+  sunny_5_4 -> rainy_6_5 [color=black];
+  cloudy_5_4 -> sunny_6_5 [color=black];
+  cloudy_5_4 -> cloudy_6_4 [color=grey];
+  cloudy_5_4 -> rainy_6_5 [color=black];
+  rainy_5_4 -> sunny_6_5 [color=black];
+  rainy_5_4 -> cloudy_6_5 [color=black];
+  rainy_5_4 -> rainy_6_4 [color=grey];
+  sunny_5_5 -> sunny_6_5 [color=grey];
+  sunny_5_5 -> cloudy_6_6 [color=black];
+  sunny_5_5 -> rainy_6_6 [color=black];
+  cloudy_5_5 -> sunny_6_6 [color=black];
+  cloudy_5_5 -> cloudy_6_5 [color=grey];
+  cloudy_5_5 -> rainy_6_6 [color=black];
+  rainy_5_5 -> sunny_6_6 [color=black];
+  rainy_5_5 -> cloudy_6_6 [color=black];
+  rainy_5_5 -> rainy_6_5 [color=grey];
+  sunny_6_1 -> sunny_7_1 [color=grey];
+  sunny_6_1 -> cloudy_7_2 [color=black];
+  sunny_6_1 -> rainy_7_2 [color=black];
+  cloudy_6_1 -> sunny_7_2 [color=black];
+  cloudy_6_1 -> cloudy_7_1 [color=grey];
+  cloudy_6_1 -> rainy_7_2 [color=black];
+  rainy_6_1 -> sunny_7_2 [color=black];
+  rainy_6_1 -> cloudy_7_2 [color=black];
+  rainy_6_1 -> rainy_7_1 [color=grey];
+  sunny_6_2 -> sunny_7_2 [color=grey];
+  sunny_6_2 -> cloudy_7_3 [color=black];
+  sunny_6_2 -> rainy_7_3 [color=black];
+  cloudy_6_2 -> sunny_7_3 [color=black];
+  cloudy_6_2 -> cloudy_7_2 [color=grey];
+  cloudy_6_2 -> rainy_7_3 [color=black];
+  rainy_6_2 -> sunny_7_3 [color=black];
+  rainy_6_2 -> cloudy_7_3 [color=black];
+  rainy_6_2 -> rainy_7_2 [color=grey];
+  sunny_6_3 -> sunny_7_3 [color=grey];
+  sunny_6_3 -> cloudy_7_4 [color=black];
+  sunny_6_3 -> rainy_7_4 [color=black];
+  cloudy_6_3 -> sunny_7_4 [color=black];
+  cloudy_6_3 -> cloudy_7_3 [color=grey];
+  cloudy_6_3 -> rainy_7_4 [color=black];
+  rainy_6_3 -> sunny_7_4 [color=black];
+  rainy_6_3 -> cloudy_7_4 [color=black];
+  rainy_6_3 -> rainy_7_3 [color=grey];
+  sunny_6_4 -> sunny_7_4 [color=grey];
+  sunny_6_4 -> cloudy_7_5 [color=black];
+  sunny_6_4 -> rainy_7_5 [color=black];
+  cloudy_6_4 -> sunny_7_5 [color=black];
+  cloudy_6_4 -> cloudy_7_4 [color=grey];
+  cloudy_6_4 -> rainy_7_5 [color=black];
+  rainy_6_4 -> sunny_7_5 [color=black];
+  rainy_6_4 -> cloudy_7_5 [color=black];
+  rainy_6_4 -> rainy_7_4 [color=grey];
+  sunny_6_5 -> sunny_7_5 [color=grey];
+  sunny_6_5 -> cloudy_7_6 [color=black];
+  sunny_6_5 -> rainy_7_6 [color=black];
+  cloudy_6_5 -> sunny_7_6 [color=black];
+  cloudy_6_5 -> cloudy_7_5 [color=grey];
+  cloudy_6_5 -> rainy_7_6 [color=black];
+  rainy_6_5 -> sunny_7_6 [color=black];
+  rainy_6_5 -> cloudy_7_6 [color=black];
+  rainy_6_5 -> rainy_7_5 [color=grey];
+  sunny_6_6 -> sunny_7_6 [color=grey];
+  sunny_6_6 -> cloudy_7_7 [color=black];
+  sunny_6_6 -> rainy_7_7 [color=black];
+  cloudy_6_6 -> sunny_7_7 [color=black];
+  cloudy_6_6 -> cloudy_7_6 [color=grey];
+  cloudy_6_6 -> rainy_7_7 [color=black];
+  rainy_6_6 -> sunny_7_7 [color=black];
+  rainy_6_6 -> cloudy_7_7 [color=black];
+  rainy_6_6 -> rainy_7_6 [color=grey];
+  sunny_7_1 -> sunny_8_1 [color=grey];
+  sunny_7_1 -> cloudy_8_2 [color=black];
+  sunny_7_1 -> rainy_8_2 [color=black];
+  cloudy_7_1 -> sunny_8_2 [color=black];
+  cloudy_7_1 -> cloudy_8_1 [color=grey];
+  cloudy_7_1 -> rainy_8_2 [color=black];
+  rainy_7_1 -> sunny_8_2 [color=black];
+  rainy_7_1 -> cloudy_8_2 [color=black];
+  rainy_7_1 -> rainy_8_1 [color=grey];
+  sunny_7_2 -> sunny_8_2 [color=grey];
+  sunny_7_2 -> cloudy_8_3 [color=black];
+  sunny_7_2 -> rainy_8_3 [color=black];
+  cloudy_7_2 -> sunny_8_3 [color=black];
+  cloudy_7_2 -> cloudy_8_2 [color=grey];
+  cloudy_7_2 -> rainy_8_3 [color=black];
+  rainy_7_2 -> sunny_8_3 [color=black];
+  rainy_7_2 -> cloudy_8_3 [color=black];
+  rainy_7_2 -> rainy_8_2 [color=grey];
+  sunny_7_3 -> sunny_8_3 [color=grey];
+  sunny_7_3 -> cloudy_8_4 [color=black];
+  sunny_7_3 -> rainy_8_4 [color=black];
+  cloudy_7_3 -> sunny_8_4 [color=black];
+  cloudy_7_3 -> cloudy_8_3 [color=grey];
+  cloudy_7_3 -> rainy_8_4 [color=black];
+  rainy_7_3 -> sunny_8_4 [color=black];
+  rainy_7_3 -> cloudy_8_4 [color=black];
+  rainy_7_3 -> rainy_8_3 [color=grey];
+  sunny_7_4 -> sunny_8_4 [color=grey];
+  sunny_7_4 -> cloudy_8_5 [color=black];
+  sunny_7_4 -> rainy_8_5 [color=black];
+  cloudy_7_4 -> sunny_8_5 [color=black];
+  cloudy_7_4 -> cloudy_8_4 [color=grey];
+  cloudy_7_4 -> rainy_8_5 [color=black];
+  rainy_7_4 -> sunny_8_5 [color=black];
+  rainy_7_4 -> cloudy_8_5 [color=black];
+  rainy_7_4 -> rainy_8_4 [color=grey];
+  sunny_7_5 -> sunny_8_5 [color=grey];
+  sunny_7_5 -> cloudy_8_6 [color=black];
+  sunny_7_5 -> rainy_8_6 [color=black];
+  cloudy_7_5 -> sunny_8_6 [color=black];
+  cloudy_7_5 -> cloudy_8_5 [color=grey];
+  cloudy_7_5 -> rainy_8_6 [color=black];
+  rainy_7_5 -> sunny_8_6 [color=black];
+  rainy_7_5 -> cloudy_8_6 [color=black];
+  rainy_7_5 -> rainy_8_5 [color=grey];
+  sunny_7_6 -> sunny_8_6 [color=grey];
+  sunny_7_6 -> cloudy_8_7 [color=black];
+  sunny_7_6 -> rainy_8_7 [color=black];
+  cloudy_7_6 -> sunny_8_7 [color=black];
+  cloudy_7_6 -> cloudy_8_6 [color=grey];
+  cloudy_7_6 -> rainy_8_7 [color=black];
+  rainy_7_6 -> sunny_8_7 [color=black];
+  rainy_7_6 -> cloudy_8_7 [color=black];
+  rainy_7_6 -> rainy_8_6 [color=grey];
+  sunny_7_7 -> sunny_8_7 [color=grey];
+  sunny_7_7 -> cloudy_8_8 [color=black];
+  sunny_7_7 -> rainy_8_8 [color=black];
+  cloudy_7_7 -> sunny_8_8 [color=black];
+  cloudy_7_7 -> cloudy_8_7 [color=grey];
+  cloudy_7_7 -> rainy_8_8 [color=black];
+  rainy_7_7 -> sunny_8_8 [color=black];
+  rainy_7_7 -> cloudy_8_8 [color=black];
+  rainy_7_7 -> rainy_8_7 [color=grey];
+  sunny_8_1 -> sunny_9_1 [color=grey];
+  sunny_8_1 -> cloudy_9_2 [color=black];
+  sunny_8_1 -> rainy_9_2 [color=black];
+  cloudy_8_1 -> sunny_9_2 [color=black];
+  cloudy_8_1 -> cloudy_9_1 [color=grey];
+  cloudy_8_1 -> rainy_9_2 [color=black];
+  rainy_8_1 -> sunny_9_2 [color=black];
+  rainy_8_1 -> cloudy_9_2 [color=black];
+  rainy_8_1 -> rainy_9_1 [color=grey];
+  sunny_8_2 -> sunny_9_2 [color=grey];
+  sunny_8_2 -> cloudy_9_3 [color=black];
+  sunny_8_2 -> rainy_9_3 [color=black];
+  cloudy_8_2 -> sunny_9_3 [color=black];
+  cloudy_8_2 -> cloudy_9_2 [color=grey];
+  cloudy_8_2 -> rainy_9_3 [color=black];
+  rainy_8_2 -> sunny_9_3 [color=black];
+  rainy_8_2 -> cloudy_9_3 [color=black];
+  rainy_8_2 -> rainy_9_2 [color=grey];
+  sunny_8_3 -> sunny_9_3 [color=grey];
+  sunny_8_3 -> cloudy_9_4 [color=black];
+  sunny_8_3 -> rainy_9_4 [color=black];
+  cloudy_8_3 -> sunny_9_4 [color=black];
+  cloudy_8_3 -> cloudy_9_3 [color=grey];
+  cloudy_8_3 -> rainy_9_4 [color=black];
+  rainy_8_3 -> sunny_9_4 [color=black];
+  rainy_8_3 -> cloudy_9_4 [color=black];
+  rainy_8_3 -> rainy_9_3 [color=grey];
+  sunny_8_4 -> sunny_9_4 [color=grey];
+  sunny_8_4 -> cloudy_9_5 [color=black];
+  sunny_8_4 -> rainy_9_5 [color=black];
+  cloudy_8_4 -> sunny_9_5 [color=black];
+  cloudy_8_4 -> cloudy_9_4 [color=grey];
+  cloudy_8_4 -> rainy_9_5 [color=black];
+  rainy_8_4 -> sunny_9_5 [color=black];
+  rainy_8_4 -> cloudy_9_5 [color=black];
+  rainy_8_4 -> rainy_9_4 [color=grey];
+  sunny_8_5 -> sunny_9_5 [color=grey];
+  sunny_8_5 -> cloudy_9_6 [color=black];
+  sunny_8_5 -> rainy_9_6 [color=black];
+  cloudy_8_5 -> sunny_9_6 [color=black];
+  cloudy_8_5 -> cloudy_9_5 [color=grey];
+  cloudy_8_5 -> rainy_9_6 [color=black];
+  rainy_8_5 -> sunny_9_6 [color=black];
+  rainy_8_5 -> cloudy_9_6 [color=black];
+  rainy_8_5 -> rainy_9_5 [color=grey];
+  sunny_8_6 -> sunny_9_6 [color=grey];
+  sunny_8_6 -> cloudy_9_7 [color=black];
+  sunny_8_6 -> rainy_9_7 [color=black];
+  cloudy_8_6 -> sunny_9_7 [color=black];
+  cloudy_8_6 -> cloudy_9_6 [color=grey];
+  cloudy_8_6 -> rainy_9_7 [color=black];
+  rainy_8_6 -> sunny_9_7 [color=black];
+  rainy_8_6 -> cloudy_9_7 [color=black];
+  rainy_8_6 -> rainy_9_6 [color=grey];
+  sunny_8_7 -> sunny_9_7 [color=grey];
+  sunny_8_7 -> cloudy_9_8 [color=black];
+  sunny_8_7 -> rainy_9_8 [color=black];
+  cloudy_8_7 -> sunny_9_8 [color=black];
+  cloudy_8_7 -> cloudy_9_7 [color=grey];
+  cloudy_8_7 -> rainy_9_8 [color=black];
+  rainy_8_7 -> sunny_9_8 [color=black];
+  rainy_8_7 -> cloudy_9_8 [color=black];
+  rainy_8_7 -> rainy_9_7 [color=grey];
+  sunny_8_8 -> sunny_9_8 [color=grey];
+  sunny_8_8 -> cloudy_9_9 [color=black];
+  sunny_8_8 -> rainy_9_9 [color=black];
+  cloudy_8_8 -> sunny_9_9 [color=black];
+  cloudy_8_8 -> cloudy_9_8 [color=grey];
+  cloudy_8_8 -> rainy_9_9 [color=black];
+  rainy_8_8 -> sunny_9_9 [color=black];
+  rainy_8_8 -> cloudy_9_9 [color=black];
+  rainy_8_8 -> rainy_9_8 [color=grey];
+  sunny_9_1 -> sunny_10_1 [color=grey];
+  sunny_9_1 -> cloudy_10_2 [color=black];
+  sunny_9_1 -> rainy_10_2 [color=black];
+  cloudy_9_1 -> sunny_10_2 [color=black];
+  cloudy_9_1 -> cloudy_10_1 [color=grey];
+  cloudy_9_1 -> rainy_10_2 [color=black];
+  rainy_9_1 -> sunny_10_2 [color=black];
+  rainy_9_1 -> cloudy_10_2 [color=black];
+  rainy_9_1 -> rainy_10_1 [color=grey];
+  sunny_9_2 -> sunny_10_2 [color=grey];
+  sunny_9_2 -> cloudy_10_3 [color=black];
+  sunny_9_2 -> rainy_10_3 [color=black];
+  cloudy_9_2 -> sunny_10_3 [color=black];
+  cloudy_9_2 -> cloudy_10_2 [color=grey];
+  cloudy_9_2 -> rainy_10_3 [color=black];
+  rainy_9_2 -> sunny_10_3 [color=black];
+  rainy_9_2 -> cloudy_10_3 [color=black];
+  rainy_9_2 -> rainy_10_2 [color=grey];
+  sunny_9_3 -> sunny_10_3 [color=grey];
+  sunny_9_3 -> cloudy_10_4 [color=black];
+  sunny_9_3 -> rainy_10_4 [color=black];
+  cloudy_9_3 -> sunny_10_4 [color=black];
+  cloudy_9_3 -> cloudy_10_3 [color=grey];
+  cloudy_9_3 -> rainy_10_4 [color=black];
+  rainy_9_3 -> sunny_10_4 [color=black];
+  rainy_9_3 -> cloudy_10_4 [color=black];
+  rainy_9_3 -> rainy_10_3 [color=grey];
+  sunny_9_4 -> sunny_10_4 [color=grey];
+  sunny_9_4 -> cloudy_10_5 [color=black];
+  sunny_9_4 -> rainy_10_5 [color=black];
+  cloudy_9_4 -> sunny_10_5 [color=black];
+  cloudy_9_4 -> cloudy_10_4 [color=grey];
+  cloudy_9_4 -> rainy_10_5 [color=black];
+  rainy_9_4 -> sunny_10_5 [color=black];
+  rainy_9_4 -> cloudy_10_5 [color=black];
+  rainy_9_4 -> rainy_10_4 [color=grey];
+  sunny_9_5 -> sunny_10_5 [color=grey];
+  sunny_9_5 -> cloudy_10_6 [color=black];
+  sunny_9_5 -> rainy_10_6 [color=black];
+  cloudy_9_5 -> sunny_10_6 [color=black];
+  cloudy_9_5 -> cloudy_10_5 [color=grey];
+  cloudy_9_5 -> rainy_10_6 [color=black];
+  rainy_9_5 -> sunny_10_6 [color=black];
+  rainy_9_5 -> cloudy_10_6 [color=black];
+  rainy_9_5 -> rainy_10_5 [color=grey];
+  sunny_9_6 -> sunny_10_6 [color=grey];
+  sunny_9_6 -> cloudy_10_7 [color=black];
+  sunny_9_6 -> rainy_10_7 [color=black];
+  cloudy_9_6 -> sunny_10_7 [color=black];
+  cloudy_9_6 -> cloudy_10_6 [color=grey];
+  cloudy_9_6 -> rainy_10_7 [color=black];
+  rainy_9_6 -> sunny_10_7 [color=black];
+  rainy_9_6 -> cloudy_10_7 [color=black];
+  rainy_9_6 -> rainy_10_6 [color=grey];
+  sunny_9_7 -> sunny_10_7 [color=grey];
+  sunny_9_7 -> cloudy_10_8 [color=black];
+  sunny_9_7 -> rainy_10_8 [color=black];
+  cloudy_9_7 -> sunny_10_8 [color=black];
+  cloudy_9_7 -> cloudy_10_7 [color=grey];
+  cloudy_9_7 -> rainy_10_8 [color=black];
+  rainy_9_7 -> sunny_10_8 [color=black];
+  rainy_9_7 -> cloudy_10_8 [color=black];
+  rainy_9_7 -> rainy_10_7 [color=grey];
+  sunny_9_8 -> sunny_10_8 [color=grey];
+  sunny_9_8 -> cloudy_10_9 [color=black];
+  sunny_9_8 -> rainy_10_9 [color=black];
+  cloudy_9_8 -> sunny_10_9 [color=black];
+  cloudy_9_8 -> cloudy_10_8 [color=grey];
+  cloudy_9_8 -> rainy_10_9 [color=black];
+  rainy_9_8 -> sunny_10_9 [color=black];
+  rainy_9_8 -> cloudy_10_9 [color=black];
+  rainy_9_8 -> rainy_10_8 [color=grey];
+  sunny_9_9 -> sunny_10_9 [color=grey];
+  sunny_9_9 -> cloudy_10_10 [color=black];
+  sunny_9_9 -> rainy_10_10 [color=black];
+  cloudy_9_9 -> sunny_10_10 [color=black];
+  cloudy_9_9 -> cloudy_10_9 [color=grey];
+  cloudy_9_9 -> rainy_10_10 [color=black];
+  rainy_9_9 -> sunny_10_10 [color=black];
+  rainy_9_9 -> cloudy_10_10 [color=black];
+  rainy_9_9 -> rainy_10_9 [color=grey];
+}
