@@ -40,7 +40,8 @@ my %prob = (
 sub make_dot {
 
   say "digraph weather {";
-  for my $day (1 .. 10) {
+  say "  start [shape=diamond]";
+  for my $day (1 .. 9) {
     say "  subgraph cluster_day_$day {";
     say "    label = \"Day $day\";";
     say "    color = black;";
@@ -56,7 +57,25 @@ sub make_dot {
     }
     say "  }";
   }
-  for my $day (1 .. 9) {
+  {
+    my $day = 10;
+    say "  subgraph cluster_day_${day} {";
+    say "    label = \"Day $day\";";
+    say "    color = black;";
+    for my $count (1 .. $day) {
+      say "    day_${day}_${count} [shape=diamond, label=\"$count blocks\"]";
+    }
+    say "  }";
+  }
+  {
+    my $day = 1;
+    my $count = 1;
+    for my $type (@types) {
+      my $name = "${type}_${day}_${count}";
+      say "start -> $name";
+    }
+  }
+  for my $day (1 .. 8) {
     my $next_day = $day + 1;
     for my $count (1 .. $day) {
       for my $type (@types) {
@@ -71,7 +90,20 @@ sub make_dot {
       }
     }
   }
+  {
+    my $day = 9;
+    my $next = 10;
+    for my $count (1 .. 9) {
+      for my $type (@types) {
+        my $name = "${type}_${day}_${count}";
+        my $count1 = $count + 1;
+        say "  $name -> day_${next}_${count} [color=grey];";
+        say "  $name -> day_${next}_${count1} [color=black];";
+      }
+    }
+  }
   say "}";
-
+  
 }
 
+make_dot();
