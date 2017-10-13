@@ -55,6 +55,8 @@ for my $day (2 .. $max_days) {
   @expected = @new_expected;
 }
 
+
 my $expected = sum(map { $prob[$_] * $expected[$_] } 0 .. $#types);
 
+say "[" . join(' ', map { sprintf '%0.3f', $_ } @expected) . ']';
 say "Epected after $max_days days: $expected";

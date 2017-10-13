@@ -35,9 +35,9 @@ my @types = qw(sunny cloudy rainy);
 
 my @prob = (0.4, 0.4, 0.2);
 my @transient_tuples = (
-  [0.0, 0.4, 0.2, 0.4, 0.0, 0.0],
-  [0.4, 0.0, 0.2, 0.0, 0.4, 0.0],
-  [0.4, 0.4, 0.0, 0.0, 0.0, 0.2]
+  [0.4, 0.0, 0.0, 0.0, 0.4, 0.2],
+  [0.0, 0.4, 0.0, 0.4, 0.0, 0.2],
+  [0.0, 0.0, 0.2, 0.4, 0.4, 0.0]
 );
 my @absorbing_tuples = (
   [0.4, 0.6],
@@ -122,7 +122,7 @@ sub make_dot {
 
 # make_dot();
 
-my $num_days = 10;
+my $num_days = $ARGV[0] // 10;
 my $n = $num_days - 1;
 my $transient_count = do {
   # each day has $day block counts in it, each of which has @types states, except for the last
@@ -194,7 +194,10 @@ $R = pdl do {
 $N = (identity($transient_count, $transient_count) - $Q)->inv;
 $B = $N x $R;
 
-say $B;
+# say $Q;
+# say $R;
+# say $N;
+# say $B;
 say $B->slice(':, (0)');
 say $B->slice(':, (0)') * (sequence($absorbing_count) + 1);
 say sumover($B->slice(':, (0)') * (sequence($absorbing_count) + 1));
