@@ -11,7 +11,7 @@ use List::Util qw(uniq);
 my %words;
 
 {
-  open(my $words, '<:encoding(utf-8)', '/usr/share/dict/american-english') or die;
+  open(my $words, '<:encoding(utf-8)', 'words.txt') or die;
   # open(my $words, '<:encoding(utf-8)', 'seven-words/american-english-filtered') or die;
   while(<$words>) {
     chomp;
