@@ -8,8 +8,23 @@ use experimental qw(signatures);
 use List::Util qw(uniq);
 use Data::Printer;
 
-# Stores the list of all words binned by word length.
+# Stores the list of all words binned by word type
 my %words;
+
+
+# Turns a word into its constituent type. This is a string where every letter has been
+# mapped to the number that represents the first position in the string it was seen.  So:
+# cats would become 1234 and sees would become 1221. If any letter would map to a number
+# larger than 9, it is prefixed by a dot to make the expression unique.
+sub map_word($word) {
+  my $i = 0;
+  my %s;
+  return join('', map {
+    $s{$_} = ++$i unless exists $s{$_};
+    my $s = $s{$_};
+    $s > 9 ? '.'.$s : $s;
+  } split(//, $word));
+}
 
 # Read in list of valid words
 {
@@ -17,7 +32,8 @@ my %words;
   # open(my $words, '<:encoding(utf-8)', 'seven-words/american-english-filtered') or die;
   while(<$words>) {
     chomp;
-    push(@{$words{length $_}}, lc);
+    my $w = lc;
+    push(@{$words{map_word($w)}}, $w);
   }
 }
 
@@ -34,7 +50,7 @@ print STDERR join('-', @letters) . "\n";
 my %mapping = map { $_ => ['a' .. 'z'] } @letters;
 
 # Set up the list of possible words that a given cipher word could be encoding
-my @possible_words = map { $words{length $_} } @words;
+my @possible_words = map { $words{map_word($_)} } @words;
 
 # The index of what letters exist in what words so we know which word sets to constrain if
 # we make a choice on the letter.
@@ -48,35 +64,14 @@ my %contains = map {
 # words that no longer match it.
 sub make_re($word) {
   my $re = '^';
-  my (%count, %seen);
   my @letters = split(//, $word);
   for my $l (@letters) {
-    ++$count{$l};
-  }
-  my $i = 1;
-  for my $l (@letters) {
-    # Every letter in the cipher word either matches a single letter, a set of letters, or
-    # a backreference to a previous match (we would overflow if someone had a 20 letter
-    # word of duplicates, but such words don't exist)
-    if ($seen{$l}) {
-      # back reference
-      $re .= '\\' . $seen{$l};
+    if (ref $mapping{$l}) {
+      # set of letters
+      $re .= '[' . join('', @{$mapping{$l}}) . ']';
     } else {
-      my $part;
-      if (ref $mapping{$l}) {
-        # set of letters
-        $part = '[' . join('', @{$mapping{$l}}) . ']';
-      } else {
-        # Single letter
-        $part = $mapping{$l};
-      }
-      if ($count{$l} > 1) {
-        # This letter shows up multiple times, so set up the back reference
-        $re .= "($part)";
-        $seen{$l} = $i++;
-      } else {
-        $re .= $part;
-      }
+      # Single letter
+      $re .= $mapping{$l};
     }
   }
   $re .= '$';
