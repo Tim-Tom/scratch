@@ -107,6 +107,10 @@ sub constrain_letters($index) {
   for my $l (keys %seen) {
     my @available = keys %{$seen{$l}};
     my @old = ref $mapping{$l} ? @{$mapping{$l}} : ($mapping{$l}, );
+    @available = grep { my $a = $_; grep { $a eq $_ } @old } @available;
+    if (@available == 0) {
+      return (0, );
+    }
     if (@available < @old) {
       if (@available == 1) {
         $mapping{$l} = $available[0];
