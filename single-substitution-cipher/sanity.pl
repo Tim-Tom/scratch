@@ -7,6 +7,14 @@ use experimental qw(signatures);
 
 use List::Util qw(uniq);
 
+=pod
+
+Simple script that just makes sure that a given piece of text doesn't contain any words
+that the decipherer will have trouble with. This obviously assumes you have the text
+already decoded, which doesn't help if you find one of these in the wild and someone had a
+typo, but it finds any typos you made when creating a test text.
+
+=cut
 
 my %words;
 
