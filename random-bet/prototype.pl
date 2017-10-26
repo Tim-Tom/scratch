@@ -92,3 +92,9 @@ say "Found " . scalar @solutions . " solutions of length @{[$limit + 1]}";
 foreach my $solution (sort @solutions) {
   print_solution($solution);
 }
+
+say "What happened to his solutions?";
+
+print_solution("175-199-223");
+print_solution("197-205-213");
+print_solution("209-217-225");
