@@ -19,7 +19,7 @@ my %words;
   }
 }
 
-my @words = map { lc } map { chomp; split } <ARGV>;
+my @words = uniq map { lc } map { chomp; split } <ARGV>;
 
 close ARGV;
 
@@ -70,6 +70,29 @@ sub make_re($word) {
 
 my $max_index = 0;
 
+sub make_unique($letter) {
+  my $mapped = $mapping{$letter};
+  die if ref $mapped;
+  my @result = $letter;
+  for my $l2 (@letters) {
+    next if $l2 eq $letter;
+    my @m = ref $mapping{$l2} ? @{$mapping{$l2}} : ($mapping{$l2}, );
+    my @new = grep { $_ ne $mapped } @m;
+    return (0, ) if (@new == 0);
+    if (@m != @new) {
+      if (@new == 1) {
+        $mapping{$l2} = $new[0];
+        my ($success, @res) = make_unique($l2);
+        return (0, ) unless $success;
+        push(@result, @res);
+      } else {
+      }
+      push(@result, $l2);
+    }
+  }
+  return (1, @result);
+}
+
 sub constrain_letters($index) {
   my @b = split(//, $words[$index]);
   my %seen;
@@ -80,28 +103,34 @@ sub constrain_letters($index) {
       $seen{$b[$i]}{$l[$i]} = 1;
     }
   }
+  my @unique;
   for my $l (keys %seen) {
     my @available = keys %{$seen{$l}};
     my @old = ref $mapping{$l} ? @{$mapping{$l}} : ($mapping{$l}, );
     if (@available < @old) {
       if (@available == 1) {
         $mapping{$l} = $available[0];
+        my ($success, @l) = make_unique($l);
+        return (0, ) unless $success;
+        push(@shrunk, @l);
       } else {
         $mapping{$l} = [sort @available];
       }
       push(@shrunk, $l);
     }
   }
-  return @shrunk;
+  return (1, @shrunk);
 }
 
-sub check_constraints($letter) {
+sub check_constraints(@letters) {
   my %follow_up;
-  for my $wi (@{$contains{$letter}}) {
+  for my $wi (uniq map { @{$contains{$_}} } @letters) {
     my $word_re = make_re($words[$wi]);
     $possible_words[$wi] = [ grep { /$word_re/ } @{$possible_words[$wi]} ];
     return 0 if (@{$possible_words[$wi]} == 0);
-    $follow_up{$_}++ foreach (constrain_letters($wi));
+    my ($success, @follow_up) = constrain_letters($wi);
+    return 0 unless $success;
+    $follow_up{$_}++ foreach (@follow_up);
   }
   return !grep { !check_constraints($_) } keys %follow_up;
 }
@@ -109,7 +138,7 @@ sub check_constraints($letter) {
 sub pick($index) {
   if ($index == @letters) {
     my ($from, $to) = ('', '');
-    for my $f (keys %mapping) {
+    for my $f (sort keys %mapping) {
       my $t = $mapping{$f};
       die if ref $t;
       $from .= $f;
@@ -137,7 +166,8 @@ sub pick($index) {
   my @available = @{$mapping{$letter}};
   for my $destination (@available) {
     $mapping{$letter} = $destination;
-    my $success = check_constraints($letter);
+    my ($success, @check) = make_unique($letter);
+    $success = check_constraints(@check) if $success;
     pick($index + 1) if $success;
     @possible_words = @word_backup;
     %mapping = %mapping_backup;
