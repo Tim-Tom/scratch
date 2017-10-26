@@ -54,7 +54,7 @@ sub make_re($word) {
       if (ref $mapping{$l}) {
         $part = '[' . join('', @{$mapping{$l}}) . ']';
       } else {
-        $part = $l;
+        $part = $mapping{$l};
       }
       if ($count{$l} > 1) {
         $re .= "($part)";
