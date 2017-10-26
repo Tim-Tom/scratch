@@ -8,9 +8,10 @@ use experimental qw(signatures);
 use List::Util qw(uniq);
 use Data::Printer;
 
+my $DEBUG = $ENV{DEBUG};
+
 # Stores the list of all words binned by word type
 my %words;
-
 
 # Turns a word into its constituent type. This is a string where every letter has been
 # mapped to the number that represents the first position in the string it was seen.  So:
@@ -28,7 +29,7 @@ sub map_word($word) {
 
 # Read in list of valid words
 {
-  open(my $words, '<:encoding(utf-8)', 'words.txt') or die "Couldn't open word list. Run ./sanitize-word-list.sh to generate";
+  open(my $words, '<:encoding(ascii)', 'words.txt') or die "Couldn't open word list. Run ./sanitize-word-list.sh to generate: $!";
   # open(my $words, '<:encoding(utf-8)', 'seven-words/american-english-filtered') or die;
   while(<$words>) {
     chomp;
@@ -44,7 +45,7 @@ close ARGV;
 # Extract the list of unique letters from the words
 my @letters = sort { $a cmp $b} uniq map { split(//) } @words;
 
-print STDERR join('-', @letters) . "\n";
+if ($DEBUG) { print STDERR join('-', @letters) . "\n"; }
 
 # Initially any cipher letter can map to anything
 my %mapping = map { $_ => ['a' .. 'z'] } @letters;
@@ -75,7 +76,7 @@ sub make_re($word) {
     }
   }
   $re .= '$';
-  return qr/$re/;
+  return qr/$re/aa;
 }
 
 # When only one letter is possible, this function ensures that letter will be removed from
@@ -161,7 +162,7 @@ sub check_constraints(@letters) {
   my %follow_up;
   for my $wi (uniq map { @{$contains{$_}} } @letters) {
     my $word_re = make_re($words[$wi]);
-    $possible_words[$wi] = [ grep { /$word_re/ } @{$possible_words[$wi]} ];
+    $possible_words[$wi] = [ grep { /$word_re/aa } @{$possible_words[$wi]} ];
     return 0 if (@{$possible_words[$wi]} == 0);
     my ($success, @follow_up) = constrain_letters($wi);
     return 0 unless $success;
@@ -170,7 +171,6 @@ sub check_constraints(@letters) {
   return 1 unless keys %follow_up;
   return check_constraints(keys %follow_up);
 }
-
 
 # For debug printing so we know how deep the search has travelled. Not really neccessary
 # now that the code is fast, but there's little reason to remove it and it gives some idea
@@ -198,7 +198,7 @@ sub pick($index) {
     say '----------';
     return;
   }
-  if ($index > $max_index) {
+  if ($DEBUG && $index > $max_index) {
     # Debug print
     print STDERR "Assigned $index letters\n";
     for my $i ( 0 .. $#possible_words) {
@@ -222,7 +222,7 @@ sub pick($index) {
   }
 }
 
-p(%contains);
+p(%contains) if $DEBUG;
 
 @letters = sort { @{$contains{$b}} <=> @{$contains{$a}} || $a cmp $b } @letters;
 
