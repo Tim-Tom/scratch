@@ -67,10 +67,10 @@ package body Decipherer is
             found : Boolean := False;
          begin
             if cp.num_possible = 1 then
-               found := cp.possibilities(1) /= c;
+               found := cp.possibilities(1) = c;
             elsif cp.num_possible = 26 then
                found := True;
-            elsif cp.num_possible < 26 then
+            else
                for j in 1 .. cp.num_possible loop
                   if cp.possibilities(j) = c then
                      found := True;
