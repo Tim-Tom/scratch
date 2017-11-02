@@ -105,11 +105,23 @@ package body Decipherer is
       IO.New_Line;
    end Put_Possible;
 
+   procedure Put_Inclusion(state: Decipher_State) is
+   begin
+      for i in 1 .. state.Num_Letters loop
+         IO.Put(Encrypted_Char'Image(state.characters(i).c) & ": ");
+         for j in 1 .. state.Num_Words loop
+            exit when state.inclusion(i, j) = 0;
+            IO.Put(Natural'Image(state.inclusion(i, j)));
+         end loop;
+         IO.New_Line;
+      end loop;
+   end Put_Inclusion;
+
    procedure Make_Unique(state : in out Decipher_State; ci : Positive; success : out Boolean; changed : in out Letter_Toggle) is
       letter : constant Character := state.characters(ci).possibilities(1);
    begin
       success := True;
-      IO.Put_Line("Determined that " & Encrypted_Char'Image(state.characters(ci).c) & " has to be a " & Character'Image(letter));
+      --  IO.Put_Line("Determined that " & Encrypted_Char'Image(state.characters(ci).c) & " has to be a " & Character'Image(letter));
       for i in state.characters'Range loop
          if i /= ci then
             declare
@@ -121,13 +133,13 @@ package body Decipherer is
                         success := False;
                         return;
                      else
-                        IO.Put("Before: "); Put_Possible(cp);
+                        --  IO.Put("Before: "); Put_Possible(cp);
                         cp.possibilities(j .. cp.num_possible - 1) := cp.possibilities(j + 1 .. cp.num_possible);
                         cp.num_possible := cp.num_possible - 1;
-                        IO.Put("After: "); Put_Possible(cp);
+                        --  IO.Put("After: "); Put_Possible(cp);
                         changed(i) := True;
                         if cp.num_possible = 1 then
-                           IO.Put_Line("Make_Unique from Make_Unique");
+                           --  IO.Put_Line("Make_Unique from Make_Unique");
                            Make_Unique(state, i, success, changed);
                            if not success then
                               return;
@@ -162,19 +174,19 @@ package body Decipherer is
       end loop;
       for i in used'range loop
          if used(i) then
-            IO.Put("Seen: ");
-            for c in Character range 'a' .. 'z' loop
-               if (seen(i, c)) then
-                  IO.Put(c);
-               end if;
-            end loop;
-            IO.New_Line;
+            --  IO.Put("Seen: ");
+            --  for c in Character range 'a' .. 'z' loop
+            --     if (seen(i, c)) then
+            --        IO.Put(c);
+            --     end if;
+            --  end loop;
+            --  IO.New_Line;
             declare
                cp : Char_Possibilities renames state.characters(i);
                shrunk : Boolean := False;
                write_head : Natural := 0;
             begin
-               IO.Put("Before: "); Put_Possible(cp);
+               --  IO.Put("Before: "); Put_Possible(cp);
                for read_head in 1 .. cp.Num_Possible loop
                   if seen(i, cp.possibilities(read_head)) then
                      write_head := write_head + 1;
@@ -186,14 +198,14 @@ package body Decipherer is
                   end if;
                end loop;
                cp.Num_Possible := write_head;
-               IO.Put("After: "); Put_Possible(cp);
+               --  IO.Put("After: "); Put_Possible(cp);
                if Shrunk then
                   changed(i) := True;
                   if cp.Num_Possible = 0 then
                      success := False;
                      return;
                   elsif cp.Num_Possible = 1 then
-                     IO.Put_Line("Make_Unique from Constrain_Letters");
+                     --  IO.Put_Line("Make_Unique from Constrain_Letters");
                      Make_Unique(state, i, success, changed);
                      if not success then
                         return;
@@ -234,10 +246,10 @@ package body Decipherer is
                   success := False;
                   return;
                elsif Natural(new_words.Length) = Natural(state.words(i).words.Length) then
-                  IO.Put_Line("Word set for " & Positive'Image(i) & "(" & Image(state.candidates(i)) & ") did not shrink from " & Ada.Containers.Count_Type'Image(state.words(i).words.all.Length));
+                  --  IO.Put_Line("Word set for " & Positive'Image(i) & "(" & Image(state.candidates(i)) & ") did not shrink from " & Ada.Containers.Count_Type'Image(state.words(i).words.all.Length));
                   Free_Word_Vector(new_Words);
                else
-                  IO.Put_Line("Restricting word set for " & Positive'Image(i) & "(" & Image(state.candidates(i)) & ") from " & Ada.Containers.Count_Type'Image(state.words(i).words.all.Length) & " to " & Ada.Containers.Count_Type'Image(new_words.all.Length));
+                  --  IO.Put_Line("Restricting word set for " & Positive'Image(i) & "(" & Image(state.candidates(i)) & ") from " & Ada.Containers.Count_Type'Image(state.words(i).words.all.Length) & " to " & Ada.Containers.Count_Type'Image(new_words.all.Length));
                   if state.words(i).is_using_root then
                      state.words(i).is_using_root := False;
                   else
@@ -295,12 +307,12 @@ package body Decipherer is
                changed := (others => False);
                changed(ci) := True;
                state.characters(ci).possibilities(1) := characters(ci).possibilities(mi);
-               IO.Put_Line("Guessing " & Character'Image(state.characters(ci).possibilities(mi)) & " for " & Encrypted_Char'Image(state.characters(ci).c));
+               --  IO.Put_Line("Guessing " & Character'Image(state.characters(ci).possibilities(mi)) & " for " & Encrypted_Char'Image(state.characters(ci).c));
                state.characters(ci).num_possible := 1;
                for wi in 1 .. state.num_words loop
                   state.words(wi).is_using_root := True;
                end loop;
-               IO.Put_Line("Make_Unique from Guess_Letter");
+               --  IO.Put_Line("Make_Unique from Guess_Letter");
                Make_Unique(state, ci, success, changed);
                if success then
                   Check_Constraints(state, changed, success);
@@ -308,7 +320,7 @@ package body Decipherer is
                      Guess_Letter(state, ci + 1);
                   end if;
                end if;
-               IO.Put_Line("Restore Letter guess for " & Positive'Image(ci));
+               --  IO.Put_Line("Restore Letter guess for " & Positive'Image(ci));
                state.characters := characters;
                state.words := words;
             end loop;
@@ -353,6 +365,7 @@ package body Decipherer is
                   for mi in 1 .. num_words loop
                      if state.inclusion(ci, mi) = 0 then
                         state.inclusion(ci, mi) := i;
+                        exit;
                      elsif state.inclusion(ci, mi) = i then
                         exit;
                      end if;
@@ -362,6 +375,7 @@ package body Decipherer is
             state.words(i).is_using_root := True;
             state.words(i).words := words.Element(Word_List.Make_Pattern(Image(candidates(i))));
          end loop;
+         -- Put_Inclusion(state);
          Guess_Letter(state, 1);
          return result;
       end;
