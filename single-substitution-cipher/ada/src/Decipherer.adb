@@ -315,7 +315,7 @@ package body Decipherer is
          declare
             result : Result_Set := (others => '.');
          begin
-            -- Put_Solution(state);
+            --  Put_Solution(state);
             for ci in 1 .. state.num_letters loop
                if state.characters(ci).num_possible /= 1 then
                   raise Constraint_Error;
@@ -335,7 +335,7 @@ package body Decipherer is
          begin
             if state.characters(ci).num_possible = 1 then
                -- Nothing to do, pass it up the line
-               Guess_Letter(state, ci + 1);
+               Guess_Letter(state, gi + 1);
             else
                declare
                   success : Boolean;
@@ -358,7 +358,7 @@ package body Decipherer is
                      if success then
                         Check_Constraints(state, changed, success);
                         if success then
-                           Guess_Letter(state, ci + 1);
+                           Guess_Letter(state, gi + 1);
                         end if;
                      end if;
                      --  IO.Put_Line("Restore Letter guess for " & Positive'Image(ci));
@@ -424,7 +424,7 @@ package body Decipherer is
          -- Put_Inclusion(state);
          for i in inclusion_priority'range loop
             state.guess_order(i) := inclusion_priority(i).item;
-            -- IO.Put_Line("Guess " & Integer'Image(i) & " is " & Encrypted_Char'Image(state.characters(inclusion_priority(i).item).c) & " with " & Integer'Image(inclusion_priority(i).priority) & " words connected to it");
+            --  IO.Put_Line("Guess " & Integer'Image(i) & " is " & Encrypted_Char'Image(state.characters(inclusion_priority(i).item).c) & " with " & Integer'Image(inclusion_priority(i).priority) & " words connected to it");
          end loop;
 
          Guess_Letter(state, 1);
