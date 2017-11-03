@@ -13,19 +13,19 @@ Problem
 3. Each school can have at between 1 and 4 teams competing. At least one school will have
    two teams.
 4. Each workstation has an x and y coordinate associated with it.
-5. Cheating is proportional to the minimum euclidian distance between two teams from the
+5. Cheating is proportional to the minimum euclidean distance between two teams from the
    same school.
 
 Analysis
 --------
 
 So the first thing to notice from the problem statement is that all these numbers are
-really tiny. So tiny that you can pretty much guaruntee you are supposed to brute force
+really tiny. So tiny that you can pretty much guarantee you are supposed to brute force
 the solution.  But there's a catch, 14! = 87,178,291,200, which is too much to truly brute
 force. So you need to exploit at least one of the following redundancies (and possibly both):
 
 1. Teams within a school are indistinguishable.
-2. Schools are indistingushable from any other school with the same number of
+2. Schools are indistinguishable from any other school with the same number of
    teams. (i.e. AABB and BBAA will just result in swapping the minimum distance between A
    and B which doesn't change our answer, but ABAB is different).
 
@@ -128,7 +128,7 @@ simplicity I have taken Algorithm L from The Art of Computer Programming, which 
 the standard algorithm you will see expressed on the internet.
 
 The second will be a series of permutation algorithms. The first will be applied to the
-total workstation space and will iterate through the school size partitionings. The second
+total workstation space and will iterate through the school size partitioning. The second
 will be applied within those partitions to order the schools appropriately.
 
 Finally I shall do the second algorithm using one permutation loop by trimming off bad
