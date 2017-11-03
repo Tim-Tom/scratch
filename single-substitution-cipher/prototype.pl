@@ -39,7 +39,7 @@ sub map_word($word) {
 }
 
 # Read in the cipher text
-my @words = uniq map { lc } map { chomp; split } <ARGV>;
+my @words = uniq map { lc } map { /([a-zA-Z]+)/g } <ARGV>;
 close ARGV;
 
 # Extract the list of unique letters from the words

@@ -27,7 +27,8 @@ my %words;
   }
 }
 
-my @words = map { lc } map { chomp; split } <ARGV>;
+my @words = uniq map { lc } map { /([a-zA-Z]+)/g } <ARGV>;
+close ARGV;
 
 my @possible;
 
