@@ -50,6 +50,7 @@ package body Decipherer is
       words : Word_Possibilities_Array(1 .. num_words);
       inclusion : Word_Inclusion(1 .. num_letters, 1 .. num_words);
       guess_order : Guess_Order_Array(1 .. num_letters);
+      results : Result_Vector;
    end record;
 
    function Image(ew: Encrypted_Word) return Word_List.Word is
@@ -131,6 +132,32 @@ package body Decipherer is
          IO.New_Line;
       end loop;
    end Put_Inclusion;
+   
+   procedure Put_Solution(state : Decipher_State) is
+   begin
+      IO.Put_Line("Found Solution");
+      for ci in 1 .. state.num_letters loop
+         IO.Put(Character(state.characters(ci).c));
+         if state.characters(ci).num_possible /= 1 then
+            IO.Put_Line(": Invalid State");
+            return;
+         end if;
+      end loop;
+      IO.New_Line;
+      for ci in 1 .. state.num_letters loop
+         IO.Put(state.characters(ci).possibilities(1));
+      end loop;
+      IO.New_Line;
+      for wi in 1 .. state.num_words loop
+         IO.Put(Image(state.candidates(wi)) & ": ");
+         if Natural(state.words(wi).words.all.Length) = 1 then
+            IO.Put_Line(state.words(wi).words.First_Element);
+         else
+            IO.Put_Line("*Invalid: " & Ada.Containers.Count_Type'Image(state.words(wi).words.all.Length) & " Words");
+         end if;
+      end loop;
+      IO.Put_Line("--------------------------");
+   end Put_Solution;
 
    procedure Make_Unique(state : in out Decipher_State; ci : Positive; success : out Boolean; changed : in out Letter_Toggle) is
       letter : constant Character := state.characters(ci).possibilities(1);
@@ -285,28 +312,23 @@ package body Decipherer is
    procedure Guess_Letter(state : in out Decipher_State; gi : Positive) is
    begin
       if gi > state.num_letters then
-         IO.Put_Line("Found Solution");
-         for ci in 1 .. state.num_letters loop
-            IO.Put(Character(state.characters(ci).c));
-            if state.characters(ci).num_possible /= 1 then
-               IO.Put_Line(": Invalid State");
-               return;
-            end if;
-         end loop;
-         IO.New_Line;
-         for ci in 1 .. state.num_letters loop
-            IO.Put(state.characters(ci).possibilities(1));
-         end loop;
-         IO.New_Line;
-         for wi in 1 .. state.num_words loop
-            IO.Put(Image(state.candidates(wi)) & ": ");
-            if Natural(state.words(wi).words.all.Length) = 1 then
-               IO.Put_Line(state.words(wi).words.all(1));
-            else
-               IO.Put_Line("*Invalid: " & Ada.Containers.Count_Type'Image(state.words(wi).words.all.Length) & " Words");
-            end if;
-         end loop;
-         IO.Put_Line("--------------------------");
+         declare
+            result : Result_Set := (others => '.');
+         begin
+            -- Put_Solution(state);
+            for ci in 1 .. state.num_letters loop
+               if state.characters(ci).num_possible /= 1 then
+                  raise Constraint_Error;
+               end if;
+               result(state.characters(ci).c) := state.characters(ci).possibilities(1);
+            end loop;
+            for wi in 1 .. state.num_words loop
+               if Natural(state.words(wi).words.all.Length) /= 1 then
+                  raise Constraint_Error;
+               end if;
+            end loop;
+            state.results.Append(result);
+         end;
       else
          declare
             ci : constant Positive := state.guess_order(gi);
@@ -349,7 +371,7 @@ package body Decipherer is
       end if;
    end Guess_Letter;
 
-   function Decipher(candidates: Candidate_Set; words: Word_List.Word_List) return Result_Set is
+   function Decipher(candidates: Candidate_Set; words: Word_List.Word_List) return Result_Vector is
       letters : Character_Sets.Set;
    begin
       for ci in candidates'Range loop
@@ -361,7 +383,6 @@ package body Decipherer is
       declare
          num_words : constant Positive := Positive(candidates'Length);
          num_letters : constant Positive := Positive(letters.Length);
-         result : Result_Set(1 .. num_letters);
          state : Decipher_State(num_words, num_letters);
          cur : Character_Sets.Cursor := letters.First;
          inclusion_priority : Priority_Pair_Array(1 .. num_letters);
@@ -405,9 +426,9 @@ package body Decipherer is
             state.guess_order(i) := inclusion_priority(i).item;
             -- IO.Put_Line("Guess " & Integer'Image(i) & " is " & Encrypted_Char'Image(state.characters(inclusion_priority(i).item).c) & " with " & Integer'Image(inclusion_priority(i).priority) & " words connected to it");
          end loop;
-         
+
          Guess_Letter(state, 1);
-         return result;
+         return state.results;
       end;
    end Decipher;
 
