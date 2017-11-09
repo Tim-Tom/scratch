@@ -4,6 +4,12 @@
 #include <map>
 #include <vector>
 
+#define NUM_LETTERS 26
+#define NUM_WORDS 38
+#define NUM_PATTERNS 9
+#define MAX_PATTERN_SIZE 8
+
+
 const char* const cipher_text = \
     "The rain in spain falls mainly on the plains\n" \
     "The quick brown fox jumps over the lazy dog\n" \
@@ -16,21 +22,11 @@ typedef struct pattern_range {
     int to;
 } pattern_range;
 
-const int num_letters = 26;
 const char* const letters = "anoilerwcfthpsmubdjkgyqvxz";
+const int letter_mapping[26] = {0, 16, 8, 17, 5, 9, 20, 11, 3, 18, 19, 4, 14, 1, 2, 12, 22, 6, 13, 10, 15, 23, 7, 24, 21, 25};
 
-#define NUM_PATTERNS 9
-#define MAX_PATTERN_SIZE 8
 const char* const patterns[NUM_PATTERNS] = {"a", "ab", "abc", "abcc", "abcd", "abccd", "abcde", "abcdef", "abcdefgh"};
 const pattern_range pattern_index[MAX_PATTERN_SIZE + 1] = {{-1,-1}, {0,0}, {1,1}, {2,2}, {3,4}, {5,6}, {7,7}, {-1,-1}, {8,8}};
-
-typedef struct word {
-    const char* const word;
-    const char* const pattern;
-} word_t;
-
-#define NUM_WORDS 38
-const word_t words[NUM_WORDS] = {{"a", patterns[0]}, {"in", patterns[1]}, {"of", patterns[1]}, {"on", patterns[1]}, {"to", patterns[1]}, {"up", patterns[1]}, {"and", patterns[2]}, {"cow", patterns[2]}, {"dog", patterns[2]}, {"fox", patterns[2]}, {"his", patterns[2]}, {"how", patterns[2]}, {"now", patterns[2]}, {"ran", patterns[2]}, {"the", patterns[2]}, {"came", patterns[4]}, {"down", patterns[4]}, {"fell", patterns[3]}, {"hill", patterns[3]}, {"jack", patterns[4]}, {"jill", patterns[3]}, {"lazy", patterns[4]}, {"over", patterns[4]}, {"pail", patterns[4]}, {"rain", patterns[4]}, {"after", patterns[6]}, {"broke", patterns[6]}, {"brown", patterns[6]}, {"crown", patterns[6]}, {"falls", patterns[5]}, {"fetch", patterns[6]}, {"jumps", patterns[6]}, {"quick", patterns[6]}, {"spain", patterns[6]}, {"water", patterns[6]}, {"mainly", patterns[7]}, {"plains", patterns[7]}, {"tumbling", patterns[8]}};
 
 typedef std::vector<const char*> wordList;
 typedef std::map<const char*, wordList> wordMap;
@@ -52,6 +48,130 @@ typedef struct state {
   charPossibilities characters[NUM_LETTERS];
   wordPossibilities words[NUM_WORDS];
 } state;
+
+typedef struct word word_t;
+
+typedef bool (*checkWord_t)(const state&, const word_t&, const char*);
+
+struct word {
+  const char* const word;
+  const char* const pattern;
+  checkWord_t checkWord;
+};
+
+bool check_letter(const state& s, char c, int ci) {
+  int j;
+  for (j = 0; j < s.characters[ci].numPossible; ++j) {
+    if (s.characters[ci].possibilities[j] == c) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool check_worda(const state& s, const word_t& candidate, const char* word) {
+  return check_letter(s, word[0], letter_mapping[candidate.word[0] - 'a']);
+}
+
+bool check_wordab(const state& s, const word_t& candidate, const char* word) {
+  return check_letter(s, word[0], letter_mapping[candidate.word[0] - 'a'])
+      && check_letter(s, word[1], letter_mapping[candidate.word[1] - 'a']);
+}
+
+bool check_wordabc(const state& s, const word_t& candidate, const char* word) {
+  return check_letter(s, word[0], letter_mapping[candidate.word[0] - 'a'])
+      && check_letter(s, word[1], letter_mapping[candidate.word[1] - 'a'])
+      && check_letter(s, word[2], letter_mapping[candidate.word[2] - 'a']);
+}
+
+bool check_wordabcc(const state& s, const word_t& candidate, const char* word) {
+  return check_letter(s, word[0], letter_mapping[candidate.word[0] - 'a'])
+      && check_letter(s, word[1], letter_mapping[candidate.word[1] - 'a'])
+      && check_letter(s, word[2], letter_mapping[candidate.word[2] - 'a']);
+}
+
+bool check_wordabcd(const state& s, const word_t& candidate, const char* word) {
+  return check_letter(s, word[0], letter_mapping[candidate.word[0] - 'a'])
+      && check_letter(s, word[1], letter_mapping[candidate.word[1] - 'a'])
+      && check_letter(s, word[2], letter_mapping[candidate.word[2] - 'a'])
+      && check_letter(s, word[3], letter_mapping[candidate.word[3] - 'a']);
+}
+
+bool check_wordabccd(const state& s, const word_t& candidate, const char* word) {
+  return check_letter(s, word[0], letter_mapping[candidate.word[0] - 'a'])
+      && check_letter(s, word[1], letter_mapping[candidate.word[1] - 'a'])
+      && check_letter(s, word[2], letter_mapping[candidate.word[2] - 'a'])
+      && check_letter(s, word[4], letter_mapping[candidate.word[4] - 'a']);
+}
+
+bool check_wordabcde(const state& s, const word_t& candidate, const char* word) {
+  return check_letter(s, word[0], letter_mapping[candidate.word[0] - 'a'])
+      && check_letter(s, word[1], letter_mapping[candidate.word[1] - 'a'])
+      && check_letter(s, word[2], letter_mapping[candidate.word[2] - 'a'])
+      && check_letter(s, word[3], letter_mapping[candidate.word[3] - 'a'])
+      && check_letter(s, word[4], letter_mapping[candidate.word[4] - 'a']);
+}
+
+bool check_wordabcdef(const state& s, const word_t& candidate, const char* word) {
+  return check_letter(s, word[0], letter_mapping[candidate.word[0] - 'a'])
+      && check_letter(s, word[1], letter_mapping[candidate.word[1] - 'a'])
+      && check_letter(s, word[2], letter_mapping[candidate.word[2] - 'a'])
+      && check_letter(s, word[3], letter_mapping[candidate.word[3] - 'a'])
+      && check_letter(s, word[4], letter_mapping[candidate.word[4] - 'a'])
+      && check_letter(s, word[5], letter_mapping[candidate.word[5] - 'a']);
+}
+
+bool check_wordabcdefgh(const state& s, const word_t& candidate, const char* word) {
+  return check_letter(s, word[0], letter_mapping[candidate.word[0] - 'a'])
+      && check_letter(s, word[1], letter_mapping[candidate.word[1] - 'a'])
+      && check_letter(s, word[2], letter_mapping[candidate.word[2] - 'a'])
+      && check_letter(s, word[3], letter_mapping[candidate.word[3] - 'a'])
+      && check_letter(s, word[4], letter_mapping[candidate.word[4] - 'a'])
+      && check_letter(s, word[5], letter_mapping[candidate.word[5] - 'a'])
+      && check_letter(s, word[6], letter_mapping[candidate.word[6] - 'a'])
+      && check_letter(s, word[7], letter_mapping[candidate.word[7] - 'a']);
+}
+
+const word_t words[NUM_WORDS] = {
+  {"a",        patterns[0], &check_worda },
+  {"in",       patterns[1], &check_wordab },
+  {"of",       patterns[1], &check_wordab },
+  {"on",       patterns[1], &check_wordab },
+  {"to",       patterns[1], &check_wordab },
+  {"up",       patterns[1], &check_wordab },
+  {"and",      patterns[2], &check_wordabc },
+  {"cow",      patterns[2], &check_wordabc },
+  {"dog",      patterns[2], &check_wordabc },
+  {"fox",      patterns[2], &check_wordabc },
+  {"his",      patterns[2], &check_wordabc },
+  {"how",      patterns[2], &check_wordabc },
+  {"now",      patterns[2], &check_wordabc },
+  {"ran",      patterns[2], &check_wordabc },
+  {"the",      patterns[2], &check_wordabc },
+  {"came",     patterns[4], &check_wordabcd },
+  {"down",     patterns[4], &check_wordabcd },
+  {"fell",     patterns[3], &check_wordabcc },
+  {"hill",     patterns[3], &check_wordabcc },
+  {"jack",     patterns[4], &check_wordabcd },
+  {"jill",     patterns[3], &check_wordabcc },
+  {"lazy",     patterns[4], &check_wordabcd },
+  {"over",     patterns[4], &check_wordabcd },
+  {"pail",     patterns[4], &check_wordabcd },
+  {"rain",     patterns[4], &check_wordabcd },
+  {"after",    patterns[6], &check_wordabcde },
+  {"broke",    patterns[6], &check_wordabcde },
+  {"brown",    patterns[6], &check_wordabcde },
+  {"crown",    patterns[6], &check_wordabcde },
+  {"falls",    patterns[5], &check_wordabccd },
+  {"fetch",    patterns[6], &check_wordabcde },
+  {"jumps",    patterns[6], &check_wordabcde },
+  {"quick",    patterns[6], &check_wordabcde },
+  {"spain",    patterns[6], &check_wordabcde },
+  {"water",    patterns[6], &check_wordabcde },
+  {"mainly",   patterns[7], &check_wordabcdef },
+  {"plains",   patterns[7], &check_wordabcdef },
+  {"tumbling", patterns[8], &check_wordabcdefgh }
+};
 
 void make_pattern(const char* buffer, char* pattern) {
   char seen[26] = {0};

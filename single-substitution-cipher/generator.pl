@@ -63,14 +63,19 @@ typedef struct pattern_range {
 END
 
 print "\n";
-printf qq(const int num_letters = %d;\n), scalar @letters;
+printf qq(#define NUM_LETTERS %d\n), scalar @letters;
 printf qq(const char* const letters = "%s";\n), join('', @letters);
 
+{
+  my %letter_mapping = map { $letters[$_] => $_ } 0 .. $#letters;
+  printf qq(const int letter_mapping[26] = {%s};\n), join(', ', map { $letter_mapping{$_} // -1 } 'a' .. 'z');
+}
+
 print "\n";
-printf qq(const int num_patterns = %d;\n), scalar @patterns;
-printf qq(const int max_pattern_size = %d;\n), $#pattern_index;
-printf qq(const char* const patterns[] = {%s};\n), join(', ',  map { qq("$_") } @patterns);
-printf qq(const int pattern_index[] = {%s};\n), join(', ', map { sprintf '{%d,%d}', @{$_}{qw(from to)} } @pattern_index);
+printf qq(#define NUM_PATTERNS %d\n), scalar @patterns;
+printf qq(#define MAX_PATTERN_SIZE %d\n), $#pattern_index;
+printf qq(const char* const patterns[NUM_PATTERNS] = {%s};\n), join(', ',  map { qq("$_") } @patterns);
+printf qq(const int pattern_index[MAX_PATTERN_SIZE + 1] = {%s};\n), join(', ', map { sprintf '{%d,%d}', @{$_}{qw(from to)} } @pattern_index);
 
 print <<"END";
 typedef struct word {
@@ -84,5 +89,5 @@ my @word_patterns = do {
   map { [$_, $patterns{map_word $_}] } @words;
 };
 
-printf qq(const int num_words = %d;\n), scalar @words;
+printf qq(#define NUM_WORDS %d\n), scalar @words;
 printf qq(const word_t words[] = {%s};\n), join(', ', map { sprintf '{"%s", patterns[%d]}', @{$_} } @word_patterns);
