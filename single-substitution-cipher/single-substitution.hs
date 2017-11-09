@@ -25,6 +25,13 @@ updateCharacters s characters = State {
   inclusion = (inclusion s)
 }
 
+baseInclusion :: State -> [Bool]
+baseInclusion s =
+  (map (\_ -> False) (candidates s))
+
+mergeInclusion :: [Bool] -> [Bool] -> [Bool]
+mergeInclusion = zipWith (||)
+
 getItem :: Ord k => k -> Map.Map k [v] -> [v]
 getItem k m =
   Map.findWithDefault [] k m
@@ -72,44 +79,99 @@ makeUnique s c mapped =
       | k == c = ((success, altered), [mapped])
       | otherwise =
         let
-          (removed, filtered) = List.partition (\e -> e == mapped) v
+          (filtered, removed) = List.partition (\e -> e /= mapped) v
           success' = success && (not (null filtered))
         in case (null removed) of
           True  -> ((success', altered), filtered)
           False -> ((success', k:altered), filtered)
     ((success, altered), newCharacters) = Map.mapAccumWithKey remove (True, []) (characters s)
-    constrained = updateCharacters s newCharacters
-    makeFurtherUnique (False, _, _) _ = (False, [], s)
-    makeFurtherUnique (True, inc, s') (from, to:[]) =
+  in case success of
+    False -> (False, [], s)
+    True ->
       let
-        (success, newInc, s'') = makeUnique s' from to
-      in (success, (zipWith (||) inc newInc), s'')
-  in List.foldl' makeFurtherUnique (success, (getItem c (inclusion constrained)), constrained) (filter (\(_, v) -> null (tail v)) (map (\k -> (k, getItem k newCharacters)) altered))
+        constrained = updateCharacters s newCharacters
+        alteredCharacters = map (\l -> (l, getItem l newCharacters)) altered
+        (newUnique, justAltered) = List.partition (\(k, v) -> null (tail v)) alteredCharacters
+        baseInc = foldl mergeInclusion (getItem c (inclusion constrained)) (map (\(k, _) -> (getItem k (inclusion constrained))) justAltered)
+        makeFurtherUnique (False, _, _) _ = (False, [], s)
+        makeFurtherUnique (True, inc, s') (from, to:[]) =
+          let
+            (success, newInc, s'') = makeUnique s' from to
+          in (success, (mergeInclusion inc newInc), s'')
+      in List.foldl' makeFurtherUnique (success, baseInc, constrained) newUnique
 
-checkConstraint :: Bool -> (Bool, String, [String]) -> State -> (Bool, [String])
-checkConstraint False _ s = (False, [])
-checkConstraint True (False, _, words) s = (True, words)
-checkConstraint True (True, candidate, words) s =
+constrainLetter :: State -> [Bool] -> Char -> [Char] -> (Bool, State, [Bool])
+constrainLetter s inc c possible =
+  let
+    previous = (getItem c (characters s))
+    intersection = List.intersect previous possible
+    size = length intersection
+    shrunk = size < (length previous)
+  in case (size, shrunk) of
+    (0, _) -> (False, s, inc)
+    (_, False) -> (True, s, inc)
+    (1, True)  ->
+      let
+        (success, inc', s') = makeUnique s c (head intersection)
+        inc'' = mergeInclusion inc inc'
+      in (success, s', inc'')
+    (_, True)  ->
+      let
+        newCharacters = Map.adjust (\_ -> intersection) c (characters s)
+        s' = updateCharacters s newCharacters
+        inc' = mergeInclusion inc (getItem c (inclusion s))
+      in (True, s', inc')
+
+constrainLetters :: State -> String -> [String] -> (Bool, State, [Bool])
+constrainLetters s candidate words =
+  let
+    updateSeenForLetter :: (Char, (Char, [Char])) -> (Char, [Char])
+    updateSeenForLetter (l, (c, seen)) = if (elem l seen) then (c, seen) else (c, l:seen)
+    updateSeenForWord :: [(Char, [Char])] -> String -> [(Char, [Char])];
+    updateSeenForWord seen word = map updateSeenForLetter (zip word seen)
+    seen = foldl updateSeenForWord (map (\c -> (c, [])) candidate) words
+    constrainLetterWrap (success, s, inc) (c, possible)
+      | success == False = (False, s, inc)
+      | otherwise = constrainLetter s inc c possible
+  in
+    foldl constrainLetterWrap (True, s, baseInclusion s) seen
+
+filterPossibleWords :: State -> String -> [String] -> (Bool, Bool, [String])
+filterPossibleWords s candidate words =
   let
     possibilities = map (\c -> (getItem c (characters s))) candidate
     passes word = all (\(l, possible) -> elem l possible) (zip word possibilities)
-    filtered = filter passes words
-  in ((not (null filtered)), filtered)
+    (filtered, removed) = List.partition passes words
+  in ((not (null filtered)), (not (null removed)), filtered)
+
+checkConstraint :: State -> [Bool] -> (Bool, String, [String]) -> (Bool, State, [String], [Bool])
+checkConstraint s inc (False, candidate, words) = (True, s, words, inc)
+checkConstraint s inc (True, candidate, words) =
+  let
+    (success, changed, newWords) = filterPossibleWords s candidate words
+  in case (success, changed) of
+    (False, _) -> (False, s, [], inc)
+    (True, False) -> (True, s, newWords, inc)
+    (True, True) ->
+      let
+        (success', s', inc') = constrainLetters s candidate newWords
+      in (success', s', newWords, (mergeInclusion inc inc'))
 
 checkConstraints :: (Bool, [Bool], State) -> (Bool, State)
 checkConstraints (False, _, s) = (False, s)
 checkConstraints (True, altered, s) =
   let
-    reducer :: (Bool, [[String]]) -> (Bool, String, [String]) -> (Bool, [[String]])
-    reducer (success, soFar) stuff =
+    reducer :: (Bool, String, [String]) -> (Bool, State, [[String]], [Bool]) -> (Bool, State, [[String]], [Bool])
+    reducer _ (False, s, possible, inc) = (False, s, possible, inc)
+    reducer pkg (True, s, possible, inc) =
       let
-        (success', newPossible) = checkConstraint success stuff s
+        (success, s', newPossible, inc') = checkConstraint s inc pkg
       in
-        (success', newPossible:soFar)
-    (success, newPossibleWords) = foldl reducer (True, [])(zip3 altered (candidates s) (possibleWords s))
-    s' = updateWords s newPossibleWords
-  in (success, s')
-  
+        (success, s', newPossible:possible, inc')
+    (success, s', newPossibleWords, altered') = foldr reducer (True, s, [], (baseInclusion s)) (zip3 altered (candidates s) (possibleWords s))
+    s'' = updateWords s' newPossibleWords
+  in if any (id) altered' then checkConstraints (success, altered', s'') else (success, s'')
+
 guess :: State -> Char -> [Char] -> [Char] -> [Map.Map Char Char] -> [Map.Map Char Char]
 guess s c [] _ solutions = solutions
 guess s c (choice:remain) cs solutions =
@@ -133,26 +195,6 @@ solveRec s (c:cs) solutions
 
 solve :: State -> [Map.Map Char Char]
 solve  s = solveRec s (Map.keys (characters s)) []
-
--- For interactive purposes
-makeState :: IO State
-makeState =
-  do
-    encrypted <- readFile "test.txt"
-    allPossibilities <- readFile "words.txt"
-    let
-      words = getWords encrypted
-      patterns = List.nub (List.map makePattern words)
-      letters = List.nub (concat words)
-      inclusion = Map.fromList (map (\l -> (l, map (elem l) words)) letters)
-      possible = getPossibilities (lines allPossibilities) patterns
-      state = State {
-        candidates = words,
-        characters = Map.fromList (map (\l -> (l, ['a' ..'z'])) letters),
-        possibleWords = map (\w -> getItem (makePattern w) possible) words,
-        inclusion = inclusion
-      }
-    return state
 
 main :: IO ()
 main =
