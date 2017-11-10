@@ -9,7 +9,6 @@
 #define NUM_PATTERNS 9
 #define MAX_PATTERN_SIZE 8
 
-
 const char* const cipherText = \
     "The rain in spain falls mainly on the plains\n" \
     "The quick brown fox jumps over the lazy dog\n" \
@@ -107,11 +106,10 @@ const word_t words[NUM_WORDS] = {
 
 typedef struct inclusion {
   int numWords;
-  // Hack for now.
-  int words[NUM_WORDS];
+  int words[0];
 } inclusion_t;
 
-const inclusion_t inclusions[NUM_LETTERS] = {{14, {0, 6, 13, 15, 19, 21, 23, 24, 25, 29, 33, 34, 35, 36}}, {13, {1, 3, 6, 12, 13, 16, 24, 27, 28, 33, 35, 36, 37}}, {13, {2, 3, 4, 7, 8, 9, 11, 12, 16, 22, 26, 27, 28}}, {11, {1, 10, 18, 20, 23, 24, 32, 33, 35, 36, 37}}, {9, {17, 18, 20, 21, 23, 29, 35, 36, 37}}, {8, {14, 15, 17, 22, 25, 26, 30, 34}}, {8, {13, 22, 24, 25, 26, 27, 28, 34}}, {7, {7, 11, 12, 16, 27, 28, 34}}, {6, {7, 15, 19, 28, 30, 32}}, {6, {2, 9, 17, 25, 29, 30}}, {6, {4, 14, 25, 30, 34, 37}}, {5, {10, 11, 14, 18, 30}}, {5, {5, 23, 31, 33, 36}}, {5, {10, 29, 31, 33, 36}}, {4, {15, 31, 35, 37}}, {4, {5, 31, 32, 37}}, {3, {26, 27, 37}}, {3, {6, 8, 16}}, {3, {19, 20, 31}}, {3, {19, 26, 32}}, {2, {8, 37}}, {2, {21, 35}}, {1, {32}}, {1, {22}}, {1, {9}}, {1, {21}}};
+inclusion_t **inclusions;
 
 wordMap wordsByPattern;
 
@@ -131,20 +129,26 @@ void makePattern(const char* buffer, char* pattern) {
   *to = '\0';
 }
 
-void buildWordList(const char* const filename) {
+void* buildWordList(const char* const filename) {
   FILE* input = fopen(filename, "r");
   char buffer[128];
   char pattern[128];
   int len, i;
   patternRange range;
   const char * cloned;
+  char *memoryField, *currentHead;
+  unsigned long memoryFieldSize;
   if (!input) {
     fprintf(stderr, "Failed to open word file list");
     exit(1);
   }
+  fseek(input, 0, SEEK_END);
+  memoryFieldSize = ftell(input);
+  rewind(input);
   for (i = 0; i < NUM_PATTERNS; ++i) {
     wordsByPattern.insert(std::make_pair(patterns[i], new wordList));
   }
+  memoryField = currentHead = (char*)malloc(memoryFieldSize);
   while(!feof(input)) {
     if (!fgets(buffer, 128, input)) {
       break;
@@ -163,10 +167,23 @@ void buildWordList(const char* const filename) {
     }
     continue;
   found:
-    cloned = strdup(buffer);
+    cloned = strcpy(currentHead, buffer);
+    currentHead += len + 1;
     wordsByPattern[patterns[i]]->push_back(cloned);
   }
   fclose(input);
+  currentHead = (char*)realloc(memoryField, currentHead - memoryField);
+  if (currentHead != memoryField) {
+    // If realloc actually moves the pointer, then all of my pointers in the field are now
+    // pointing to freed memory, so I have to rehome them.
+    for (wordMap::iterator pit = wordsByPattern.begin(); pit != wordsByPattern.end(); ++pit) {
+      for (wordList::iterator it = pit->second->begin(); it != pit->second->end(); ++it) {
+        *it += (currentHead - memoryField);
+      }
+    }
+  }
+
+  return currentHead;
 }
 
 bool checkWord(const state& s, const word_t& candidate, const char* word) {
@@ -278,8 +295,8 @@ bool checkConstraints(state& s, letterToggle_t& changed) {
   for (int i = 0; i < NUM_LETTERS; ++i) {
     if (changed[i]) {
       anyChanged = true;
-      for(int j = 0; j < inclusions[i].numWords; ++j) {
-        wordsChanged[inclusions[i].words[j]] = true;
+      for(int j = 0; j < inclusions[i]->numWords; ++j) {
+        wordsChanged[inclusions[i]->words[j]] = true;
       }
     }
   }
@@ -363,9 +380,54 @@ void guessLetter(const state& s, int ci) {
   }
 }
 
+void buildInclusions() {
+  unsigned char* memory;
+  int totalWords = 0;
+  int i, j;
+  char l;
+  const char* cp;
+  for (i = 0; i < NUM_LETTERS; ++i) {
+    l = letters[i];
+    for (j = 0; j < NUM_WORDS; ++j) {
+      cp = words[j].word;
+      while (*cp != '\0') {
+        if (*cp++ == l) {
+          ++totalWords;
+          goto nextWord;
+        }
+      }
+    nextWord:
+      ;
+    }
+  }
+  memory = (unsigned char*)malloc(NUM_LETTERS*sizeof(inclusion_t*) + NUM_LETTERS*sizeof(inclusion_t) + totalWords*sizeof(int));
+  inclusions = (inclusion_t**)memory;
+  memory += NUM_LETTERS*sizeof(inclusion_t*);
+  for (i = 0; i < NUM_LETTERS; ++i) {
+    l = letters[i];
+    inclusions[i] = (inclusion_t*)memory;
+    inclusions[i]->numWords = 0;
+    memory += sizeof(inclusion_t);
+    for (j = 0; j < NUM_WORDS; ++j) {
+      cp = words[j].word;
+      while (*cp != '\0') {
+        if (*cp++ == l) {
+          inclusions[i]->words[inclusions[i]->numWords++] = j;
+          goto buildNextWord;
+        }
+      }
+    buildNextWord:
+      ;
+    }
+    memory += inclusions[i]->numWords * sizeof(int);
+  }
+}
+
 int main(int argc, const char* const argv[]) {
   state s;
-  buildWordList("words.txt");
+  void* wordMemory;
+  wordMemory = buildWordList("words.txt");
+  buildInclusions();
   for (int i = 0; i < NUM_LETTERS; ++i) {
     s.characters[i].c = letters[i];
     s.characters[i].numPossible = 26;
@@ -379,12 +441,10 @@ int main(int argc, const char* const argv[]) {
   }
   guessLetter(s, 0);
   for (wordMap::iterator pit = wordsByPattern.begin(); pit != wordsByPattern.end(); ++pit) {
-    for (wordList::iterator it = pit->second->begin(); it != pit->second->end(); ++it) {
-      free((void*)*it);
-    }
-    pit->second->clear();
     delete pit->second;
   }
   wordsByPattern.clear();
+  free(wordMemory);
+  free(inclusions);
   return 0;
 }
