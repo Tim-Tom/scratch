@@ -361,6 +361,11 @@ package body Decipherer is
                            Guess_Letter(state, gi + 1);
                         end if;
                      end if;
+                     for wi in 1 .. state.num_words loop
+                        if not state.words(wi).is_using_root then
+                           Free_Word_Vector(state.words(wi).words);
+                        end if;
+                     end loop;
                      --  IO.Put_Line("Restore Letter guess for " & Positive'Image(ci));
                      state.characters := characters;
                      state.words := words;

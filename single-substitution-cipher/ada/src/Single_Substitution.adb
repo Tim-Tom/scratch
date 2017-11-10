@@ -4,6 +4,7 @@ with Ada.Command_Line;
 with Ada.Containers; use Ada.Containers;
 with Ada.Characters.Handling;
 with Ada.Containers.Ordered_Sets;
+with Ada.Unchecked_Deallocation;
 
 with Word_List;
 with Decipherer;
@@ -16,6 +17,9 @@ procedure Single_Substitution is
    function "="(a, b: Decipherer.Encrypted_Word) return Boolean renames Decipherer."=";
    function "<"(a, b: Decipherer.Encrypted_Word) return Boolean renames Decipherer."<";
    package Word_Sets is new Ada.Containers.Ordered_Sets(Element_Type => Decipherer.Encrypted_Word);
+   
+   function "="(a, b: Word_List.Word_Lists.Cursor) return Boolean renames Word_List.Word_Lists."=";
+   procedure Free_Word_Vector is new Ada.Unchecked_Deallocation(Object => Word_List.Word_Vectors.Vector, Name => Word_List.Word_Vector);
    
    line : String (1 .. 512);
    last : Natural;
@@ -63,7 +67,7 @@ begin
       Get_Words(content);
       IO.Close(content);
       declare
-         list : constant Word_List.Word_List := Word_List.Build_Word_List(word_filename, patterns);
+         list : Word_List.Word_List := Word_List.Build_Word_List(word_filename, patterns);
          words : Decipherer.Candidate_Set(1 .. Positive(all_words.Length));
          c : Word_Sets.Cursor := all_words.First;
       begin
@@ -78,7 +82,15 @@ begin
             c : Character;
             ec : Decipherer.Encrypted_Char;
             content_stream : S_IO.Stream_Access;
+            cur : Word_List.Word_Lists.Cursor := list.First;
+            dummy : Word_List.Word_Vector;
          begin
+            while cur /= Word_List.Word_Lists.No_Element loop
+               dummy := Word_List.Word_Lists.Element(cur);
+               Free_Word_Vector(dummy);
+               Word_List.Word_Lists.Next(cur);
+            end loop;
+            Word_List.Word_Lists.Clear(list);
             if length = 0 then
                IO.Put_Line("No solutions found");
             end if;
