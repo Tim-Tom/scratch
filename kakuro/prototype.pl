@@ -76,7 +76,11 @@ sub add_constraint_to_queues($constraint) {
 sub add_cell_to_queues($cell) {
   if (@{$cell->{data}} == 1) {
     push(@unique_queue, $cell);
+    --$cell->{row}{remaining};
+    --$cell->{col}{remaining};
     ++$solved;
+  } elsif (@{$cell->{data}} == 0) {
+    die "Impossible state";
   }
   add_constraint_to_non_mask_queues($cell->{row});
   add_constraint_to_non_mask_queues($cell->{col});
@@ -99,6 +103,8 @@ sub build_constraint($index, $cell, $type) {
   push(@simulation_queue, $constraint);
   return $constraint;
 }
+
+sub simulate($sum, 
 
 sub read_line {
   my $line;
@@ -160,6 +166,7 @@ for my $row (0 .. $vsize - 1) {
     my $r = $rows[$row][$i];
     $r->{constraint} = $constraints[$i];
     $r->{length} = $rows[$row][$i]->{end} - $rows[$row][$i]->{start} + 1;
+    $r->{remaining} = $r->{length};
     my $key = $r->{length} . '-' . $r->{constraint};
     $r->{key} = $key;
     $r->{possible} = [@{$possible_sums{$key}}];
@@ -173,6 +180,7 @@ for my $col (0 .. $hsize - 1) {
     my $c = $columns[$col][$i];
     $c->{constraint} = $constraints[$i];
     $c->{length} = $columns[$col][$i]->{end} - $columns[$col][$i]->{start} + 1;
+    $c->{remaining} = $c->{length};
     my $key = $c->{length} . '-' . $c->{constraint};
     $c->{key} = $key;
     $c->{possible} = [@{$possible_sums{$key}}];
@@ -184,10 +192,8 @@ for my $cell (@cells) {
   my %rm = %{$mask{$cell->{row}{key}}};
   my %cm = %{$mask{$cell->{col}{key}}};
   $cell->{data} = [grep { $rm{$_} && $cm{$_} } @{$cell->{data}}];
-  push(@unique_queue, $cell) if (@{$cell->{data}} == 1);
+  add_cell_to_queues($cell);
 }
-
-$solved = @unique_queue;
 
 while($solved < @cells) {
   if (@unique_queue) {
@@ -215,6 +221,7 @@ while($solved < @cells) {
     }
   } elsif (@mask_queue) {
     my $constraint = shift(@mask_queue);
+    next if $constraint->{remaining} == 0;
     $constraint->{mask_dirty} = 0;
     my %m = map { $_ => 1 } map { @$_ } @{$constraint->{possible}};
     print "Masking $constraint->{name} using improved possibilities\n";
@@ -228,6 +235,7 @@ while($solved < @cells) {
     }
   } elsif (@required_queue) {
     my $constraint = shift(@required_queue);
+    next if $constraint->{remaining} == 0;
     $constraint->{req_dirty} = 0;
     print "Finding cells with unique required elements in $constraint->{name}\n";
     my %seen;
@@ -246,10 +254,24 @@ while($solved < @cells) {
     }
   } elsif (@multi_unique_queue) {
     my $constraint = shift(@multi_unique_queue);
+    next if $constraint->{remaining} == 0;
     $constraint->{unq_dirty} = 0;
-    die 'Not implemented';
+    print "Finding cell supersets with equal elements in $constraint->{name}\n";
+    my %seen;
+    for my $cell (@{$constraint->{cells}}) {
+      my $len = @{$cell->{data}};
+      next if $len == 1 || $len >= $constraint->{remaining};
+      my $key = join('', @{$cell->{data}});
+      push(@{$seen{$key}}, $cell);
+    }
+    foreach my $set (keys %seen) {
+      if (length($set) == @{$seen{$set}}) {
+        die "Not implemented!";
+      }
+    }
   } elsif (@simulation_queue) {
     my $constraint = shift(@simulation_queue);
+    next if $constraint->{remaining} == 0;
     $constraint->{sim_dirty} = 0;
     die 'Not implemented';
   } else {
