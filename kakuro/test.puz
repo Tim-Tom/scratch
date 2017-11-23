@@ -1,0 +1,28 @@
+# Kakuro Board Layout
+8 8
+X..XX..X
+...X...X
+.....X..
+XX...X..
+..X...XX
+..X.....
+X...X...
+X..XX..X
+# Horizontal Clues
+16 16
+23 24
+35 13
+24 16
+3 23
+4 31
+12 24
+4 17
+# Vertical Clues
+16 4
+23 10
+30 4
+35
+33
+16 29
+30 23
+16 16
