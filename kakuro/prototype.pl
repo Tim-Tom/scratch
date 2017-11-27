@@ -14,6 +14,10 @@ my %possible_sums;
 my %mask;
 my %required;
 
+sub set_difference($a1, $a2) {
+  return grep { my $e = $_; !grep { $_ == $e } @$a2 } @$a1;
+}
+
 sub determine_required(@sums) {
   my %seen;
   $seen{$_}++ foreach (map {@$_} @sums);
@@ -47,7 +51,7 @@ my @mask_queue;
 my @required_queue;
 my @multi_unique_queue;
 my @simulation_queue;
-my $solved;
+my $solved = 0;
 
 sub add_constraint_to_non_mask_queues($constraint) {
   if (!$constraint->{req_dirty}) {
@@ -104,8 +108,6 @@ sub build_constraint($index, $cell, $type) {
   return $constraint;
 }
 
-sub simulate($sum, 
-
 sub read_line {
   my $line;
   while($line = <ARGV>) {
@@ -116,6 +118,50 @@ sub read_line {
   return $line;
 }
 
+sub simulate($cells, $possible, $index, $remain) {
+  my $found = 0;
+  return 1 if ($index >= @$cells);
+  foreach my $n (@{$cells->[$index]{data}}) {
+    next unless $remain->{$n};
+    $remain->{$n} = 0;
+    if (simulate($cells, $possible, $index + 1, $remain)) {
+      $possible->[$index]{$n} = 1;
+      $found  = 1;
+    }
+    $remain->{$n} = 1;
+  }
+  return $found;
+}
+
+sub simulate_constraint($constraint) {
+  my @cell_possible;
+  my @new_possible;
+  say "Simulating $constraint->{name} using current possibilities";
+  for my $pos (@{$constraint->{possible}}) {
+    my %remain = map { $_ => 1 } @{$pos};
+    if (simulate($constraint->{cells}, \@cell_possible, 0, \%remain)) {
+      push(@new_possible, $pos);
+    } else {
+      say "-Determined that [@{$pos}] was not possible.";
+    }
+  }
+  if (@new_possible != @{$constraint->{possible}}) {
+    $constraint->{possible} = \@new_possible;
+    $constraint->{required} = determine_required(@new_possible);
+    add_constraint_to_queues($constraint);
+  }
+  for my $i (0 .. $#cell_possible) {
+    my $cell = $constraint->{cells}[$i];
+    my @new_data = grep { $cell_possible[$i]{$_} } @{$cell->{data}};
+    if (@new_data != @{$cell->{data}}) {
+      say "-Improved cell [$cell->{row_index}, $cell->{col_index}] to [@new_data].";
+      $cell->{data} = \@new_data;
+      add_cell_to_queues($cell);
+    }
+  }
+}
+
+
 my ($hsize, $vsize) = split(/\s+/, read_line);
 
 my @columns;
@@ -125,7 +171,8 @@ my @current_cols;
 my @cells;
 for my $row (0 .. ($vsize - 1)) {
   my @dots = split(//, read_line);
-  die "Too few characters in board" unless @dots == $hsize;
+  die "Too few characters in board (expected $hsize, got @{[scalar @dots]})" if @dots < $hsize;
+  die "Too many characters in board (expected $hsize, got @{[scalar @dots]})" if @dots > $hsize;
   die "Invalid characters in board" if grep { $_ ne '.' && $_ ne 'X' } @dots;
   @dots = map { $_ eq '.' } @dots;
   my $cur_row = undef;
@@ -187,6 +234,7 @@ for my $col (0 .. $hsize - 1) {
     $c->{required} = $required{$key};
   }
 }
+close *ARGV;
 
 for my $cell (@cells) {
   my %rm = %{$mask{$cell->{row}{key}}};
@@ -199,20 +247,20 @@ while($solved < @cells) {
   if (@unique_queue) {
     my $cell = shift @unique_queue;
     my $n = $cell->{data}[0];
-    print "Implementing Uniqueness for cell [$cell->{row_index}, $cell->{col_index}] ($n)\n";
+    say "Implementing Uniqueness for cell [$cell->{row_index}, $cell->{col_index}] ($n)";
     for my $constraint (($cell->{row}, $cell->{col})) {
-      print "-Removing $n from $constraint->{type} siblings\n";
+      say "-Removing $n from $constraint->{type} siblings";
       for my $sibling (@{$constraint->{cells}}) {
         next if refaddr($sibling) == refaddr($cell);
         my @new_data = grep { $_ != $n } @{ $sibling->{data} };
         if (@new_data != @{ $sibling->{data} }) {
-          print "--Improved cell [$sibling->{row_index}, $sibling->{col_index}] to [@new_data].\n";
+          say "--Improved cell [$sibling->{row_index}, $sibling->{col_index}] to [@new_data].";
           $sibling->{data} = \@new_data;
           add_cell_to_queues($sibling);
         }
       }
       if (!$constraint->{required}{$n}) {
-        print "-Removing $constraint->{name} possibilities that do not include $n\n";
+        say "-Removing $constraint->{name} possibilities that do not include $n";
         my @possible = grep { grep { $_ == $n } @$_ } @{$constraint->{possible}};
         $constraint->{possible} = \@possible;
         $constraint->{required} = determine_required(@possible);
@@ -224,11 +272,11 @@ while($solved < @cells) {
     next if $constraint->{remaining} == 0;
     $constraint->{mask_dirty} = 0;
     my %m = map { $_ => 1 } map { @$_ } @{$constraint->{possible}};
-    print "Masking $constraint->{name} using improved possibilities\n";
+    say "Masking $constraint->{name} using improved possibilities";
     for my $cell (@{$constraint->{cells}}) {
       my @new_data = grep { $m{$_} } @{$cell->{data}};
       if (@new_data != @{$cell->{data}}) {
-        print "-Improved cell [$cell->{row_index}, $cell->{col_index}] to [@new_data].\n";
+        say "-Improved cell [$cell->{row_index}, $cell->{col_index}] to [@new_data].";
         $cell->{data} = \@new_data;
         add_cell_to_queues($cell);
       }
@@ -237,7 +285,7 @@ while($solved < @cells) {
     my $constraint = shift(@required_queue);
     next if $constraint->{remaining} == 0;
     $constraint->{req_dirty} = 0;
-    print "Finding cells with unique required elements in $constraint->{name}\n";
+    say "Finding cells with unique required elements in $constraint->{name}";
     my %seen;
     for my $cell (@{$constraint->{cells}}) {
       push(@{$seen{$_}}, $cell) foreach (grep { $constraint->{required}{$_} } @{$cell->{data}});
@@ -246,7 +294,7 @@ while($solved < @cells) {
       if (@{$seen{$n}} == 1) {
         my $cell = $seen{$n}[0];
         if (@{$cell->{data}} != 1) {
-          print "-Determined that cell [$cell->{row_index}, $cell->{col_index}] had to be a $n\n";
+          say "-Determined that cell [$cell->{row_index}, $cell->{col_index}] had to be a $n";
           $cell->{data} = [$n];
           add_cell_to_queues($cell);
         }
@@ -256,7 +304,7 @@ while($solved < @cells) {
     my $constraint = shift(@multi_unique_queue);
     next if $constraint->{remaining} == 0;
     $constraint->{unq_dirty} = 0;
-    print "Finding cell supersets with equal elements in $constraint->{name}\n";
+    say "Finding cell supersets with equal elements in $constraint->{name}";
     my %seen;
     for my $cell (@{$constraint->{cells}}) {
       my $len = @{$cell->{data}};
@@ -266,14 +314,30 @@ while($solved < @cells) {
     }
     foreach my $set (keys %seen) {
       if (length($set) == @{$seen{$set}}) {
-        die "Not implemented!";
+        my @nums = @{$seen{$set}[0]{data}};
+        say "-Found cell superset $set with @{[scalar @{$seen{$set}}]} elements";
+        for my $cell (set_difference($constraint->{cells}, $seen{$set})) {
+          my @new_data = set_difference($cell->{data}, \@nums);
+          if (@new_data != @{$cell->{data}}) {
+            say "--Improved cell [$cell->{row_index}, $cell->{col_index}] to [@new_data].";
+            $cell->{data} = \@new_data;
+            add_cell_to_queues($cell);
+          }
+        }
       }
     }
   } elsif (@simulation_queue) {
+    @simulation_queue = map { $_->[1] } sort { $a->[0] <=> $b->[0] } map {
+      my $product = @{$_->{possible}};
+      for my $cell (@{$_->{cells}}) {
+        $product *= @{$cell->{data}};
+      }
+      [$product, $_]
+    } grep { $_->{remaining} > 0 } @simulation_queue;
     my $constraint = shift(@simulation_queue);
     next if $constraint->{remaining} == 0;
     $constraint->{sim_dirty} = 0;
-    die 'Not implemented';
+    simulate_constraint($constraint);
   } else {
     die "Could not solve puzzle :(";
   }
