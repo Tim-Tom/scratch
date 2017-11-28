@@ -1,0 +1,47 @@
+#board {
+    border-width: 2px;
+    border-color: black;
+    border-style: solid;
+}
+
+#next-button {
+}
+
+.cell {
+    width: 50px;
+    height: 50px;
+    padding: 2px;
+}
+
+.constraint {
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+}
+
+.horz-constraint {
+    width: calc;
+    color: darkgreen;
+    text-align: right;
+}
+
+.vert-constraint {
+    width: calc;
+    color: darkblue;
+    text-align: center;
+}
+
+.empty {
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+    background-color: gray;
+}
+
+.possible {
+}
+
+.impossible {
+    color: lightgray
+}
+

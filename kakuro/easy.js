@@ -1,6 +1,4 @@
-"use strict";
-
-var input_data = {
+document.input_data = {
    "cells" : [
       {
          "col_index" : 1,
@@ -2769,48 +2767,4 @@ var input_data = {
          ]
       }
    ]
-};
-
-var cells = [];
-var constraints = {
-  "row": [],
-  "column": [],
-};
-
-(function() {
-  var i, c;
-  for (i = 0; i < input_data.cells.length; ++i) {
-    c = input_data.cells[i];
-    if (!cells[c.row_index]) {
-      cells[c.row_index] = {};
-    }
-    cells[c.row_index][c.col_index] = c
-  }
-})();
-
-(function() {
-  var i, j, c, a;
-  for (i = 0; i < input_data.constraints.length; ++i) {
-    c = input_data.constraints[i];
-    c.cells = []
-    if (c.type == "Row") {
-      a = constraints.row;
-      for (j = c.start; j <= c.end; ++j) {
-        cells[c.index_major][j].row = c;
-      }
-    } else if (c.type == "Column") {
-      a = constraints.column;
-      for (j = c.start; j <= c.end; ++j) {
-        cells[j][c.index_major].col = c
-      }
-    } else {
-      console.error("Could not determine constraint type", c);
-      continue;
-    }
-    if (!a[c.index_major]) {
-      a[c.index_major] = []
-    }
-    a[c.index_major][c.index_minor] = c;
-  }
-})();
-
+}
