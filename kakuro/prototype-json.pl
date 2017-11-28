@@ -114,7 +114,11 @@ sub build_constraint($index, $cell, $type, $major, $minor) {
 }
 
 sub clean_constraint($constraint) {
-  return { map { $_ => $constraint->{$_} } qw(type index_major index_minor start end) };
+  return { map { $_ => $constraint->{$_} } qw(type index_major index_minor start end possible) };
+}
+
+sub clean_cell($cell) {
+  return { map { $_ => $cell->{$_} } qw(row_index col_index data) }
 }
 
 sub loc_cell($cell) {
@@ -423,6 +427,7 @@ for my $cell (@cells) {
 
 my $result = {
   constraints => [ map { clean_constraint($_) } map { @$_ } @rows, @columns],
+  cells => [ map { clean_cell($_) } @cells],
   steps => []
 };
 
