@@ -118,6 +118,86 @@ sub read_line {
   return $line;
 }
 
+sub unique_cell($cell) {
+  my $n = $cell->{data}[0];
+  say "Implementing Uniqueness for cell [$cell->{row_index}, $cell->{col_index}] ($n)";
+  for my $constraint (($cell->{row}, $cell->{col})) {
+    say "-Removing $n from $constraint->{type} siblings";
+    for my $sibling (@{$constraint->{cells}}) {
+      next if refaddr($sibling) == refaddr($cell);
+      my @new_data = grep { $_ != $n } @{ $sibling->{data} };
+      if (@new_data != @{ $sibling->{data} }) {
+        say "--Improved cell [$sibling->{row_index}, $sibling->{col_index}] to [@new_data].";
+        $sibling->{data} = \@new_data;
+        add_cell_to_queues($sibling);
+        }
+    }
+    if (!$constraint->{required}{$n}) {
+      say "-Removing $constraint->{name} possibilities that do not include $n";
+      my @possible = grep { grep { $_ == $n } @$_ } @{$constraint->{possible}};
+      $constraint->{possible} = \@possible;
+      $constraint->{required} = determine_required(@possible);
+      add_constraint_to_queues($constraint);
+    }
+  }
+}
+
+sub mask_constraint($constraint) {
+  my %m = map { $_ => 1 } map { @$_ } @{$constraint->{possible}};
+  say "Masking $constraint->{name} using improved possibilities";
+  for my $cell (@{$constraint->{cells}}) {
+    my @new_data = grep { $m{$_} } @{$cell->{data}};
+    if (@new_data != @{$cell->{data}}) {
+      say "-Improved cell [$cell->{row_index}, $cell->{col_index}] to [@new_data].";
+      $cell->{data} = \@new_data;
+      add_cell_to_queues($cell);
+    }
+  }
+}
+
+sub required_constraint($constraint) {
+  say "Finding cells with unique required elements in $constraint->{name}";
+  my %seen;
+  for my $cell (@{$constraint->{cells}}) {
+    push(@{$seen{$_}}, $cell) foreach (grep { $constraint->{required}{$_} } @{$cell->{data}});
+  }
+  for my $n (keys %{$constraint->{required}}) {
+    if (@{$seen{$n}} == 1) {
+      my $cell = $seen{$n}[0];
+      if (@{$cell->{data}} != 1) {
+        say "-Determined that cell [$cell->{row_index}, $cell->{col_index}] had to be a $n";
+        $cell->{data} = [$n];
+        add_cell_to_queues($cell);
+      }
+    }
+  }
+}
+
+sub multi_unique_constraint($constraint) {
+  say "Finding cell supersets with equal elements in $constraint->{name}";
+  my %seen;
+  for my $cell (@{$constraint->{cells}}) {
+    my $len = @{$cell->{data}};
+    next if $len == 1 || $len >= $constraint->{remaining};
+    my $key = join('', @{$cell->{data}});
+    push(@{$seen{$key}}, $cell);
+  }
+  foreach my $set (keys %seen) {
+    if (length($set) == @{$seen{$set}}) {
+      my @nums = @{$seen{$set}[0]{data}};
+      say "-Found cell superset $set with @{[scalar @{$seen{$set}}]} elements";
+      for my $cell (set_difference($constraint->{cells}, $seen{$set})) {
+        my @new_data = set_difference($cell->{data}, \@nums);
+        if (@new_data != @{$cell->{data}}) {
+          say "--Improved cell [$cell->{row_index}, $cell->{col_index}] to [@new_data].";
+          $cell->{data} = \@new_data;
+          add_cell_to_queues($cell);
+        }
+      }
+    }
+  }
+}
+
 sub simulate($cells, $possible, $index, $remain) {
   my $found = 0;
   return 1 if ($index >= @$cells);
@@ -160,7 +240,6 @@ sub simulate_constraint($constraint) {
     }
   }
 }
-
 
 my ($hsize, $vsize) = split(/\s+/, read_line);
 
@@ -246,86 +325,22 @@ for my $cell (@cells) {
 while($solved < @cells) {
   if (@unique_queue) {
     my $cell = shift @unique_queue;
-    my $n = $cell->{data}[0];
-    say "Implementing Uniqueness for cell [$cell->{row_index}, $cell->{col_index}] ($n)";
-    for my $constraint (($cell->{row}, $cell->{col})) {
-      say "-Removing $n from $constraint->{type} siblings";
-      for my $sibling (@{$constraint->{cells}}) {
-        next if refaddr($sibling) == refaddr($cell);
-        my @new_data = grep { $_ != $n } @{ $sibling->{data} };
-        if (@new_data != @{ $sibling->{data} }) {
-          say "--Improved cell [$sibling->{row_index}, $sibling->{col_index}] to [@new_data].";
-          $sibling->{data} = \@new_data;
-          add_cell_to_queues($sibling);
-        }
-      }
-      if (!$constraint->{required}{$n}) {
-        say "-Removing $constraint->{name} possibilities that do not include $n";
-        my @possible = grep { grep { $_ == $n } @$_ } @{$constraint->{possible}};
-        $constraint->{possible} = \@possible;
-        $constraint->{required} = determine_required(@possible);
-        add_constraint_to_queues($constraint);
-      }
-    }
+    unique_cell($cell);
   } elsif (@mask_queue) {
     my $constraint = shift(@mask_queue);
     next if $constraint->{remaining} == 0;
     $constraint->{mask_dirty} = 0;
-    my %m = map { $_ => 1 } map { @$_ } @{$constraint->{possible}};
-    say "Masking $constraint->{name} using improved possibilities";
-    for my $cell (@{$constraint->{cells}}) {
-      my @new_data = grep { $m{$_} } @{$cell->{data}};
-      if (@new_data != @{$cell->{data}}) {
-        say "-Improved cell [$cell->{row_index}, $cell->{col_index}] to [@new_data].";
-        $cell->{data} = \@new_data;
-        add_cell_to_queues($cell);
-      }
-    }
+    mask_constraint($constraint);
   } elsif (@required_queue) {
     my $constraint = shift(@required_queue);
     next if $constraint->{remaining} == 0;
     $constraint->{req_dirty} = 0;
-    say "Finding cells with unique required elements in $constraint->{name}";
-    my %seen;
-    for my $cell (@{$constraint->{cells}}) {
-      push(@{$seen{$_}}, $cell) foreach (grep { $constraint->{required}{$_} } @{$cell->{data}});
-    }
-    for my $n (keys %{$constraint->{required}}) {
-      if (@{$seen{$n}} == 1) {
-        my $cell = $seen{$n}[0];
-        if (@{$cell->{data}} != 1) {
-          say "-Determined that cell [$cell->{row_index}, $cell->{col_index}] had to be a $n";
-          $cell->{data} = [$n];
-          add_cell_to_queues($cell);
-        }
-      }
-    }
+    required_constraint($constraint);
   } elsif (@multi_unique_queue) {
     my $constraint = shift(@multi_unique_queue);
     next if $constraint->{remaining} == 0;
     $constraint->{unq_dirty} = 0;
-    say "Finding cell supersets with equal elements in $constraint->{name}";
-    my %seen;
-    for my $cell (@{$constraint->{cells}}) {
-      my $len = @{$cell->{data}};
-      next if $len == 1 || $len >= $constraint->{remaining};
-      my $key = join('', @{$cell->{data}});
-      push(@{$seen{$key}}, $cell);
-    }
-    foreach my $set (keys %seen) {
-      if (length($set) == @{$seen{$set}}) {
-        my @nums = @{$seen{$set}[0]{data}};
-        say "-Found cell superset $set with @{[scalar @{$seen{$set}}]} elements";
-        for my $cell (set_difference($constraint->{cells}, $seen{$set})) {
-          my @new_data = set_difference($cell->{data}, \@nums);
-          if (@new_data != @{$cell->{data}}) {
-            say "--Improved cell [$cell->{row_index}, $cell->{col_index}] to [@new_data].";
-            $cell->{data} = \@new_data;
-            add_cell_to_queues($cell);
-          }
-        }
-      }
-    }
+    multi_unique_constraint($constraint);
   } elsif (@simulation_queue) {
     @simulation_queue = map { $_->[1] } sort { $a->[0] <=> $b->[0] } map {
       my $product = @{$_->{possible}};
