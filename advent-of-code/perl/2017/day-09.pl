@@ -3,6 +3,8 @@ use warnings;
 
 use v5.24;
 
+use experimental 'signatures';
+
 =pod
 
 ***** --- Day 9: Stream Processing --- *****
@@ -57,6 +59,56 @@ immediately contains it. (The outermost group gets a score of 1.)
     * {{<a!>},{<a!>},{<a!>},{<ab>}}, score of 1 + 2 = 3.
 What is the total score for all groups in your input?
 
+=cut
+
+=pod
+
+I could solve this entirely with a recursive regular expression because it's perl, but
+I'll do it manually for kicks.
 
 =cut
 
+my $state = 0;
+
+sub parse_garbage($text, $i) {
+  my $start_i = $i;
+  while(1) {
+    my $c = substr($text, $i++, 1);
+    if ($c eq '!') {
+      ++$i; # Skip extra character
+    } elsif ($c eq '>') {
+      last;
+    }
+  }
+  # say "Parsed garbage from $start_i to $i: " . substr($text, $start_i, $i - $start_i);
+  return $i;
+}
+
+sub parse_group($text, $i, $depth) {
+  my $total_score = $depth;
+  my $start_i = $i;
+  while(1) {
+    my $c = substr($text, $i++, 1);
+    if ($c eq '{') {
+      my $score;
+      ($i, $score) = parse_group($text, $i, $depth + 1);
+      $total_score += $score;
+    } elsif ($c eq '<') {
+      $i = parse_garbage($text, $i);
+    } elsif ($c eq ',') {
+    } elsif ($c eq '}') {
+      last;
+    } else {
+      die "Bad parse: '$c'";
+    }
+  }
+  # say "Parsed group from $start_i to $i: " . substr($text, $start_i, $i - $start_i);
+  return ($i, $total_score);
+}
+
+while(my $stream = <ARGV>) {
+  chomp $stream;
+  die "Invalid stream" if (substr($stream, 0, 1) ne '{');
+  my ($end, $score) = parse_group($stream, 1, 1);
+  say "$stream: $score";
+}
