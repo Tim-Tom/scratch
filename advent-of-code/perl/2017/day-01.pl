@@ -38,5 +38,15 @@ For example:
       the last digit, 9.
 What is the solution to your captcha?
 
-
 =cut
+
+while(my $line = <ARGV>) {
+  chomp($line);
+  my @digits = split(//, $line);
+  my $sum = 0;
+  for my $i (1 .. $#digits) {
+    ++$sum if $digits[$i] == $digits[$i - 1];
+  }
+  ++$sum if $digits[0] == $digits[$#digits];
+  say "$line: $sum";
+}
