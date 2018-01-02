@@ -20,3 +20,17 @@ passphrases are valid?
 
 =cut
 
+while(my $passphrase = <ARGV>) {
+  chomp($passphrase);
+  my @words = sort { $a cmp $b } split(/\s+/, $passphrase);
+  my $last = '';
+  my $valid = 1;
+  for my $word (@words) {
+    if ($word eq $last) {
+      $valid = 0;
+      last;
+    }
+    $last = $word;
+  }
+  say "$passphrase: " . ($valid ? 'valid' : 'invalid');
+}
