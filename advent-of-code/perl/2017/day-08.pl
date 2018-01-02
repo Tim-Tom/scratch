@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use v5.24;
+use experimental 'signatures';
 
 =pod
 
@@ -32,6 +33,49 @@ are named, and leaves that to you to determine.
 What is the largest value in any register after completing the instructions in
 your puzzle input?
 
-
 =cut
 
+my %registers;
+
+my %operations = (
+  inc => sub($var, $val) {
+    $registers{$var} += $val;
+  },
+  dec => sub($var, $val) {
+    $registers{$var} -= $val;
+  }
+);
+
+my %comparisons = (
+  '<'  => sub($l, $r) { return $l < $r; },
+  '>'  => sub($l, $r) { return $l > $r; },
+  '<=' => sub($l, $r) { return $l <= $r; },
+  '>=' => sub($l, $r) { return $l >= $r; },
+  '==' => sub($l, $r) { return $l == $r; },
+  '!=' => sub($l, $r) { return $l != $r; }
+);
+
+sub determine_value($val) {
+  if ($val =~ /^-?\d+$/) {
+    return $val;
+  } else {
+    return ($registers{$val} //= 0);
+  }
+}
+
+while(<ARGV>) {
+  chomp;
+  die $_ unless (/^\s*(\w+)\s+(\S+)\s+(-?\d+|\w+)\s+if\s+(-?\d+|\w+)\s+(\S+)\s*(-?\d+|\w+)\s*$/);
+  my ($register, $operation, $amount, $lop, $comparison, $rop) = ($1, $2, $3, $4, $5, $6);
+  die "Unknown operation $operation" unless ($operations{$operation});
+  die "Unknown comparison $comparison" unless ($comparisons{$comparison});
+  ($amount, $lop, $rop) = map { determine_value($_) } ($amount, $lop, $rop);
+  $registers{$register} //= 0;
+  if ($comparisons{$comparison}($lop, $rop)) {
+    $operations{$operation}($register, $amount);
+  }
+}
+
+for my $register (sort { $registers{$b} <=> $registers{$a} } keys %registers) {
+  say "$register: $registers{$register}";
+}
