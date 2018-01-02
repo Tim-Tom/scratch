@@ -28,20 +28,19 @@ For example, if the spinlock were to step 3 times per insert, the circular
 buffer would begin to evolve like this (using parentheses to mark the current
 position after each iteration of the algorithm):
     * (0), the initial state before any insertions.
-    * 0Â (1): the spinlock steps forward three times (0, 0, 0), and then
-      inserts the first value, 1, after it. 1 becomes the current position.
-    * 0Â (2)Â 1: the spinlock steps forward three times (0, 1, 0), and then
+    * 0 (1): the spinlock steps forward three times (0, 0, 0), and then inserts
+      the first value, 1, after it. 1 becomes the current position.
+    * 0 (2) 1: the spinlock steps forward three times (0, 1, 0), and then
       inserts the second value, 2, after it. 2 becomes the current position.
-    * 0Â Â 2Â (3)Â 1: the spinlock steps forward three times (1, 0, 2), and
-      then inserts the third value, 3, after it. 3 becomes the current
-      position.
+    * 0  2 (3) 1: the spinlock steps forward three times (1, 0, 2), and then
+      inserts the third value, 3, after it. 3 becomes the current position.
 And so on:
-    * 0Â Â 2Â (4)Â 3Â Â 1
-    * 0Â (5)Â 2Â Â 4Â Â 3Â Â 1
-    * 0Â Â 5Â Â 2Â Â 4Â Â 3Â (6)Â 1
-    * 0Â Â 5Â (7)Â 2Â Â 4Â Â 3Â Â 6Â Â 1
-    * 0Â Â 5Â Â 7Â Â 2Â Â 4Â Â 3Â (8)Â 6Â Â 1
-    * 0Â (9)Â 5Â Â 7Â Â 2Â Â 4Â Â 3Â Â 8Â Â 6Â Â 1
+    * 0  2 (4) 3  1
+    * 0 (5) 2  4  3  1
+    * 0  5  2  4  3 (6) 1
+    * 0  5 (7) 2  4  3  6  1
+    * 0  5  7  2  4  3 (8) 6  1
+    * 0 (9) 5  7  2  4  3  8  6  1
 Eventually, after 2017 insertions, the section of the circular buffer near the
 last insertion looks like this:
 1512  1134  151 (2017) 638  1513  851

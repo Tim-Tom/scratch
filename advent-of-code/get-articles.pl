@@ -34,5 +34,5 @@ for my $day (1 .. 25) {
   next if -f $text;
   die if -z $html;
   say "Converting article for day $day to text";
-  system(qq(html2text <$html >$text));
+  system(qq(html2text -utf8 <$html >$text));
 }
