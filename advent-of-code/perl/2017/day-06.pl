@@ -3,6 +3,8 @@ use warnings;
 
 use v5.24;
 
+use experimental 'signatures';
+
 =pod
 
 ***** --- Day 6: Memory Reallocation --- *****
@@ -44,6 +46,42 @@ Given the initial block counts in your puzzle input, how many redistribution
 cycles must be completed before a configuration is produced that has been seen
 before?
 
+=cut
+
+=pod
+
+This seems to be something like nim, where the relative sizes of all the blocks tells you
+the answer, but I don't want to think about it so I'm just going to do it the dumb way.
 
 =cut
 
+sub max_index(@bank) {
+  my ($mi, $max) = (0, $bank[0]);
+  for my $i (1 .. $#bank) {
+    if ($bank[$i] > $max) {
+      $mi = $i;
+      $max = $bank[$i];
+    }
+  }
+  return ($mi, $max);
+}
+
+while(my $bank = <ARGV>) {
+  chomp($bank);
+  my %cache;
+  my @bank = split(/\s+/, $bank);
+  my $steps = 0;
+  while(1) {
+    my $key = join('-', @bank);
+    last if (exists $cache{$key});
+    $cache{$key} = ++$steps;
+    my ($index, $amount) = max_index(@bank);
+    my $whole = int($amount / @bank);
+    my $remains = $amount % @bank;
+    $bank[$index] = 0;
+    $bank[$_] += $whole for (0 .. $#bank);
+    ++$bank[$_] for (map { $_ < @bank ? $_ : $_ - @bank } ($index + 1 .. $index + $remains) );
+  }
+  my $cycle_len = $steps - $cache{join('-', @bank)} + 1;
+  say "$bank: $steps with a cycle length of $cycle_len";
+}
