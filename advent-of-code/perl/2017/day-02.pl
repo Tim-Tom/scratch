@@ -27,6 +27,19 @@ For example, given the following spreadsheet:
 In this example, the spreadsheet's checksum would be 8 + 4 + 6 = 18.
 What is the checksum for the spreadsheet in your puzzle input?
 
-
 =cut
 
+my $checksum = 0;
+while(<ARGV>) {
+  chomp;
+  my @digits = split(/\s+/);
+  next unless @digits;
+  my ($min, $max) = ($digits[0], $digits[0]);
+  for my $digit (@digits) {
+    $min = $digit if $digit < $min;
+    $max = $digit if $digit > $max;
+  }
+  $checksum += $max - $min;
+}
+
+say $checksum;
