@@ -29,6 +29,49 @@ For example:
 How many steps are required to carry the data from the square identified in
 your puzzle input all the way to the access port?
 
+=cut
+
+=pod
+
+Corners:
+Top left corner is the even squares + 1:        1(0), 5(2), 17(4), 37(6), 65(8)
+The top right corner is top left - n:           1(0), 3(2), 13(4), 31(6), 57(8)
+The bottom left corner is top left + n:         1(0), 7(2), 21(4), 43(6), 73(8)
+The bottom right corners are the odd squares:   1(1), 9(3), 25(5), 49(7), 81(9)
+Or equivalently bottom left + n.
 
 =cut
 
+while(my $position = <ARGV>) {
+  chomp $position;
+  die if $position < 1;
+  my $np = sqrt($position);
+  my $n = int($np);
+  if ($n % 2) {
+    if ($n == $np) {
+      $n--; # Odd squares are actually the end of the previous shell
+    } else {
+      $n++; # Otherwise they are the beginning of the next shell.
+    }
+  }
+  my $top_left = $n*$n + 1;
+  my $offset;
+  if ($position < $top_left) {
+    my $top_right = $top_left - $n;
+    if ($position < $top_right) {
+      $offset = $top_right - $position;
+    } else {
+      $offset = $position - $top_right;
+    }
+  } else {
+    my $bottom_left = $top_left + $n;
+    if ($position < $bottom_left) {
+      $offset = $bottom_left - $position;
+    } else {
+      $offset = $position - $bottom_left;
+    }
+  }
+  my $n2 =  $n / 2;
+  my $steps = $n2 + abs($offset - $n2);
+  say "$position: shell $n2, offset $offset, steps $steps";
+}
