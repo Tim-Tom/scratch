@@ -3,6 +3,8 @@ use warnings;
 
 use v5.24;
 
+use experimental 'signatures';
+
 =pod
 
 ***** --- Day 7: Recursive Circus --- *****
@@ -66,3 +68,47 @@ correct. What is the name of the bottom program?
 
 =cut
 
+my %node;
+
+sub make_node($name, $weight, @children) {
+  if (exists $node{$name}) {
+    $node{$name}{weight} = $weight;
+    $node{$name}{children} = [@children];
+  } else {
+    $node{$name} = {
+      name => $name,
+      weight => $weight,
+      children => [@children],
+      parent => undef
+     };
+  }
+  my $node = $node{$name};
+  for my $child (@children) {
+    $child->{parent} = $node;
+  }
+  return $node;
+}
+
+sub make_child($name) {
+  unless (exists $node{$name}) {
+    $node{$name} = { name => $name };
+  }
+  return $node{$name};
+}
+
+while(<ARGV>) {
+  chomp;
+  die $_ unless /^\s*(\w+)\s+\((\d+)\)\s*(?:\-\>\s+(.+))?$/;
+  my ($node, $weight, $children) = ($1, $2, $3);
+  my @children;
+  if ($children) {
+    @children = split(/\s*,\s*/, $children);
+  }
+  make_node($node, $weight, map { make_child($_) } @children);
+}
+
+# As long as there are no cycles and there is actually one root, we can just pick a random
+# node and traverse from there back to the root using our parent pointers.
+my ($root, ) = values %node;
+$root = $root->{parent} while ($root->{parent});
+say "The root of the tree is $root->{name}";
