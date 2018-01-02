@@ -39,3 +39,15 @@ In this example, the exit is reached in 5 steps.
 How many steps does it take to reach the exit?
 
 =cut
+
+while(my $listing = <ARGV>) {
+  chomp($listing);
+  my @offsets = split(/\s+/, $listing);
+  my $index = 0;
+  my $steps = 0;
+  while($index >= 0 && $index <= $#offsets) {
+    $index = $index + $offsets[$index]++;
+    ++$steps;
+  }
+  say "$listing: $steps steps";
+}
