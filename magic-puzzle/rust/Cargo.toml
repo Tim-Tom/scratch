@@ -1,0 +1,8 @@
+[package]
+name = "magic-puzzle"
+version = "0.1.0"
+authors = ["tbollman"]
+edition = "2018"
+
+[dependencies]
+rayon = "1.1.0"
