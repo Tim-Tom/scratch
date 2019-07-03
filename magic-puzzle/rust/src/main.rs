@@ -1,6 +1,6 @@
-// extern crate rayon;
+extern crate rayon;
 
-// use rayon::prelude::*;
+use rayon::prelude::*;
 
 // const WIDTH : usize = 3;
 const WIDTH : usize = 4;
@@ -34,7 +34,7 @@ const ACTIONS : [Action; SIZE + 3] = [
     // Action { pos : 0, action : validate, indexes : [1, 4, 7] },
     // Action { pos : 0, action : validate, indexes : [2, 4, 6] },
     // Action { pos : 0, action : solution, indexes : [0, 0, 0] }
-    Action { pos :  0, action : choose,   indexes: [0, 0, 0, 0] },
+    Action { pos :  0, action : choose_p, indexes: [0, 0, 0, 0] },
     Action { pos :  1, action : choose,   indexes: [0, 0, 0, 0] },
     Action { pos :  2, action : choose,   indexes: [0, 0, 0, 0] },
     Action { pos :  3, action : decide,   indexes: [0, 1, 2, 0] },
@@ -64,19 +64,21 @@ fn choice_search(n : i32) -> usize {
     return SIZE + 1;
 }
 
+fn choose_p(ai : usize, picked : &mut[bool; SIZE], a : &mut[i32; SIZE]) {
+    let action = &ACTIONS[ai];
+    (0 .. SIZE).into_par_iter().for_each(|i| {
+        let mut thread_picked = picked.clone();
+        let mut thread_a = a.clone();
+        thread_a[action.pos] = CHOICES[i];
+        thread_picked[i] = true;
+        (ACTIONS[ai + 1].action)(ai + 1, &mut thread_picked, &mut thread_a);
+        thread_picked[i] = false;
+    });
+}
+
 fn choose(ai : usize, picked : &mut[bool; SIZE], a : &mut[i32; SIZE]) {
     let action = &ACTIONS[ai];
-    // (0 .. SIZE).into_iter().for_each(|i| {
-    //     if !picked[i] {
-    //         let mut thread_picked = picked.clone();
-    //         let mut thread_a = a.clone();
-    //         thread_a[action.pos] = CHOICES[i];
-    //         thread_picked[i] = true;
-    //         (ACTIONS[ai + 1].action)(ai + 1, &mut thread_picked, &mut thread_a);
-    //         thread_picked[i] = false;
-    //     }
-    // });
-    for i in 0 .. SIZE {
+     for i in 0 .. SIZE {
         if !picked[i] {
             a[action.pos] = CHOICES[i];
             picked[i] = true;
