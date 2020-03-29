@@ -24,6 +24,6 @@ we have two places to put those variables (real x and y). Thus giving us 8 combi
 |-----------------+----+----|
 
 My first instinct is that we should be able to look at the 4 corners and perform an
-arbitrary cut like the top left and top right above. I already tried this once on a
-virtual machine that did not get pushed to master, but I'm hopeful testing the work again
-will result in not making the same mistake.
+arbitrary cut like the top left and top right above. You can see the results of this in
+generate-permutations.pl, which permutes all the possible value orderings of the corner
+and then arbitrarily cuts out values to give me a unique set across all the permutations.
