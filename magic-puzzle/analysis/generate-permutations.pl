@@ -30,18 +30,15 @@ my $values = Algorithm::Permute->new([1 .. 4]);
 my %seen;
 while (my @vals = $values->next()) {
   my $rKey = join('', @vals);
-  # Skip if top left > top right
-  if ($vals[0] > $vals[1]) {
-    next;
-  }
-  # Skip if top right < bottom left
-  if ($vals[1] > $vals[2]) {
-    next;
-  }
-  # Skip if bottom right is greater than bottom left and top left.
-  if ($vals[2] > $vals[3] && $vals[0] > $vals[3]) {
-    next;
-  }
+  my $tl = 0;
+  my $tr = 1;
+  my $bl = 2;
+  my $br = 3;
+  next unless (
+    $vals[$tl] < $vals[$tr] &&
+      $vals[$tr] < $vals[$bl] &&
+      ($vals[$bl] < $vals[$br] || $vals[$tl] < $vals[$br])
+  );
 
   for my $idx (@symmetry) {
     my $key = join('', @vals[@$idx]);
