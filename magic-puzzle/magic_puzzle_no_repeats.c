@@ -164,7 +164,7 @@ static void chooseBL(int ai) {
 }
 
 static void checkBR(int ai) {
-  if (a[BL].i < a[BR].i && a[TL].i < a[BR].i) {
+  if (a[BL].i < a[BR].i || a[TL].i < a[BR].i) {
     actions[ai + 1].action(ai + 1);
   }
   #ifdef TRACE
