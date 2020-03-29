@@ -30,7 +30,7 @@ my $values = Algorithm::Permute->new([1 .. 4]);
 my %seen;
 while (my @vals = $values->next()) {
   my $rKey = join('', @vals);
-  # Skip if top left < top right
+  # Skip if top left > top right
   if ($vals[0] > $vals[1]) {
     next;
   }
