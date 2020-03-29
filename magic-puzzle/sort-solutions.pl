@@ -8,7 +8,7 @@ for my $file (@ARGV) {
   my @solutions;
   my $solution = '';
   while(<$input>) {
-    if (/--- Solution \d+ ---/a) {
+    if (/--- Solution (\d+ )?---/a) {
       if ($solution) {
         push(@solutions, $solution);
       }
