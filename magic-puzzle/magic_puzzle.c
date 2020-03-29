@@ -11,9 +11,6 @@
 
 typedef int bool;
 
-static void pickNext(int);
-
-
 #if WIDTH == 3
 
 #define GOAL 21
