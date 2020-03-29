@@ -3,7 +3,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define WIDTH 3
+#define WIDTH 4
 
 #define WM (WIDTH-1)
 #define WP (WIDTH+1)

@@ -3,7 +3,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define WIDTH 3
+#define WIDTH 4
 
 #define WM (WIDTH-1)
 #define WP (WIDTH+1)
@@ -261,15 +261,15 @@ int main(int argc, const char* argv[]) {
   actions[++i].pos =  3; actions[i].action = &chooseTR;
   actions[++i].pos =  1; actions[i].action = &choose;
   actions[++i].pos =  2; actions[i].action = &decide;   actions[i].indexes[0] =  0; actions[i].indexes[1] =  1; actions[i].indexes[2] =  3;
-  actions[++i].pos = 15; actions[i].action = &chooseBR;
-  actions[++i].pos =  5; actions[i].action = &choose;
-  actions[++i].pos = 10; actions[i].action = &decide;   actions[i].indexes[0] =  0; actions[i].indexes[1] =  5; actions[i].indexes[2] = 15;
-  actions[++i].pos =  9; actions[i].action = &choose;
-  actions[++i].pos = 13; actions[i].action = &decide;   actions[i].indexes[0] =  1; actions[i].indexes[1] =  5; actions[i].indexes[2] =  9;
+  actions[++i].pos = 12; actions[i].action = &chooseBL;
   actions[++i].pos =  6; actions[i].action = &choose;
-  actions[++i].pos = 12; actions[i].action = &decide;   actions[i].indexes[0] =  3; actions[i].indexes[1] =  6; actions[i].indexes[2] =  9;
-  actions[++i].pos =  0; actions[i].action = &checkBL;
+  actions[++i].pos =  9; actions[i].action = &decide;   actions[i].indexes[0] =  3; actions[i].indexes[1] =  6; actions[i].indexes[2] = 12;
+  actions[++i].pos = 10; actions[i].action = &choose;
   actions[++i].pos = 14; actions[i].action = &decide;   actions[i].indexes[0] =  2; actions[i].indexes[1] =  6; actions[i].indexes[2] = 10;
+  actions[++i].pos =  5; actions[i].action = &choose;
+  actions[++i].pos = 15; actions[i].action = &decide;   actions[i].indexes[0] =  0; actions[i].indexes[1] =  5; actions[i].indexes[2] = 10;
+  actions[++i].pos =  0; actions[i].action = &checkBR;
+  actions[++i].pos = 13; actions[i].action = &decide;   actions[i].indexes[0] =  1; actions[i].indexes[1] =  5; actions[i].indexes[2] =  9;
   actions[++i].pos =  0; actions[i].action = &validate; actions[i].indexes[0] = 12; actions[i].indexes[1] = 13; actions[i].indexes[2] = 14; actions[i].indexes[3] = 15;
   actions[++i].pos =  4; actions[i].action = &choose;
   actions[++i].pos =  7; actions[i].action = &decide;   actions[i].indexes[0] =  4; actions[i].indexes[1] =  5; actions[i].indexes[2] =  6;
