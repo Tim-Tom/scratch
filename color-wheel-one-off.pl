@@ -37,35 +37,35 @@ my ($l, $r) = (0, $end);
 
 my %seen;
 
-my @best = ('R', ) x 50;
-sub check($l, $r, @path) {
-  return 0 if @path > @best;
-  return 0 if exists $seen{$l,$r} && $seen{$l,$r} <= @path;
-  $seen{$l,$r} = @path;
-  my ($L, $R) = @cells[$l, $r];
-  for my $ln ($L->{neighbors}->@*) {
-    my $LN = $cells[$ln];
-    for my $rn ($R->{neighbors}->@*) {
-      my $RN = $cells[$rn];
-      if ($LN->{color} eq $RN->{color}) {
-        if ($ln == $rn) {
-          if (@path <= @best) {
-            @best = (@path, $ln);
-            say "Met on turn " . scalar @path;
-          }
-          # push(@path, [$ln, $rn]);
-          # use Data::Printer;
-          # p(@path);
-          return $#path;
+my %memo;
+my $depth = 1;
+sub check($l, $r) {
+  return [0, []] if $l == $r;
+  if (!exists $memo{$l,$r}) {
+    say(('-' x $depth) . "check[$l,$r]...");
+    $memo{$l,$r} = [1e100, ['error']];
+    my ($L, $R) = @cells[$l, $r];
+    my $min = [1e100, ['no-match']];
+    for my $ln ($L->{neighbors}->@*) {
+      my $LN = $cells[$ln];
+      for my $rn ($R->{neighbors}->@*) {
+        my $RN = $cells[$rn];
+        if ($LN->{color} eq $RN->{color}) {
+          ++$depth;
+          my $result = check($ln, $rn);
+          --$depth;
+          say(('-' x $depth) . "check[$l,$r]=" . $result->[0] . "+1?");
+          $min = [$result->[0]+1, [[$ln, $rn], $result->[1]->@*]] if $result->[0] + 1 < $min->[0];
         }
-        check($ln, $rn, @path, [$ln, $rn]);
       }
     }
+    $memo{$l,$r} = $min if $min->[0] < 1e100;
   }
-  return 0;
+  say(('-' x $depth) . "check[$l,$r]=" . $memo{$l,$r}[0]);
+  return $memo{$l,$r};
 }
 
-check($l, $r, [$l, $r]);
+my $result = check($l, $r);
 
 use Data::Printer;
-p(@best);
+p($result);
