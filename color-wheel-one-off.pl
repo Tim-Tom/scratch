@@ -113,6 +113,38 @@ if (@ARGV == 0 || $ARGV[0] eq 'd') {
   }
   die unless $goal->{ancestor};
   say join(' ', reverse @path);
+} elsif ($ARGV[0] eq 'b') {
+  my @search = ([0, $end], );
+  my %seen;
+  $seen{0,$end} = $seen{$end,0} = '';
+  my @path;
+  search:
+  while (my $n = shift @search) {
+    my ($l, $r) = $n->@*;
+    my ($L, $R) = @cells[$l, $r];
+    for my $ln ($L->{neighbors}->@*) {
+      my $LN = $cells[$ln];
+      for my $rn ($R->{neighbors}->@*) {
+        my $RN = $cells[$rn];
+        if ($LN->{color} eq $RN->{color}) {
+          if ($ln == $rn) {
+            my @path = ($ln, );
+            my $x = join($;, $l, $r);
+            while ($x ne '') {
+              push(@path, join('-', split($;, $x)));
+              $x = $seen{$x};
+            }
+            say scalar @path . ': ' . join(' ', reverse @path);
+            last search;
+          } else {
+            next if defined $seen{$ln,$rn};
+            $seen{$ln,$rn} = $seen{$rn,$ln} = join($;, $l, $r);
+            push(@search, [$ln, $rn]);
+          }
+        }
+      }
+    }
+  }
 } else {
   die "Unknown type $ARGV[0]";
 }
